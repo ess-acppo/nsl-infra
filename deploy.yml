@@ -1,0 +1,49 @@
+---
+# Add this snippet to the top of your playbook. 
+# It will install python2 if missing (but checks first so no expensive repeated apt updates)
+# gwillem@gmail.com
+
+- hosts: all
+  gather_facts: False
+  become: yes
+  
+  tasks:
+  - name: install python 2
+    raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal && wget https://bootstrap.pypa.io/get-pip.py &&  python get-pip.py &&  pip install boto && pip install boto3)
+
+
+# This playbook deploys a simple standalone Tomcat 7 server.
+
+- hosts: tomcat-servers
+  remote_user: "{{sshuser}}"
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: Clean artifact path
+    file:
+      state: absent
+      path: "{{ war_deploy_path }}/{{ war_name }}/"
+
+  - name: Deploy war file
+    s3: 
+      bucket: "{{ war_bucket }}"
+      object: "{{ war_name }}.war" 
+      dest: "{{ war_deploy_path }}/{{ war_name }}.war"
+      mode: get 
+      overwrite: yes
+    register: war_downloaded
+
+  - name: Set correct permissions
+    file: 
+      path: "{{ war_deploy_path }}/{{ war_name }}.war"
+      owner: tomcat
+      group: tomcat
+    when: war_downloaded.changed
+    register: war_deployed
+
+  
+  - name: Restart Tomcat
+    service: name=tomcat state=restarted enabled=yes
+    when: war_deployed.changed
+

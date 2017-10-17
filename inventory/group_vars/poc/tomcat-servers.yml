@@ -1,0 +1,13 @@
+# Here are variables related to the Tomcat installation
+
+http_port: 8080
+https_port: 8443
+
+# This will configure a default manager-gui user:
+
+admin_username: admin
+admin_password: adminsecret
+
+war_bucket: nslrepo
+war_name: nsl#editor##1.44
+war_deploy_path: /opt/apache-tomcat-7.0.61/webapps

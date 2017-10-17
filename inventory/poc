@@ -1,0 +1,5 @@
+[poc:children]
+tomcat-servers
+
+[tomcat-servers]
+52.63.46.155 sshuser=ubuntu version=7
