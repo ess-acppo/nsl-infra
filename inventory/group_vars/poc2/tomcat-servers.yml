@@ -1,7 +1,11 @@
 # Here are variables related to the Tomcat installation
 
 http_port: 8080
-https_port: 8443
+https_port: 443
+nsl_protocol: https
+nsl_port: 443
+
+ldap_admin_password: secret
 
 # This will configure a default manager-gui user:
 

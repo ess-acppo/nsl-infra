@@ -1,0 +1,38 @@
+---
+- name: Install the package "apacheds"
+  apt:
+    name: apacheds
+    state: present
+
+- name: Install the ldap utils
+  apt:
+    name: ldap-utils
+    state: present
+
+- name: Ensures /var/lib/apacheds/default/conf dir exists
+  file: path="{{ item }}" state=directory
+  with_items:
+    - /var/lib/apacheds/default/conf
+    - /lib/systemd/system
+    - /etc/default
+
+# next 2 customization is required as per : https://bugs.launchpad.net/ubuntu/+source/apache-directory-server/+bug/1646146
+- template: src=templates/apacheds.service.j2 dest=/lib/systemd/system/apacheds.service
+- template: src=templates/apacheds.j2 dest=/etc/default/apacheds.service
+- template: src=templates/config.ldif.j2 dest=/var/lib/apacheds/default/conf/config.ldif
+- template: src=templates/create.ldif.j2 dest=/tmp/create.ldif
+- template: src=templates/add_user.ldif.j2 dest=/tmp/add_user.ldif
+
+
+# This repeatedly errors out even though the service actually starts up. So, errors are ignored 
+- name: start apache
+  command: bash -c '/etc/init.d/apacheds start ; /etc/init.d/apacheds start'
+  ignore_errors: yes
+
+- pause: seconds=30
+
+- name: import the users
+  command: bash -c 'ldapadd -c -h localhost -p 10389 -D "uid=admin,ou=system" -w secret < /tmp/create.ldif ; echo added_org'
+
+- name: import the users
+  command: bash -c 'ldapadd -c -h localhost -p 10389 -D "uid=admin,ou=system" -w secret < /tmp/add_user.ldif ; echo added_users'

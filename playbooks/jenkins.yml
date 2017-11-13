@@ -1,0 +1,26 @@
+---
+# Add this snippet to the top of your playbook. 
+# It will install python2 if missing (but checks first so no expensive repeated apt updates)
+# gwillem@gmail.com
+
+- hosts: jenkins-hosts
+  gather_facts: False
+  become: yes
+  
+  tasks:
+  - name: install python 2
+    raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal && wget https://bootstrap.pypa.io/get-pip.py &&  python get-pip.py &&  pip install boto && pip install boto3)
+  - name: Install Java 1.8
+    apt: name=openjdk-8-jdk
+
+  
+
+
+#Install jenkins
+- hosts: jenkins-hosts
+  vars:
+    jenkins_hostname: localhost
+  roles:
+    - role: geerlingguy.jenkins
+      become: yes
+

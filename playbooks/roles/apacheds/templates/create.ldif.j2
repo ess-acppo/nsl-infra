@@ -1,0 +1,48 @@
+dn: ou=people,dc=example,dc=com
+objectclass: top
+objectclass: organizationalUnit
+ou: people
+
+
+
+
+dn: ou=groups,dc=example,dc=com
+objectclass: top
+objectclass: organizationalUnit
+ou: groups
+
+dn: cn=ABRSL,ou=groups,dc=example,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+uniqueMember: uid=jamie
+cn: ABRSL
+
+dn: cn=admin,ou=groups,dc=example,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+uniqueMember: uid=jamie
+cn: admin
+
+dn: cn=APC,ou=groups,dc=example,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+uniqueMember: uid=jamie
+cn: APC
+
+dn: cn=edit,ou=groups,dc=example,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+uniqueMember: uid=jamie
+cn: edit
+
+dn: cn=QA,ou=groups,dc=example,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+uniqueMember: uid=jamie
+cn: QA
+
+dn: cn=treebuilder,ou=groups,dc=example,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+uniqueMember: uid=jamie
+cn: treebuilder

@@ -1,0 +1,24 @@
+{
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "access_key": "",
+      "secret_key": ""
+      "region": "ap-southeast-2",
+      "source_ami": "ami-e2021d81",
+      "instance_type": "t2.micro",
+      "ssh_username": "ubuntu",
+      "ami_name": "packer {{timestamp}}"
+    }
+  ],
+
+  "provisioners": [
+    {
+      "type": "ansible",
+      "playbook_file": "playbooks/site.yml",
+      "inventory_directory": "inventory",
+      "groups": ["tomcat-servers","database-servers","ldap-servers"],
+      "extra_arguments": [ "-vvvv" ]
+    }
+  ]
+}

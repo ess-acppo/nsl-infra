@@ -1,0 +1,120 @@
+grails.serverURL = 'http://{{inventory_hostname}}:8080/nsl/mapper'
+
+mapper {
+    resolverURL = 'http://{{inventory_hostname}}:8080/nsl/mapper'
+    contextExtension = '' //extension to the context path (after nsl-mapper).
+    defaultProtocol = 'http'
+
+    shards = [
+            apni    : [
+                    baseURL: 'http://{{inventory_hostname}}:8080',
+                    service: [
+                            html: { ident ->
+                                "nsl/services/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
+                            },
+                            json: { ident ->
+                                "nsl/services/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
+                            },
+                            xml : { ident ->
+                                "nsl/services/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
+                            },
+                            rdf : { ident ->
+                                String url = "DESCRIBE <http://biodiversity.org.au/boa/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}>".encodeAsURL()
+                                "sparql/?query=${url}"
+                            }
+                    ]
+            ],
+            ausmoss : [
+                    baseURL: 'http://{{inventory_hostname}}:8080',
+                    service: [
+                            html: { ident ->
+                                "nsl/services/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
+                            },
+                            json: { ident ->
+                                "nsl/services/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
+                            },
+                            xml : { ident ->
+                                "nsl/services/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
+                            },
+                            rdf : { ident ->
+                                String url = "DESCRIBE <http://biodiversity.org.au/boa/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}>".encodeAsURL()
+                                "sparql/?query=${url}"
+                            }
+                    ]
+            ],
+            ausalgae: [
+                    baseURL: 'http://{{inventory_hostname}}:8080',
+                    service: [
+                            html: { ident ->
+                                "nsl/services/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
+                            },
+                            json: { ident ->
+                                "nsl/services/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
+                            },
+                            xml : { ident ->
+                                "nsl/services/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
+                            },
+                            rdf : { ident ->
+                                String url = "DESCRIBE <http://biodiversity.org.au/boa/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}>".encodeAsURL()
+                                "sparql/?query=${url}"
+                            }
+                    ]
+            ],
+            lichen: [
+                    baseURL: 'http://{{inventory_hostname}}:8080',
+                    service: [
+                            html: { ident ->
+                                "nsl/services/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
+                            },
+                            json: { ident ->
+                                "nsl/services/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
+                            },
+                            xml : { ident ->
+                                "nsl/services/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
+                            },
+                            rdf : { ident ->
+                                String url = "DESCRIBE <http://biodiversity.org.au/boa/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}>".encodeAsURL()
+                                "sparql/?query=${url}"
+                            }
+                    ]
+            ],
+            foa     : [
+                    baseURL: 'http://biodiversity.org.au/',
+                    service: [
+                            html: { ident ->
+                                "foa/taxa/${ident.idNumber}/summary"
+                            },
+                    ]
+            ]
+    ]
+}
+
+api.auth = [
+        '558aaeb5-3e5b-4dd3-ad03-d17c2689b70d': [
+                application: 'nsl/services',
+                roles      : ['admin'],
+                host       : '{{private_ip}}'
+        ]
+]
+
+ldap {
+    skip{
+      authentication = false
+    }
+    domain = 'domain'
+    server.url = 'ldap://{{inventory_hostname}}:10389'
+    search {
+        base = 'ou=people,dc=example,dc=com'
+        user = 'uid=admin,ou=system'
+        pass = 'secret'
+
+        group {
+            name = 'ou=groups,dc=example,dc=com'
+            member {
+                element = 'uniqueMember'
+                prefix = 'uid='
+                postfix = ''
+            }
+        }
+    }
+}

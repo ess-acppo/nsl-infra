@@ -1,0 +1,49 @@
+---
+# Add this snippet to the top of your playbook. 
+# It will install python2 if missing (but checks first so no expensive repeated apt updates)
+# gwillem@gmail.com
+
+- hosts: all
+  gather_facts: False
+  become: yes
+  
+  tasks:
+  - name: install python 2
+    raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal && wget https://bootstrap.pypa.io/get-pip.py &&  python get-pip.py &&  pip install boto && pip install boto3)
+
+
+#This playbook deploys a simple standalone Tomcat 7 server.
+# Tomcat strt ; i.e 2nd last task of the role doesnot work. Instead manually start the tomcat.
+# then continue by commenting this role.
+
+- hosts: tomcat-servers
+  remote_user: "{{sshuser}}"
+  become: yes
+  become_method: sudo
+
+  pre_tasks:
+    - debug: var=version
+ # choice the tomcat version
+  roles:  
+    - { role: tomcat7, when: version == 7 }
+    - { role: tomcat8, when: version == 8 }
+
+#Install postgres server
+- hosts: database-servers
+  become: yes
+  roles:
+  - role: geerlingguy.postgresql
+    become: yes
+
+- hosts: database-servers
+  become: yes
+  roles:
+    - bootstrap-db 
+
+
+- hosts: ldap-servers
+  become: yes
+  roles:
+    - apacheds
+
+    

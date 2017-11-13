@@ -14,6 +14,7 @@
 # Ignore all logfiles and tempfiles.
 /log
 /log/*.log
+*.log
 /tmp
 
 # Ignore vim swaps
@@ -41,3 +42,6 @@ sandi_meter/assets
 # Ignore ansible retry files
 
 *.retry 
+
+# Ignore vagrant dir
+/.vagrant

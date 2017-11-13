@@ -1,0 +1,30 @@
+---
+- name: Copy ddl files
+  template:
+    src: "{{item.filename}}.j2"
+    dest: "/tmp/{{item.filename}}"
+  with_items:
+    - { filename: nsl-ddl.sql }
+    - { filename: mapper-ddl.sql }
+
+
+
+
+- postgresql_schema:
+    name: mapper
+    owner: "{{postgresql_users[1].name}}"
+    database: "{{postgresql_databases[0].name}}"
+    login_host: 127.0.0.1
+    login_user: "{{postgresql_users[1].name}}"
+    login_password: "{{postgresql_users[1].password}}"
+
+
+- name: Create nsl.public tables, views etc
+  become: true
+  become_user: postgres
+  command: psql -f /tmp/nsl-ddl.sql nsl
+
+- name: Create nsl.mapper tables, views etc
+  become: true
+  become_user: postgres
+  command: psql -f /tmp/mapper-ddl.sql nsl

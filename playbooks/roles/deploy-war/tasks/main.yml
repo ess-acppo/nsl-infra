@@ -1,0 +1,55 @@
+---
+- name: Clean artifact path
+  file:
+    state: absent
+    path: "{{ war_deploy_path }}/{{ item.war_name }}/"
+  with_items: "{{ war_names }}"
+
+- name: Deploy war file
+  s3: 
+    bucket: "{{ war_bucket }}"
+    object: "{{ item.war_name }}.war" 
+    dest: "{{ war_deploy_path }}/{{ item.war_name }}.war"
+    mode: get 
+    overwrite: yes
+  environment:
+    AWS_ACCESS_KEY_ID: 
+    AWS_SECRET_ACCESS_KEY: 
+    AWS_REGION: ap-southeast-2
+  with_items: "{{ war_names }}"
+  register: war_downloaded
+
+- name: Set correct permissions
+  file: 
+    path: "{{ war_deploy_path }}/{{ item.war_name }}.war"
+    owner: tomcat
+    group: tomcat
+  when: war_downloaded.changed
+  with_items: "{{ war_names }}"
+  register: war_deployed
+
+- name: Ensures /usr/share/tomcat/.nsl/ dir exists
+  file: path=/usr/share/tomcat/.nsl/ state=directory
+
+- name: Copy config files
+  template:
+    src: "{{item.filename}}.j2"
+    dest: "/usr/share/tomcat/.nsl/{{item.filename}}"
+  with_items:
+    - { filename: editor-config.rb }
+    - { filename: editor-database.yml }
+    - { filename: services-config.groovy }
+    - { filename: nsl-mapper-config.groovy }
+
+- name: Copy setenv file
+  template:
+      src: "{{item.filename}}.j2"
+      dest: "/usr/share/tomcat/bin/{{item.filename}}"
+      mode: 0664
+  with_items:
+  - { filename: setenv.sh } 
+
+- name: Restart Tomcat
+#  service: name=tomcat state=restarted enabled=yes
+  shell: /usr/share/tomcat/bin/shutdown.sh && /usr/share/tomcat/bin/startup.sh
+  when: war_deployed.changed

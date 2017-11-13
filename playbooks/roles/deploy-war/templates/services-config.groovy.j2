@@ -1,0 +1,72 @@
+grails.serverURL = 'http://{{inventory_hostname}}:8080/nsl/services'
+
+shard {
+    system.message.file = "/home/pmcneil/.nsl/broadcast.txt"
+    product = "Don't use this"
+    temp.file.directory = "/tmp"
+    colourScheme = "local"
+    webUser = "webmoss"
+}
+
+services {
+
+    mapper {
+        apikey = '558aaeb5-3e5b-4dd3-ad03-d17c2689b70d'
+    }
+
+    link {
+        mapperURL = 'http://{{inventory_hostname}}:8080/nsl/mapper'
+        internalMapperURL = 'http://{{inventory_hostname}}:8080/nsl/mapper'
+        editor = 'http://{{inventory_hostname}}:8080/nsl/editor'
+    }
+
+    photoService {
+        url = "http://www.anbg.gov.au/cgi-bin/apiiDigital?name=%&FORMAT=CSV"
+        search = { String name ->
+            "http://staging.anbg.gov.au/cgi-bin/apiiName2?name=${name.encodeAsURL()}"
+        }
+    }
+
+    googleAnalytics = """google analytics is here."""
+}
+
+ldap {
+    domain = 'domain'
+    server.url = 'ldap://{{inventory_hostname}}:10389'
+    search {
+        base = 'ou=people,dc=example,dc=com'
+        user = 'uid=admin,ou=system'
+        pass = 'secret'
+
+        group {
+            name = 'ou=groups,dc=example,dc=com'
+            member {
+                element = 'uniqueMember'
+                prefix = 'uid='
+                postfix = ''
+            }
+        }
+    }
+}
+
+dataSource_nsl {
+//    jndiName = "java:comp/env/jdbc/apni"
+		username = "{{postgresql_users[1].name}}"
+		password = "{{postgresql_users[1].password}}"
+		url = "jdbc:postgresql://localhost:5432/{{postgresql_databases[0].name}}"
+}
+
+api.auth = [
+        'dev-apni-editor': [
+                application: 'nsl/editor',
+                roles      : ['admin'],
+                host       : '{{private_ip}}'
+        ],
+        'IAM-A-TEST-KEY' : [
+                application: 'tester',
+                roles      : ['admin'],
+                host       : '{{private_ip}}'
+        ]
+]
+
+nslServices.jwt.secret = 'poobarbee'
