@@ -1,11 +1,11 @@
+sshuser: ubuntu 
+version: 7 
+private_ip: "{{inventory_hostname}}"
+
 # Here are variables related to the Tomcat installation
 
 http_port: 8080
-https_port: 443
-nsl_protocol: https
-nsl_port: 443
-
-ldap_admin_password: secret
+https_port: 8443
 
 # This will configure a default manager-gui user:
 
@@ -18,3 +18,50 @@ war_names:
     - { war_name: 'nsl#mapper##1.0017' }
     - { war_name: 'nsl#services##1.0122' }
 war_deploy_path: /opt/apache-tomcat-7.0.61/webapps
+
+Rails:
+    configuration:
+        services_clientside_root_url : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/services/"
+        nsl_services : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/services/"
+        nsl_links : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/services/"
+        services : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/services/"
+        name_services : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/services/name/apni/"
+        reference_services : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/services/reference/apni/"
+        api_key : 'd0d1e81d-test-apni-editor'
+        ldap_admin_username : "uid=admin,ou=system"
+        ldap_admin_password : "secret"
+        ldap_base : "ou=people,dc=example,dc=com"
+        ldap_host : "{{inventory_hostname}}"
+        ldap_port : 10389
+        ldap_user_base : "ou=people,dc=example,dc=com"
+        ldap_users : "ou=people,dc=example,dc=com"
+        ldap_groups : "ou=groups,dc=example,dc=com"
+        mapper_root_url : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/mapper/"
+        tree_editor_url : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/tree-editor/"
+        mapper_shard : "apni"
+        action_mailer:
+            delivery_method : ":sendmail"
+            perform_deliveries : true
+            raise_delivery_errors : true
+        relative_url_root : "/nsl/editor"
+        environment : "development"
+        session_key_tag : "test"
+
+
+services:
+    grails:
+        serverURL : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/services"
+    link:
+        mapperURL : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/mapper"
+        internalMapperURL : "http://localhost:8080/nsl/mapper"
+        editor : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/editor"
+
+
+mapper:
+    grails:
+        serverURL : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/mapper"
+    resolverURL : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/mapper"
+    shards:
+        icn:
+            name : plant
+            baseURL : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com"

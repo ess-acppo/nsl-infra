@@ -1,37 +1,37 @@
 
-Rails.configuration.services_clientside_root_url : "{{Rails.configuration.services_clientside_root_url}}"
-Rails.configuration.nsl_services : "{{Rails.configuration.nsl_services}}"
-Rails.configuration.nsl_links : "{{Rails.configuration.nsl_links}}"
+Rails.configuration.services_clientside_root_url = "{{Rails.configuration.services_clientside_root_url}}"
+Rails.configuration.nsl_services = "{{Rails.configuration.nsl_services}}"
+Rails.configuration.nsl_links = "{{Rails.configuration.nsl_links}}"
 
-Rails.configuration.services : "{{Rails.configuration.services}}"
-Rails.configuration.name_services : "{{Rails.configuration.name_services}}"
-Rails.configuration.reference_services : "{{Rails.configuration.reference_services}}"
-Rails.configuration.api_key : "{{Rails.configuration.api_key}}"
+Rails.configuration.services = "{{Rails.configuration.services}}"
+Rails.configuration.name_services = "{{Rails.configuration.name_services}}"
+Rails.configuration.reference_services = "{{Rails.configuration.reference_services}}"
+Rails.configuration.api_key = "{{Rails.configuration.api_key}}"
 
-Rails.configuration.ldap_admin_username : "{{Rails.configuration.ldap_admin_username}}"
-Rails.configuration.ldap_admin_password : "{{Rails.configuration.ldap_admin_password}}"
-Rails.configuration.ldap_base : "{{Rails.configuration.ldap_base}}"
-Rails.configuration.ldap_host : "{{Rails.configuration.ldap_host}}"
-Rails.configuration.ldap_port : "{{Rails.configuration.ldap_port}}"
-Rails.configuration.ldap_user_base : "{{Rails.configuration.ldap_user_base}}"
-Rails.configuration.ldap_users : "{{Rails.configuration.ldap_users}}"
-Rails.configuration.ldap_groups : "{{Rails.configuration.ldap_groups}}"
+Rails.configuration.ldap_admin_username = "{{Rails.configuration.ldap_admin_username}}"
+Rails.configuration.ldap_admin_password = "{{Rails.configuration.ldap_admin_password}}"
+Rails.configuration.ldap_base = "{{Rails.configuration.ldap_base}}"
+Rails.configuration.ldap_host = "{{Rails.configuration.ldap_host}}"
+Rails.configuration.ldap_port = "{{Rails.configuration.ldap_port}}"
+Rails.configuration.ldap_user_base = "{{Rails.configuration.ldap_user_base}}"
+Rails.configuration.ldap_users = "{{Rails.configuration.ldap_users}}"
+Rails.configuration.ldap_groups = "{{Rails.configuration.ldap_groups}}"
 
-Rails.configuration.mapper_root_url : "{{Rails.configuration.mapper_root_url}}"
-Rails.configuration.tree_editor_url : "{{Rails.configuration.tree_editor_url}}"
-Rails.configuration.mapper_shard : "{{Rails.configuration.mapper_shard}}"
-Rails.configuration.action_mailer.delivery_method : "{{Rails.configuration.action_mailer.delivery_method}}"
-Rails.configuration.action_mailer.perform_deliveries : "{{Rails.configuration.action_mailer.perform_deliveries}}"
-Rails.configuration.action_mailer.raise_delivery_errors : "{{Rails.configuration.action_mailer.raise_delivery_errors}}"
+Rails.configuration.mapper_root_url = "{{Rails.configuration.mapper_root_url}}"
+Rails.configuration.tree_editor_url = "{{Rails.configuration.tree_editor_url}}"
+Rails.configuration.mapper_shard = "{{Rails.configuration.mapper_shard}}"
+Rails.configuration.action_mailer.delivery_method = "{{Rails.configuration.action_mailer.delivery_method}}"
+Rails.configuration.action_mailer.perform_deliveries = "{{Rails.configuration.action_mailer.perform_deliveries}}"
+Rails.configuration.action_mailer.raise_delivery_errors = "{{Rails.configuration.action_mailer.raise_delivery_errors}}"
 
 
 
 if ENV['PRECOMPILING_FOR_PRODUCTION']=='true'
   Rails.configuration.relative_url_root = "{{Rails.configuration.relative_url_root}}"
 else
-  Rails.configuration.relative_url_root = ""{{Rails.configuration.relative_url_root}}
+  Rails.configuration.relative_url_root = "{{Rails.configuration.relative_url_root}}"
 end
 
-Rails.configuration.environment : "{{Rails.configuration.environment}}"
-Rails.configuration.session_key_tag : "{{Rails.configuration.session_key_tag}}"
+Rails.configuration.environment = "{{Rails.configuration.environment}}"
+Rails.configuration.session_key_tag = "{{Rails.configuration.session_key_tag}}"
 

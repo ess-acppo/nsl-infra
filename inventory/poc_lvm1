@@ -1,5 +1,7 @@
-[poc:children]
+[poc_lvm1:children]
 tomcat-servers
+database-servers
+ldap-servers
 
 [tomcat-servers]
 192.168.33.10 sshuser=ubuntu version=7 private_ip=192.168.33.10

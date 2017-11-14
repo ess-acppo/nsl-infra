@@ -1,4 +1,4 @@
-grails.serverURL = 'http://{{inventory_hostname}}:8080/nsl/services'
+grails.serverURL = "{{services.grails.serverURL}}"
 
 shard {
     system.message.file = "/home/pmcneil/.nsl/broadcast.txt"
@@ -15,9 +15,9 @@ services {
     }
 
     link {
-        mapperURL = 'http://{{inventory_hostname}}:8080/nsl/mapper'
-        internalMapperURL = 'http://{{inventory_hostname}}:8080/nsl/mapper'
-        editor = 'http://{{inventory_hostname}}:8080/nsl/editor'
+        mapperURL = "{{services.link.mapperURL}}"
+        internalMapperURL = "{{services.link.internalMapperURL}}"
+        editor = "{{services.link.editor}}"
     }
 
     photoService {
