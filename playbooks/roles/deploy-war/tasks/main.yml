@@ -1,4 +1,20 @@
 ---
+- find:
+    paths: "{{ war_deploy_path }}"
+    patterns: ".*{{item.app}}.*"
+    use_regex: yes
+  register: existing_wars
+  with_items: "{{ apps }}"
+
+
+
+- name: Clean exisitng war dir
+  file:
+    state: absent
+    path: "{{ item.path }}"
+  with_items: "{{ existing_wars.results[0].files }}"
+
+
 - name: Clean artifact path
   file:
     state: absent
@@ -46,6 +62,6 @@
   - { filename: setenv.sh } 
 
 - name: Restart Tomcat
-#  service: name=tomcat state=restarted enabled=yes
-  shell: /usr/share/tomcat/bin/shutdown.sh && /usr/share/tomcat/bin/startup.sh
-  when: war_deployed.changed
+  service: name=tomcat state=restarted enabled=yes
+  #shell: /usr/share/tomcat/bin/shutdown.sh && /usr/share/tomcat/bin/startup.sh
+  when: war_pushed.changed
