@@ -14,9 +14,8 @@ admin_password: adminsecret
 
 war_bucket: nslrepo
 war_names: 
-    - { war_name: 'nsl#editor##1.44' }
-    - { war_name: 'nsl#mapper##1.0017' }
-    - { war_name: 'nsl#services##1.0122' }
+    - { war_name: '*' }
+
 war_deploy_path: /opt/apache-tomcat-7.0.61/webapps
 
 
