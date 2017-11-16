@@ -62,6 +62,5 @@
   - { filename: setenv.sh } 
 
 - name: Restart Tomcat
-  service: name=tomcat state=restarted enabled=yes
-  #shell: /usr/share/tomcat/bin/shutdown.sh && /usr/share/tomcat/bin/startup.sh
+  service: name=tomcat state=restarted
   when: war_pushed.changed
