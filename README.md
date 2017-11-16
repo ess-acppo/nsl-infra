@@ -30,6 +30,9 @@ Jenkins is our CI server. Under the covers jenkins uses
 * github wehooks 
 
 As soon as a developer pushes changes to the remote github repo ; github webhook will trigger a build job in jenkins. 
+Jenkins plugins used ( not an exaustive list) :
+* Build Token Root Plugin (https://wiki.jenkins.io/display/JENKINS/Build+Token+Root+Plugin) to enable build trigger without authentication.
+* Pipeline to enable pipeline as code (https://jenkins.io/solutions/pipeline/)
 
 
 ### Report bugs using github issues
