@@ -2,9 +2,9 @@ This repository contains code code to assist installing the application stack as
 
 Technologies used are:
 
-* Ansible
-* Packer
-* Vagrant
+* [Ansible](https://www.ansible.com/)
+* [Packer](https://www.packer.io/)
+* [Vagrant](https://www.vagrantup.com/)
 
 
 ### Steps to stand up a new environment: 
