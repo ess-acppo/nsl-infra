@@ -14,3 +14,51 @@ war_names:
     - { war_name: 'nsl#mapper##1.0017' }
     - { war_name: 'nsl#services##1.0122' }
 war_deploy_path: /opt/apache-tomcat-7.0.61/webapps
+
+
+Rails:
+    configuration:
+        services_clientside_root_url : "http://localhost:8080/nsl/services/"
+        nsl_services : "http://localhost:8080/nsl/services/"
+        nsl_links : "http://localhost:8080/nsl/services/"
+        services : "http://localhost:8080/nsl/services/"
+        name_services : "http://localhost:8080/nsl/services/name/apni/"
+        reference_services : "http://localhost:8080/nsl/services/reference/apni/"
+        api_key : 'd0d1e81d-test-apni-editor'
+        ldap_admin_username : "uid=admin,ou=system"
+        ldap_admin_password : "secret"
+        ldap_base : "ou=people,dc=example,dc=com"
+        ldap_host : "{{inventory_hostname}}"
+        ldap_port : 10389
+        ldap_user_base : "ou=people,dc=example,dc=com"
+        ldap_users : "ou=people,dc=example,dc=com"
+        ldap_groups : "ou=groups,dc=example,dc=com"
+        mapper_root_url : "http://localhost:8080/nsl/mapper/"
+        tree_editor_url : "http://localhost:8080/nsl/tree-editor/"
+        mapper_shard : "apni"
+        action_mailer:
+            delivery_method : ":sendmail"
+            perform_deliveries : true
+            raise_delivery_errors : true
+        relative_url_root : "/nsl/editor"
+        environment : "development"
+        session_key_tag : "test"
+
+
+services:
+    grails:
+        serverURL : "http://localhost:8080/nsl/services"
+    link:
+        mapperURL : "http://localhost:8080/nsl/mapper"
+        internalMapperURL : "http://localhost:8080/nsl/mapper"
+        editor : "http://localhost:8080/nsl/editor"
+
+
+mapper:
+    grails:
+        serverURL : "http://localhost:8080/nsl/mapper"
+    resolverURL : "http://localhost:8080/nsl/mapper"
+    shards:
+        icn:
+            name : bpni
+            baseURL : "http://localhost:8080"
