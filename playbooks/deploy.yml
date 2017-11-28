@@ -3,7 +3,7 @@
 # It will install python2 if missing (but checks first so no expensive repeated apt updates)
 # gwillem@gmail.com
 
-- hosts: all
+- hosts: tomcat-servers
   gather_facts: False
   become: yes
   
