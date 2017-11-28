@@ -60,5 +60,5 @@ mapper:
     resolverURL : "http://{{inventory_hostname}}:8080/nsl/mapper"
     shards:
         icn:
-            name : plant
+            name : bpni
             baseURL : "http://{{inventory_hostname}}:8080"

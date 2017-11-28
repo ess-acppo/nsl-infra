@@ -63,5 +63,5 @@ mapper:
     resolverURL : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/mapper"
     shards:
         icn:
-            name : plant
+            name : bpni
             baseURL : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com"
