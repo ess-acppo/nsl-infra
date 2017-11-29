@@ -1,0 +1,88 @@
+
+
+
+--------------
+
+-- TREE CREATION STARTS
+--------------
+
+-- create the end node. global across all graphs that make use of this structure and ontology
+-- the physical id of the end tree and the node are both zero.
+-- THIS IS A  MAGIC NUMBER AND MAY APPEAR IN CODE.
+
+-- the end node is a null object. It means "this node has been replaced and is no longer current, but is has not been replaced by anything".
+-- If I did not have an end node, then I would have to keep a "status" field on the node table - I'd be spreading the info over two fields, two
+-- rdf and json properties, and creating a situation where inconsistent data becomes possible.
+
+TRUNCATE  table tree_arrangement cascade;
+TRUNCATE  table tree_node cascade;
+TRUNCATE  table tree_link cascade;
+
+insert into tree_arrangement(id, lock_version, tree_type, is_synthetic, label, description)
+values (0, 1, 'E', 'N', 'END-TREE', 'The END tree. This tree is the same abstract object across all instances of this data structure.');
+
+insert into tree_node(id, internal_type, lock_version, is_synthetic, tree_arrangement_id, type_uri_ns_part_id, type_uri_id_part)
+values (0, 'S', 1, 'N', 0, 1, 'EndNode');
+
+update tree_arrangement set node_id = 0;
+
+
+
+
+-- Log into NSl services as admin and create  BPNI and BPC classification from tree manager
+-- possibly automate this as well using below code
+-- insert the BPNI and BPC tree arrangement records
+--INSERT INTO public.tree_arrangement (  tree_type,  description,                           label, namespace_id,   shared )
+--                              VALUES ( 'P',       'This is the taxonomic tree for DAWR',  'BPC', (select id into namespace_id from namespace where name = 'BPNI'),   true);
+--INSERT INTO public.tree_arrangement (  tree_type,  description,                            label,   namespace_id,   shared )
+--                             VALUES ( 'P',        'This is the name index tree for DAWR',  ' BPNI', (select id into namespace_id from namespace where name = 'BPNI'),   true);
+
+
+
+
+
+-- The classification constructor in the NSL services admin page doesn't add "instances" to the "tree_nodes" it creates
+-- So, here we update the "tree_nodes" to add "instances"
+CREATE OR REPLACE FUNCTION for_loop_through_treenode_update_instances()
+  RETURNS VOID AS $$
+DECLARE
+  rec RECORD;
+
+BEGIN
+
+
+  FOR rec IN select ii.id instance_id , ii.name_id name_id  from tree_node tn join instance ii on tn.name_id=ii.name_id
+  LOOP
+    RAISE NOTICE '%', concat('adding instance for name -->', rec.name_id);
+    update tree_node set instance_id = rec.instance_id where name_id =rec.name_id;
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT for_loop_through_treenode_update_instances();
+
+
+
+
+-- Random notes
+/*
+
+SELECT regexp_matches('(A.Cunn. ex Benth.) C AGardner', '\((.*)ex([^\)]+)\)(.*)ex(.*)|\((.*)ex([^\)]+)\)(.*)|(.*)ex(.*)|\(([^\)]+)\)(.*)|(.*)')
+
+select regexp_matches('(Batsch. : Fries) Fries' , );
+select name , cc[4] from
+  (SELECT name, regexp_matches('(A.Cunn. ex Hook.) Endl. ex Heynh.', '\(?(.*)ex([^\)]+)\)?(.*)ex(.*)')  cc FROM author limit 1) t;
+
+select regexp_matches('Fairbrother, 1940', '([^0-9]*)(\d*)\D*|(.*)')*/
+
+
+
+
+
+
+
+
+
+
+
+

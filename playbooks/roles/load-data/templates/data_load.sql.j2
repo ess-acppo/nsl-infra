@@ -1,0 +1,411 @@
+-- setup shard_config
+truncate TABLE public.shard_config cascade;
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'config rules', 'All lower case names, space separated, follow the pattern hierachy');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name space', 'BPNI');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name tree label', 'BPNI');
+INSERT INTO public.shard_config (id, name, value, deprecated) VALUES (nextval('hibernate_sequence'), 'classification tree label', 'BPC', true);
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'BPNI description', 'The Biosecurity Plant Name Index (BPNI) is a tool for the botanical community that deals with *******placeholder*******');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'BPC description', 'The Biosecurity Plant Census (BPC) is a list of the accepted scientific names for the *******placeholder*******');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'menu label', 'Biosecurity Plants');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'banner text', 'Biosecurity Plants');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree banner text', 'Biosecurity Plant Census');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name label', 'BPNI');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree description html', '<p>The Biosecurity Plant Census (BPC) is a *******placeholder*******</p>');
+INSERT INTO public.shard_config (id, name, value, deprecated) VALUES (nextval('hibernate_sequence'), 'tree label', 'BPC', true);
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree label text', 'Biosecurity Plant Census');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'page title', 'Biosecurity Plants');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree search help text html', 'The Biosecurity Plant Census (BPC) provides a listing of ************placeholder**************</p>');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'services path name element', 'bpni');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name search help text html', '<p>The Biosecurity Plant Name Index (BPNI) is a resource for ************placeholder**************</p>');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'services path tree element', 'bpc');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name link title', 'Biosecurity Plant Names in the Biosecurity Plant Names Index');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'menu link title', 'Biosecurity Plants');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name label text', 'Biosecurity Plant Name Index');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name banner text', 'Biosecurity Plant Name Index');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree link title', 'Biosecurity Plant Census Taxonomy');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name description html', '<p>The Biosecurity Plant Name Index (BPNI) is a ************placeholder**************</p>');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'banner image', 'bpni-banner.png');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'card image', 'bpni-vert-200.png');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'description html', '<p>This section of the ************placeholder**************</p>');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'classification tree key', 'BPC');
+
+-- Create table "raw" which stores a as-is copy of the input csv file
+drop table raw;
+create table raw
+(
+  intbiotaid varchar(4000),
+  intparentid varchar(4000),
+  vchrepithet varchar(4000),
+  vchrfullname varchar(4000),
+  vchryearofpub varchar(4000),
+  vchrauthor varchar(4000),
+  vchrnamequalifier varchar(4000),
+  chrelemtype varchar(4000),
+  vchrrank varchar(4000),
+  chrkingdomcode varchar(4000),
+  intorder varchar(4000),
+  vchrparentage varchar(4000),
+  bitchangedcomb varchar(4000),
+  bitshadowed varchar(4000),
+  bitunplaced varchar(4000),
+  bitunverified varchar(4000),
+  bitavailablename varchar(4000),
+  bitliteraturename varchar(4000),
+  dtdatecreated varchar(4000),
+  vchrwhocreated varchar(4000),
+  dtdatelastupdated varchar(4000),
+  vchrwholastupdated varchar(4000),
+  txtdistqual varchar(4000),
+  guid varchar(4000),
+  exbaseauthor       VARCHAR(1000),
+  baseauthor         VARCHAR(1000),
+  exauthor           VARCHAR(1000),
+  author             VARCHAR(1000),
+  sanctioningauthor  VARCHAR(1000)
+)
+;
+-- Create table "name_rank_dawr" which servers as a mapping between Taxatree taxon names to NSL taxon names
+DROP TABLE name_rank_dawr;
+create table name_rank_dawr
+(
+  id varchar(100),
+  name varchar(100)
+)
+;
+
+-- Setup the mapping between Taxatree taxon names to NSL taxon names
+truncate TABLE name_rank_dawr cascade;
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Regnum' , 'KING');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Division' , 'D');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Classis' , 'C');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subclassis' , 'SBC');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Superordo' , 'SPO');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Ordo' , 'O');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subordo' ,'SBO');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Familia', 'F');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subfamilia' ,'SF');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Tribus' ,'T');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subtribus' ,'SBT');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Genus' , 'G');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subgenus' ,'SG');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Sectio' , 'SCT');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subsectio', 'SSCT');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Series' , 'SRS');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subseries',  'SSRS');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Superspecies' , 'SGP');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Species' , 'SP');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subspecies' , 'SSP');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Varietas', 'V');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subvarietas', 'SV');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Forma' , 'FM');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subforma', 'SFM');
+
+
+-- create the namespace for BPNI : Biosecurity Plant Name Index
+TRUNCATE table public.namespace cascade;
+INSERT INTO public.namespace (id, lock_version, name, description_html, rdf_id) VALUES (nextval('nsl_global_seq'), 0, 'BPNI', '(description of <b>BPNI</b>)', 'bpni');
+
+-- Load the csv into table "raw". Use below command to convert encoding
+-- iconv -f UTF-16LE -t UTF8 /tmp/Workbook2-utf16.txt > /tmp/data.tsv
+COPY raw(intbiotaid ,
+         intparentid,
+         vchrepithet ,
+         vchrfullname,
+         vchryearofpub,
+         vchrauthor ,
+         vchrnamequalifier ,
+         chrelemtype ,
+         vchrrank ,
+         chrkingdomcode ,
+         intorder ,
+         vchrparentage ,
+         bitchangedcomb,
+         bitshadowed ,
+         bitunplaced ,
+         bitunverified ,
+         bitavailablename ,
+         bitliteraturename,
+         dtdatecreated ,
+         vchrwhocreated,
+         dtdatelastupdated ,
+         vchrwholastupdated,
+         txtdistqual ,
+         guid ) FROM '/tmp/data.tsv' WITH  (FORMAT csv, DELIMITER E'\t',  ENCODING UTF8 );
+
+
+
+-- process each line of table "raw" to do the following:
+-- 1. Split each composite author into author bits.
+-- 1. Insert each bit along with the correct author_type into table "author"
+-- 1. Add ids of these new auhtor rows into the current "raw" record so that references can be constructed in next steps.
+-- 1. Add reference for each "raw" record using the composite author field.
+CREATE OR REPLACE FUNCTION for_loop_raw_process_authors()
+  RETURNS VOID AS $$
+DECLARE
+  rec RECORD;
+  x VARCHAR(100);
+  xx VARCHAR(100)[];
+  xxx VARCHAR(100);
+  i int;                   --( 1)   ( 2)     ( 3)  ( 4)|  ( 5)  (  6   )  ( 7)|( 8)  ( 9)|  (   10  )  (11)|(12)
+  author_regex varchar(200) = '\((.*)ex([^\)]+)\)(.*)ex(.*)|\((.*)ex([^\)]+)\)(.*)|(.*)ex(.*)|\(([^\)]+)\)(.*)|(.*)';
+  author_type VARCHAR(20);
+  i_xx int;
+  xxx_y VARCHAR(100)[];
+  ref_text VARCHAR(1000);
+  language_id BIGINT ;
+  ref_author_role_id BIGINT ;
+  ref_type_id BIGINT;
+  author_id_for_ref BIGINT;
+  publication_author VARCHAR(100);
+
+BEGIN
+  -- clear tables
+  TRUNCATE  table author cascade;
+  TRUNCATE  table reference cascade;
+
+  select id into language_id from language where lower(name) = 'english';
+  select id into ref_author_role_id from ref_author_role where lower(name) = 'compiler';
+  select id into ref_type_id  from ref_type where lower(name) = 'database record';
+
+  FOR rec IN select intbiotaid, namespace_id, vchryearofpub, vchrauthor , regexp_matches(vchrauthor, author_regex)  cc
+             from
+               (SELECT intbiotaid, trim(vchryearofpub) vchryearofpub, trim(vchrauthor) vchrauthor, (select id from namespace where name = 'BPNI') namespace_id FROM raw where vchrauthor NOTNULL ) ii
+
+  LOOP
+    RAISE NOTICE '%', concat(rec.vchrauthor , '-->', rec.cc);
+    i := 1;
+    FOREACH x IN ARRAY rec.cc
+    LOOP
+
+      -- insert into author and enrich raw with author bits
+      IF x IS NOT NULL THEN
+        RAISE NOTICE '%', concat('Processing author bit ',x);
+        CASE i
+          WHEN 1, 5 THEN
+          author_type := 'exbaseauthor';
+          WHEN 2, 6, 10 THEN
+          author_type := 'baseauthor';
+          WHEN 3, 8  THEN
+          author_type := 'exauthor';
+          WHEN 4, 7, 9, 11, 12 THEN
+          author_type := 'author';
+        ELSE
+          RAISE NOTICE '%', concat('invalid author type');
+        END CASE;
+        xx := regexp_matches(x, '(.*):(.*)|(.*)');
+        i_xx := 1;
+        FOREACH xxx IN ARRAY xx
+        LOOP
+          IF i_xx = 2 THEN
+            author_type := 'sanctioningauthor';
+          END IF;
+          IF xxx IS NOT NULL THEN
+            BEGIN
+              -- extract year if present
+              xxx_y := regexp_matches(xxx, '([^0-9]*)(\d*)\D*|(.*)');
+              IF xxx_y[2] NOTNULL THEN
+                xxx = xxx_y[1];
+              END IF;
+              -- insert into author
+              INSERT INTO public.author (  created_at, created_by, abbrev, name,  namespace_id, source_id_string, source_system, updated_at, updated_by, valid_record)
+              VALUES ( CURRENT_TIMESTAMP , 'DAWR', trim(xxx), trim(xxx) , rec.namespace_id,              rec.vchrauthor ,           'NAQS',  CURRENT_TIMESTAMP , 'DAWR', true);
+              EXCEPTION
+              WHEN unique_violation THEN
+                RAISE NOTICE '%', concat('duplicate entry of ',xxx,' prevented');
+            END;
+            -- update raw set author_type = xxx where raw.intbiotaid=rec.intbiotaid;
+            EXECUTE 'UPDATE raw '||
+                    ' SET ' || quote_ident(author_type) || ' = $1 ' ||
+                    ' WHERE raw.intbiotaid' || ' = $2 '
+            USING trim(xxx), rec.intbiotaid;
+            IF author_type = 'author' THEN
+              publication_author = trim(xxx);
+            END IF;
+          END IF;
+        END LOOP;
+      END IF ;
+      i := i + 1;
+    END LOOP;
+
+    -- insert into references
+    BEGIN
+      IF rec.vchryearofpub ISNULL THEN
+        ref_text := concat('Unidentified publication by ',publication_author);
+      ELSE
+        ref_text := concat('Unidentified publication by ',publication_author, ' in ',rec.vchryearofpub);
+      END IF;
+      select id into author_id_for_ref  from author where lower(name) = (select lower(raw.author) from raw where intbiotaid = rec.intbiotaid);
+      RAISE NOTICE '%', concat('author for reference is ',xxx,' prevented');
+      INSERT INTO public.reference
+      (  author_id,       created_at,    created_by,  display_title,    namespace_id,             language_id,        ref_author_role_id, ref_type_id, source_id_string,         source_system,     title,                updated_at,        updated_by,  verbatim_author,   year)
+      VALUES (  author_id_for_ref, CURRENT_TIMESTAMP, 'DAWR',  ref_text,          rec.namespace_id,         language_id      ,ref_author_role_id, ref_type_id, rec.intbiotaid,       'NAQS'     ,     ref_text,           CURRENT_TIMESTAMP,   'DAWR',      rec.vchrauthor,              NULLIF(rec.vchryearofpub, '')::int);
+    EXCEPTION
+    WHEN invalid_text_representation THEN
+      RAISE NOTICE '%', concat('failed to insert year',rec.vchryearofpub ,' for reference ',ref_text);
+    END;
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+
+select for_loop_raw_process_authors();
+
+
+
+
+
+---------------------------------------------
+
+---------------------------------------------
+-- Clear table "name"
+truncate table name CASCADE ;
+
+
+-- process each line of "raw" create records of table "name"
+CREATE OR REPLACE FUNCTION for_loop_through_query_name()
+  RETURNS VOID AS $$
+DECLARE
+  rec RECORD;
+BEGIN
+  FOR rec IN select vchrepithet,vchrauthor, (select id from author a where a.name = r.exbaseauthor ) exbaseauthor_id
+               ,  (select id from author a where a.name = r.baseauthor ) baseauthor_id
+               ,  (select id from author a where a.name = r.exauthor ) exauthor_id
+               ,  (select id from author a where a.name = r.author ) author_id
+               ,  (select id from author a where a.name = r.sanctioningauthor ) sanctioningauthor_id
+               ,intbiotaid, chrelemtype ,(select rr.id from name_rank rr where rr.name=rd.id ) rank_id
+               ,  (select id from name_status where name = 'legitimate') status_id
+               , (select id from name_type where name = 'scientific') type_id
+               , (select id from namespace where name = 'BPNI') namespace_id
+             from
+               (select * from raw where trim(chrkingdomcode) in ('P','F','L') ) r
+               join
+               name_rank_dawr rd
+                 on trim(r.chrelemtype)=trim(rd.name)
+  LOOP
+    RAISE NOTICE '%', rec.vchrepithet;
+    INSERT INTO public.name( ex_base_author_id, base_author_id, ex_author_id, author_id, sanctioning_author_id, created_at, created_by, full_name,  name_element,  name_rank_id, name_status_id, name_type_id, namespace_id,         source_id_string,                    source_system,   updated_at,          updated_by)
+    values  ( rec.exbaseauthor_id, rec.baseauthor_id, rec.exauthor_id, rec.author_id, rec.sanctioningauthor_id, CURRENT_TIMESTAMP , 'DAWR',  trim(rec.vchrepithet), trim(rec.vchrepithet), rec.rank_id,  rec.status_id,  rec.type_id,  rec.namespace_id,     (rec.intbiotaid),        'NAQS',          CURRENT_TIMESTAMP , 'DAWR');
+
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+select  for_loop_through_query_name();
+
+
+------------------------
+------------------------
+
+-- process each record of name ( while joining them with corresponding "raw" record) to create parent child relationships in the table "name"
+CREATE OR REPLACE FUNCTION for_loop_through_query_child_parent()
+  RETURNS VOID AS $$
+DECLARE
+  rec RECORD;
+BEGIN
+  FOR rec IN select p.vchrepithet child_name, nn.name_element parent_name, p.id child,nn.id parent , p.intbiotaid,nn.source_id_string,p.intparentid from
+    name nn
+    join
+    (select n.id,r.intbiotaid,r.intparentid,r.vchrepithet from name n join raw r on n.source_id_string = r.intbiotaid) p
+      on nn.source_id_string = p.intparentid
+  LOOP
+    RAISE NOTICE '%', concat(rec.child_name , '-->', rec.parent_name);
+    update name set parent_id = rec.parent where id=rec.child;
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT for_loop_through_query_child_parent();
+
+---------------------
+---------------------
+-- insert 'Unknown' author and reference
+
+CREATE OR REPLACE FUNCTION insertUnknowns()
+  RETURNS VOID AS $$
+DECLARE
+
+  instance_type_id BIGINT;
+  namespace_id BIGINT;
+  author_id_unknown BIGINT;
+  language_id BIGINT ;
+  ref_author_role_id BIGINT ;
+  ref_type_id BIGINT;
+  ref_id_unknown BIGINT;
+BEGIN
+
+  select id into instance_type_id  from instance_type where lower(name)='secondary reference';
+  select id into namespace_id from namespace where name = 'BPNI';
+  select id into language_id from language where lower(name) = 'english';
+  select id into ref_author_role_id from ref_author_role where lower(name) = 'compiler';
+  select id into ref_type_id  from ref_type where lower(name) = 'unknown';
+
+
+  -- insert an Unknown reference
+  INSERT INTO public.author (   created_at,         created_by, abbrev, name,           namespace_id,  updated_at, updated_by)
+  VALUES (                      CURRENT_TIMESTAMP , 'DAWR',     'Unknown author', '-' ,  namespace_id,    CURRENT_TIMESTAMP , 'DAWR');
+
+  select id into author_id_unknown  from author where lower(name) = '-';
+
+  INSERT INTO public.reference
+  (         author_id,          created_at        ,created_by ,  display_title,    namespace_id,          language_id,        ref_author_role_id, ref_type_id,              title,                updated_at,        updated_by,  verbatim_author)
+  VALUES (  author_id_unknown,  CURRENT_TIMESTAMP ,'DAWR'     ,  'Unknown reference'        ,namespace_id,         language_id         ,ref_author_role_id, ref_type_id,            'Unknown reference',           CURRENT_TIMESTAMP,   'DAWR',      'Unknown');
+
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT insertUnknowns();
+
+---------------------------------------------
+---------------------------------------------
+-- iterate through each "name" joined with corresponding "reference" to construct "instances"
+
+CREATE OR REPLACE FUNCTION for_loop_through_names_create_instances()
+  RETURNS VOID AS $$
+DECLARE
+rec RECORD;
+instance_type_id BIGINT;
+namespace_id BIGINT;
+language_id BIGINT ;
+ref_author_role_id BIGINT ;
+ref_type_id BIGINT;
+ref_id_unknown BIGINT;
+BEGIN
+
+  -- truncate table instance
+  TRUNCATE  table instance cascade;
+
+  select id into instance_type_id  from instance_type where lower(name)='secondary reference';
+  select id into namespace_id from namespace where name = 'BPNI';
+  select id into language_id from language where lower(name) = 'english';
+  select id into ref_author_role_id from ref_author_role where lower(name) = 'compiler';
+  select id into ref_type_id  from ref_type where lower(name) = 'unknown';
+  select id into ref_id_unknown from public.reference where title ILIKE 'Unknown reference';
+
+
+
+
+  FOR rec IN select nn.id name_id , nn.name_element name_element ,COALESCE(rr.id,ref_id_unknown) reference_id from name nn left join reference rr on nn.source_id_string = rr.source_id_string
+  LOOP
+    RAISE NOTICE '%', concat('adding instance for name -->', rec.name_element);
+    INSERT into public.instance(created_at        ,created_by,instance_type_id,name_id    ,namespace_id ,reference_id ,updated_at         ,updated_by)
+    VALUES                     (CURRENT_TIMESTAMP ,'DAWR'    ,instance_type_id,rec.name_id,namespace_id ,rec.reference_id ,CURRENT_TIMESTAMP  ,'DAWR');
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT for_loop_through_names_create_instances();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

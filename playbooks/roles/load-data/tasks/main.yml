@@ -1,0 +1,43 @@
+---
+- name: Copy ddl files
+  template:
+    src: "{{item.filename}}.j2"
+    dest: "/tmp/{{item.filename}}"
+  with_items:
+    - { filename: data_load.sql }
+    - { filename: create_tree.sql }
+
+- name: Copy csv file
+  copy:
+    src: "{{item.filename}}"
+    dest: "/tmp/{{item.filename}}"
+  with_items:
+    - { filename: data.tsv }
+
+
+
+
+
+
+- postgresql_schema:
+    name: mapper
+    owner: "{{postgresql_users[1].name}}"
+    database: "{{postgresql_databases[0].name}}"
+    login_host: 127.0.0.1
+    login_user: "{{postgresql_users[1].name}}"
+    login_password: "{{postgresql_users[1].password}}"
+
+
+- name: Load data into NSL DB
+  become: true
+  become_user: postgres
+  command: psql -f /tmp/data_load.sql nsl
+
+
+- pause:
+    prompt: "Do manual steps: 1. rebuild name tree BPNI. Check if names are populated"
+
+- name: Create tree
+  become: true
+  become_user: postgres
+  command: psql -f /tmp/create_tree.sql nsl

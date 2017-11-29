@@ -20,6 +20,7 @@
   become_method: sudo
   roles:
     - { role: bootstrap-db}
+    - {role: 'load-data', tags: 'load-data'}
 
 
   
