@@ -21,23 +21,23 @@ war_deploy_path: /opt/apache-tomcat-7.0.61/webapps
 
 Rails:
     configuration:
-        services_clientside_root_url : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/services/"
-        nsl_services : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/services/"
-        nsl_links : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/services/"
-        services : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/services/"
-        name_services : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/services/name/apni/"
-        reference_services : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/services/reference/apni/"
+        services_clientside_root_url : "https://nxl-beta-231725113.ap-southeast-2.elb.amazonaws.com/nsl/services/"
+        nsl_services : "https://nxl-beta-231725113.ap-southeast-2.elb.amazonaws.com/nsl/services/"
+        nsl_links : "https://nxl-beta-231725113.ap-southeast-2.elb.amazonaws.com/nsl/services/"
+        services : "https://nxl-beta-231725113.ap-southeast-2.elb.amazonaws.com/nsl/services/"
+        name_services : "https://nxl-beta-231725113.ap-southeast-2.elb.amazonaws.com/nsl/services/name/apni/"
+        reference_services : "https://nxl-beta-231725113.ap-southeast-2.elb.amazonaws.com/nsl/services/reference/apni/"
         api_key : 'd0d1e81d-test-apni-editor'
         ldap_admin_username : "uid=admin,ou=system"
         ldap_admin_password : "secret"
         ldap_base : "ou=people,dc=example,dc=com"
-        ldap_host : "{{inventory_hostname}}"
+        ldap_host : "localhost"
         ldap_port : 10389
         ldap_user_base : "ou=people,dc=example,dc=com"
         ldap_users : "ou=people,dc=example,dc=com"
         ldap_groups : "ou=groups,dc=example,dc=com"
-        mapper_root_url : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/mapper/"
-        tree_editor_url : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/tree-editor/"
+        mapper_root_url : "https://nxl-beta-231725113.ap-southeast-2.elb.amazonaws.com/nsl/mapper/"
+        tree_editor_url : "https://nxl-beta-231725113.ap-southeast-2.elb.amazonaws.com/nsl/tree-editor/"
         mapper_shard : "apni"
         action_mailer:
             delivery_method : ":sendmail"
@@ -50,18 +50,18 @@ Rails:
 
 services:
     grails:
-        serverURL : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/services"
+        serverURL : "https://nxl-beta-231725113.ap-southeast-2.elb.amazonaws.com/nsl/services"
     link:
-        mapperURL : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/mapper"
+        mapperURL : "https://nxl-beta-231725113.ap-southeast-2.elb.amazonaws.com/nsl/mapper"
         internalMapperURL : "http://localhost:8080/nsl/mapper"
-        editor : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/editor"
+        editor : "https://nxl-beta-231725113.ap-southeast-2.elb.amazonaws.com/nsl/editor"
 
 
 mapper:
     grails:
-        serverURL : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/mapper"
-    resolverURL : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com/nsl/mapper"
+        serverURL : "https://nxl-beta-231725113.ap-southeast-2.elb.amazonaws.com/nsl/mapper"
+    resolverURL : "https://nxl-beta-231725113.ap-southeast-2.elb.amazonaws.com/nsl/mapper"
     shards:
         icn:
             name : bpni
-            baseURL : "https://nsl-dev-1138426303.ap-southeast-2.elb.amazonaws.com"
+            baseURL : "https://nxl-beta-231725113.ap-southeast-2.elb.amazonaws.com"
