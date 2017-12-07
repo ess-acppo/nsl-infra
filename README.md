@@ -45,5 +45,9 @@ The ansible role to load data into the NSl DB is load-data. It can be invoked by
 It does the following:
 * copies the tab sperate file data.tsv into the server. 
 * Then runs the postgres pl sql script data_load.sql. 
-* Waits for a human to perform manual steps in the service web UI.
+* Waits for a human to perform following steps in the service web UI.
+    * Create BPNI and BPC trees
+    * Rebuild BPNI
+    * Reconstruct names
+    * Construct reference citation string
 * Human can continue the ansible script to finish tree creation.
