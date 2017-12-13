@@ -1,0 +1,155 @@
+---
+#- ec2_vpc_subnet_facts:
+#    region: ap-southeast-2
+#    filters:
+#      "tag:Name": "Bastion host Subnet"
+#  register: bastion_host_subnet_facts
+
+- name: Create subnet for bastion host
+  ec2_vpc_subnet:
+    state: present
+    vpc_id: vpc-30d5ba54
+    cidr: 172.31.48.0/28
+    az: ap-southeast-2a
+    map_public: true
+    region: ap-southeast-2
+    resource_tags:
+      Name: Bastion host Subnet
+  register: bastion_host_subnet
+
+- debug:
+    var: bastion_host_subnet.subnet.id
+
+## Use a template from a URL
+- name: launch ansible cloudformation example
+  cloudformation:
+    stack_name: "bastion-hosts"
+    state: present
+    region: ap-southeast-2
+    disable_rollback: true
+    template_url: https://s3.amazonaws.com/quickstart-reference/linux/bastion/latest/templates/linux-bastion.template
+  args:
+    template_parameters:
+      BastionAMIOS: Ubuntu-Server-16.04-LTS-HVM
+      BastionInstanceType: t2.micro
+      EnableBanner: "true"
+      KeyPairName: DAWRAWSSYD
+      NumBastionHosts: 1
+      EnableTCPForwarding: "true"
+      PublicSubnet1ID: "{{ bastion_host_subnet.subnet.id }}"
+      PublicSubnet2ID: "{{ bastion_host_subnet.subnet.id }}"
+      RemoteAccessCIDR: 0.0.0.0/0
+      VPCID: vpc-30d5ba54
+    tags:
+      Stack: ansible-cloudformation
+
+# Create security group
+# TO-DO
+
+
+# Creates private subnet
+- name: Create private subnet for NXL host
+  ec2_vpc_subnet:
+    state: present
+    vpc_id: vpc-30d5ba54
+    cidr: 172.31.50.0/28
+    az: ap-southeast-2a
+    map_public: false
+    region: ap-southeast-2
+    resource_tags:
+      Name: "{{ nxl_env_name }}_nxl_private_subnet"
+  register: nxl_private_subnet
+
+# allocated a NAT gateway for this subnet
+- name: Create new nat gateway and allocate new EIP if a nat gateway does not yet exist in the subnet.
+  ec2_vpc_nat_gateway:
+    state: present
+    subnet_id: "{{ bastion_host_subnet.subnet.id }}"
+    wait: yes
+    region: ap-southeast-2
+    if_exist_do_not_create: true
+  register: new_nat_gateway
+
+- name: Set up NAT-protected route table
+  ec2_vpc_route_table:
+    vpc_id: vpc-30d5ba54
+    region: ap-southeast-2
+    tags:
+      Name: "{{ nxl_env_name }}_nxl_Internal_route_table"
+    subnets:
+      - "{{ nxl_private_subnet.subnet.id }}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ new_nat_gateway.nat_gateway_id }}"
+  register: nat_route_table
+
+# Creates one host with role tomcat,database and ldap. if required this can  be installed in separate machine.
+# But recommendation is to install in one machine as a multi machine deployment gives little / no benefit.
+- name: launch an NXL instance
+  ec2:
+    id: "{{ nxl_env_name }}"
+    region: ap-southeast-2
+    key_name: DAWRAWSSYD
+    group: NXL-app-sg
+    instance_type: t2.medium
+    image: ami-3605f054
+    wait: yes
+    wait_timeout: 500
+    count: 1
+    instance_tags:
+       Name: "{{ nxl_env_name }}_nxl"
+       env: "{{ nxl_env_name }}"
+       role: tomcat,database,ldap
+    monitoring: yes
+    vpc_subnet_id: "{{ nxl_private_subnet.subnet.id }}"
+    assign_public_ip: no
+  register: nxl_instance
+
+
+# Create a target group with targets
+- name: Create target group to asign instance to
+  elb_target_group:
+    region: ap-southeast-2
+    name: "{{ nxl_env_name }}-tg"
+    protocol: http
+    port: 8080
+    vpc_id: vpc-30d5ba54
+    health_check_path: /
+    successful_response_codes: "200,250-260"
+    targets:
+      - Id: "{{ nxl_instance.instance_ids[0] }}"
+        Port: 8080
+    state: present
+    wait: False
+  register: nxl_elb_target_group
+
+# Create ELB  for exposing NXL to internet and attach a listener with logging enabled
+- name: Create load balancer
+  elb_application_lb:
+    region: ap-southeast-2
+    access_logs_enabled: yes
+    access_logs_s3_bucket: "nxl"
+    access_logs_s3_prefix: "{{ nxl_env_name }}-logs"
+    name: "{{ nxl_env_name }}-elb"
+    security_groups:
+      - NXL-lb-sg
+    subnets:
+      - "{{ bastion_host_subnet.subnet.id }}"
+      - subnet-fedbbfa7
+    listeners:
+      - Protocol: HTTP # Required. The protocol for connections from clients to the load balancer (HTTP or HTTPS) (case-sensitive).
+        Port: 80 # Required. The port on which the load balancer is listening.
+        DefaultActions:
+          - Type: forward # Required. Only 'forward' is accepted at this time
+            TargetGroupName: "{{ nxl_elb_target_group.target_group_name }}" # Required. The name of the target group
+      - Protocol: HTTPS # Required. The protocol for connections from clients to the load balancer (HTTP or HTTPS) (case-sensitive).
+        Port: 443 # Required. The port on which the load balancer is listening.
+        # The security policy that defines which ciphers and protocols are supported. The default is the current predefined security policy.
+        SslPolicy: ELBSecurityPolicy-2016-08
+        Certificates: # The ARN of the certificate (only one certficate ARN should be provided)
+          - CertificateArn: arn:aws:acm:ap-southeast-2:194924002687:certificate/af010859-5c5e-4586-a2b7-006a8d230541
+        DefaultActions:
+          - Type: forward # Required. Only 'forward' is accepted at this time
+            TargetGroupName: "{{ nxl_elb_target_group.target_group_name }}"# Required. The name of the target group
+    state: present
+  register: nxl_elb

@@ -33,7 +33,7 @@ services {
 
 ldap {
     domain = 'domain'
-    server.url = 'ldap://{{inventory_hostname}}:10389'
+    server.url = 'ldap://localhost:10389'
     search {
         base = 'ou=people,dc=example,dc=com'
         user = 'uid=admin,ou=system'
@@ -61,13 +61,14 @@ api.auth = [
         'dev-apni-editor': [
                 application: 'nsl/editor',
                 roles      : ['admin'],
-                host       : '{{private_ip}}'
+                host       : '{{ansible_host}}'
         ],
         'IAM-A-TEST-KEY' : [
                 application: 'tester',
                 roles      : ['admin'],
-                host       : '{{private_ip}}'
+                host       : '{{ansible_host}}'
         ]
 ]
 
 nslServices.jwt.secret = 'poobarbee'
+

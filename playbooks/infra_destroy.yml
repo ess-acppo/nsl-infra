@@ -1,0 +1,13 @@
+---
+# This playbook creates the AWS infra for NXL apps
+- hosts: localhost
+  connection: local
+  roles:
+    - { role: aws-infra, state: "absent"}
+
+
+
+
+
+
+
