@@ -31,7 +31,7 @@ node {
    }
    stage("Deploy to $INVENTORY_NAME") {
       dir('nsl-infra'){
-          sh 'ansible-playbook  -i inventory/$INVENTORY_NAME -u ubuntu playbooks/deploy.yml -e \'{"apps":[{"app": "services"}], "war_names": [{"war_name": "nsl#services##1.0123"}   ],   "war_source_dir": "/var/lib/jenkins/workspace/nsl-services-pipeline/services/target"}\''
+          sh 'sed -ie \'s/.*instance_filters = tag:env=.*$/instance_filters = tag:env=$ENVIRONMENT_NAME/g\' aws_utils/ec2.ini && ansible-playbook  -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml -e \'{"apps":[{"app": "services"}], "war_names": [{"war_name": "nsl#services##1.0123"}   ],   "war_source_dir": "/var/lib/jenkins/workspace/nsl-services-pipeline/services/target"}\''
       }
    }
 }
