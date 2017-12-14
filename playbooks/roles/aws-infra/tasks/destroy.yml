@@ -26,6 +26,9 @@
     state: absent
     wait: True
 
+- pause:
+    minutes: 1
+
 # Create a target group with targets
 - name: Destroy target group
   elb_target_group:
