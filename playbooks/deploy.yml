@@ -3,7 +3,7 @@
 # It will install python2 if missing (but checks first so no expensive repeated apt updates)
 # gwillem@gmail.com
 
-- hosts: tomcat-servers
+- hosts: tag_role_tomcat
   gather_facts: False
   become: yes
   
@@ -14,7 +14,7 @@
 
 # This playbook deploys a war file onto a  standalone Tomcat 7 server.
 
-- hosts: tomcat-servers
+- hosts: tag_role_tomcat
   remote_user: "{{sshuser}}"
   become: yes
   become_method: sudo
