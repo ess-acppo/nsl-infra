@@ -87,7 +87,7 @@
 # But recommendation is to install in one machine as a multi machine deployment gives little / no benefit.
 - name: launch an NXL instance
   ec2:
-    id: "{{ nxl_env_name }}"
+    id: "{{ nxl_env_name }}-{{ ansible_date_time.date }}"
     region: ap-southeast-2
     key_name: DAWRAWSSYD
     group: NXL-app-sg
