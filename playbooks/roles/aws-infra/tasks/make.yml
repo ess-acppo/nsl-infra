@@ -83,11 +83,14 @@
         gateway_id: "{{ new_nat_gateway.nat_gateway_id }}"
   register: nat_route_table
 
+- name: get my public key
+  command: cat ~/.ssh/id_rsa.pub
+  register: mypubkey
 # Creates one host with role tomcat,database and ldap. if required this can  be installed in separate machine.
 # But recommendation is to install in one machine as a multi machine deployment gives little / no benefit.
 - name: launch an NXL instance
   ec2:
-    id: "{{ nxl_env_name }}-{{ ansible_date_time.date }}"
+    id: "{{ nxl_env_name }}-{{ ansible_date_time.epoch }}"
     region: ap-southeast-2
     key_name: DAWRAWSSYD
     group: NXL-app-sg
@@ -103,6 +106,9 @@
     monitoring: yes
     vpc_subnet_id: "{{ nxl_private_subnet.subnet.id }}"
     assign_public_ip: no
+    user_data: |
+                   #!/bin/sh
+                   sudo  echo "{{ mypubkey.stdout }}" >> /home/ubuntu/.ssh/authorized_keys
   register: nxl_instance
 
 
