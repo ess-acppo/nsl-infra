@@ -52,12 +52,12 @@
   ec2_vpc_subnet:
     state: present
     vpc_id: vpc-30d5ba54
-    cidr: 172.31.50.0/28
+    cidr: 172.31.52.0/24
     az: ap-southeast-2a
     map_public: false
     region: ap-southeast-2
     resource_tags:
-      Name: "{{ nxl_env_name }}_nxl_private_subnet"
+      Name: "nxl_private_subnet"
   register: nxl_private_subnet
 
 # allocated a NAT gateway for this subnet
