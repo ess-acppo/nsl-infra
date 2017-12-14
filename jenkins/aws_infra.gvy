@@ -1,6 +1,13 @@
+/*
+Perquisites before this can be run in a machine ( irrespective of whether it run using Jenkins):
+1. Install boto
+2. Configure AWS KEYS
+3. Configure ssh to enable shh thorugh bastion
+*/
+
 node {
   
-   stage('Preparation') { // for display purposes
+   stage("Preparation for $ENVIRONMENT_NAME") { // for display purposes
       // Get some code from a GitHub repository
       sh 'rm -rf *'
       

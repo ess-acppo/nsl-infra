@@ -1,6 +1,6 @@
 node {
   
-   stage('Preparation') { // for display purposes
+   stage("Preparation for $ENVIRONMENT_NAME") { // for display purposes
       // Get some code from a GitHub repository
       sh 'rm -rf *'
       
@@ -29,7 +29,7 @@ node {
         }
       
    }
-   stage("Deploy to $INVENTORY_NAME") {
+   stage("Deploy") {
       dir('nsl-infra'){
           def warDir = pwd()+"/../services/target/"
           def extra_vars = /'{"nxl_env_name":"$ENVIRONMENT_NAME","apps":[{"app": "services"}], "war_names": [{"war_name": "nsl#services##1.0123"}   ],   "war_source_dir": "$warDir"}'/
