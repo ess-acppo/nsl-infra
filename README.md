@@ -9,6 +9,7 @@ Technologies used are:
 
 ### Steps to stand up a new environment: 
 
+# Manual steps in any cloud or Datacenter
 1. Provision a ubuntu / redhat machine possibly in AWS ( or elsewhere) ( If using Vagrant Oracle VirtualBox is used to automatically provision a VM) 
 1. Include the public ip/hostname and the private ip in the inventory/*your_env_name_file*
 1. Create corresponding dir and files under group_vars. Use the existing env dir/files as examples
@@ -19,6 +20,12 @@ Technologies used are:
 ```ansible-playbook  -i inventory/*your_env_name_file* -u ubuntu --private-key ../DAWRAWSSYD.pem playbooks/site.yml ```
 1. Run the following ansible-playbook command to deploy war files for the NSL apps
 ```ansible-playbook  -i inventory/*your_env_name_file* -u ubuntu --private-key ../DAWRAWSSYD.pem playbooks/deploy.yml ```
+
+# Automated provisioning in AWS
+1. The following ansible command stands up a set of AWS resources ```ansible-playbook -vvv playbooks/infra.yml  -e "nxl_env_name=$ENVIRONMENT_NAME"```
+1. The following ansible command will deploy a default set of war files and corresponding configuration into tomcat ```sed -ie \'s/.*instance_filters = tag:env=.*$/instance_filters = tag:env=$ENVIRONMENT_NAME/g\' aws_utils/ec2.ini && ansible-playbook -i aws_utils/ec2.py -u ubuntu  playbooks/deploy.yml -e '{"elb_dns": "linnaeus-elb-809937712.ap-southeast-2.elb.amazonaws.com","apps":[{"app": "services"}], "war_names": [{"war_name": "nsl#services##1.0123"}   ],   "war_source_dir": "/var/lib/jenkins/workspace/nsl-services-pipeline/services/target"}'```
+
+
 
 
 

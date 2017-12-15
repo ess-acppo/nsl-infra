@@ -17,7 +17,7 @@
       "type": "ansible",
       "playbook_file": "playbooks/site.yml",
       "inventory_directory": "inventory",
-      "groups": ["tomcat-servers","database-servers","ldap-servers"],
+      "groups": ["tag_role_tomcat","tag_role_database","tag_role_ldap"],
       "extra_arguments": [ "-vvvv" ]
     }
   ]

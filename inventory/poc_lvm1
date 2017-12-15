@@ -1,13 +1,13 @@
 [poc_lvm1:children]
-tomcat-servers
-database-servers
-ldap-servers
+tag_role_tomcat
+tag_role_database
+tag_role_ldap
 
-[tomcat-servers]
+[tag_role_tomcat]
 192.168.33.10 sshuser=ubuntu version=7 private_ip=192.168.33.10
 
-[database-servers]
+[tag_role_database]
 192.168.33.10
 
-[ldap-servers]
+[tag_role_ldap]
 192.168.33.10

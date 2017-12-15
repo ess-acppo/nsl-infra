@@ -1,6 +1,6 @@
 node {
   
-   stage("Preparation for $ENVIRONMENT_NAME") { // for display purposes
+   stage("Preparation for "+ "${ENVIRONMENT_NAME ?: INVENTORY_NAME}" ) { // for display purposes
       // Get some code from a GitHub repository
       sh 'rm -rf *'
       
@@ -32,8 +32,15 @@ node {
    stage("Deploy") {
       dir('nsl-infra'){
           def warDir = pwd()+"/../services/target/"
-          def extra_vars = /'{"nxl_env_name":"$ENVIRONMENT_NAME","apps":[{"app": "services"}], "war_names": [{"war_name": "nsl#services##1.0123"}   ],   "war_source_dir": "$warDir"}'/
-          sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$ENVIRONMENT_NAME/g' aws_utils/ec2.ini && ansible-playbook  -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml -e $extra_vars"
+          if (ENVIRONMENT_NAME) {
+              def extra_vars = /'{"nxl_env_name":"$ENVIRONMENT_NAME","apps":[{"app": "services"}], "war_names": [{"war_name": "nsl#services##1.0123"}   ],   "war_source_dir": "$warDir"}'/
+              sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$ENVIRONMENT_NAME/g' aws_utils/ec2.ini && ansible-playbook  -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml -e $extra_vars"
+          }else if (INVENTORY_NAME){
+              def extra_vars = /'{"nxl_env_name":"$INVENTORY_NAME","apps":[{"app": "services"}], "war_names": [{"war_name": "nsl#services##1.0123"}   ],   "war_source_dir": "$warDir"}'/
+              sh "ansible-playbook  -i inventory/$INVENTORY_NAME -u ubuntu playbooks/deploy.yml -e $extra_vars"
+          }
+
+
       }
    }
 }

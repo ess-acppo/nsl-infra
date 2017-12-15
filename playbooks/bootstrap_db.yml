@@ -14,7 +14,7 @@
 
 # This playbook deploys a war file onto a  standalone Tomcat 7 server.
 
-- hosts: database-servers
+- hosts: tag_role_database
   remote_user: "{{sshuser}}"
   become: yes
   become_method: sudo

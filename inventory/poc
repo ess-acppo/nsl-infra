@@ -1,13 +1,13 @@
 [poc:children]
-tomcat-servers
-database-servers
-ldap-servers
+tag_role_tomcat
+tag_role_database
+tag_role_ldap
 
-[tomcat-servers]
+[tag_role_tomcat]
 ec2-13-54-185-122.ap-southeast-2.compute.amazonaws.com sshuser=ubuntu version=7 private_ip=172.31.39.28
 
-[database-servers]
+[tag_role_database]
 ec2-13-54-185-122.ap-southeast-2.compute.amazonaws.com
 
-[ldap-servers]
+[tag_role_ldap]
 ec2-13-54-185-122.ap-southeast-2.compute.amazonaws.com

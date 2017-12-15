@@ -16,7 +16,7 @@
 # Tomcat strt ; i.e 2nd last task of the role doesnot work. Instead manually start the tomcat.
 # then continue by commenting this role.
 
-- hosts: tomcat-servers
+- hosts: tag_role_tomcat
   remote_user: "{{sshuser}}"
   become: yes
   become_method: sudo
@@ -29,21 +29,24 @@
     - { role: tomcat8, when: version == 8 }
 
 #Install postgres server
-- hosts: database-servers
+- hosts: tag_role_database
   become: yes
   roles:
   - role: geerlingguy.postgresql
     become: yes
 
-- hosts: database-servers
+- hosts: tag_role_database
   become: yes
   roles:
     - bootstrap-db 
 
 
-- hosts: ldap-servers
+- hosts: tag_role_ldap
   become: yes
   roles:
     - apacheds
+
+
+
 
     
