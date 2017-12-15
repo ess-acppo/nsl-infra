@@ -95,7 +95,7 @@
     key_name: DAWRAWSSYD
     group: NXL-app-sg
     instance_type: t2.medium
-    image: ami-3605f054
+    image: ami-6c24d20e
     wait: yes
     wait_timeout: 500
     count: 1
