@@ -26,6 +26,7 @@
   tasks:
   - set_fact:
       elb_dns: "{{ hostvars.localhost.elb_facts.load_balancers[0].dns_name }}"
+    when: hostvars.localhost.elb_facts.load_balancers.0 is defined
 
 
 
