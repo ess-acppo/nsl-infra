@@ -22,12 +22,19 @@ Technologies used are:
 ```ansible-playbook  -i inventory/*your_env_name_file* -u ubuntu --private-key ../DAWRAWSSYD.pem playbooks/deploy.yml ```
 
 # Automated provisioning in AWS
-1. The following ansible command stands up a set of AWS resources ```ansible-playbook -vvv playbooks/infra.yml  -e "nxl_env_name=$ENVIRONMENT_NAME"```
-1. The following ansible command will deploy a default set of war files and corresponding configuration into tomcat ```sed -ie \'s/.*instance_filters = tag:env=.*$/instance_filters = tag:env=$ENVIRONMENT_NAME/g\' aws_utils/ec2.ini && ansible-playbook -i aws_utils/ec2.py -u ubuntu  playbooks/deploy.yml -e '{"elb_dns": "linnaeus-elb-809937712.ap-southeast-2.elb.amazonaws.com","apps":[{"app": "services"}], "war_names": [{"war_name": "nsl#services##1.0123"}   ],   "war_source_dir": "/var/lib/jenkins/workspace/nsl-services-pipeline/services/target"}'```
+1. The following ansible command stands up a set of AWS resources ```ansible-playbook -vvv playbooks/infra.yml  -e "nxl_env_name=$ENVIRONMENT_NAME"```. The anisble provisioners are not run. We use a pre-existing AMI which contains all previously provisioned software components. The full list of such components can be found in ansible ( site.yml , Step 4 under [manual deployment](#manual-steps-in-any-cloud-or-datacenter)])
+1. The following ansible command will deploy a default set of war files and corresponding configuration into tomcat ```sed -ie \'s/.*instance_filters = tag:env=.*$/instance_filters = tag:env=$ENVIRONMENT_NAME/g\' aws_utils/ec2.ini && ansible-playbook -i aws_utils/ec2.py -u ubuntu  playbooks/deploy.yml -e '{"nxl_env_name":"$ENVIRONMENT_NAME","apps":[{"app": "services"},{"app": "editor"},{"app": "mapper"}], "war_names": [{"war_name": "nsl#services##1.0123"},{"war_name": "nsl#editor##1.44"},{"war_name": "nsl#mapper##1.0017"}   ],   "war_source_dir": "~/agri/nsl-infra"}'```
+
+The above ansible commands has also been configured to run via Jenkins using the jenkins/aws_infra.gvy and jenkins/services.gvy ( for services)
+
+# In Vagrant
+1. Have [Vagrant](https://www.vagrantup.com/) installed int he machine
+1. Have a virtualization software like [Virtual box](https://www.virtualbox.org/) installed
+1. Run `vagrant up` from the repo root.  _This will be slow for the first time as it will download a Ubuntu image as defined in Varantfile_. This step also runs ansible provisioners
 
 
-
-
+# Create ami with ansible provisioned software components
+1. Simply run `packer build packer-template.json`. This will use AWS EBS to create a new ami and output the ami id. This ami may be used in while standing up a AWS env(automated-provisioning-in-aws)
 
 ### CI/CD set:
 
@@ -58,3 +65,12 @@ It does the following:
     * Reconstruct names
     * Construct reference citation string
 * Human can continue the ansible script to finish tree creation.
+
+
+## Notes
+###Getting a fresh instance up in AWS:
+Some of these have been incorporated into above sections but this section gives the basic building blocks.
+1. Provision an new AWS env using [AWS env section](automated-provisioning-in-aws)
+1. To install all war files using ansible. ```sed -ie 's/.*instance_filters = tag:env=.*$/instance_filters = tag:env=aristotle/g' aws_utils/ec2.ini && ansible-playbook -i aws_utils/ec2.py -u ubuntu -vvv  playbooks/deploy.yml -e '{"nxl_env_name":"aristotle","apps":[{"app": "services"},{"app": "editor"},{"app": "mapper"}], "war_names": [{"war_name": "nsl#services##1.0123"},{"war_name": "nsl#editor##1.44"},{"war_name": "nsl#mapper##1.0017"}   ],   "war_source_dir": "~/agri/nsl-infra"}'```. Ensure that war_source_dir contains the matching war files
+1. Load data ( NXL specific ) ported from taxatree using [data loading](#Dataloading)
+1. Sets up tunnel to instance behind bastion `ssh -L 55432:localhost:5432 ubuntu@ip-172-31-52-196.ap-southeast-2.compute.internal`
