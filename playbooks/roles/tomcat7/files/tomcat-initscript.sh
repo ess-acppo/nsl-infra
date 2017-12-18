@@ -12,6 +12,7 @@
 # Added usage of CATALINA_BASE
 # Added coloring and additional status
 # Added check for existence of the tomcat user
+# adds init info section with default-start and stop as per: https://github.com/lomik/go-carbon/issues/189
 #
 
 ### BEGIN INIT INFO
