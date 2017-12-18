@@ -28,6 +28,9 @@ INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_seq
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'card image', 'bpni-vert-200.png');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'description html', '<p>This section of the ************placeholder**************</p>');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'classification tree key', 'BPC');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'shard group name', 'NXL');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'shards for SPARQL', 'NXL,NSL');
+
 
 -- Create table "raw" which stores a as-is copy of the input csv file
 drop table raw;
