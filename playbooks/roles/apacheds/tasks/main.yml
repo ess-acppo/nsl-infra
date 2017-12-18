@@ -26,10 +26,15 @@
 
 # This repeatedly errors out even though the service actually starts up. So, errors are ignored 
 - name: start apache
-  command: bash -c '/etc/init.d/apacheds start ; /etc/init.d/apacheds start'
+  command: bash -c '/etc/init.d/apacheds start'
   ignore_errors: yes
 
 - pause: seconds=30
+
+# This repeatedly errors out even though the service actually starts up. So, errors are ignored
+- name: start apache second time
+  command: bash -c '/etc/init.d/apacheds start'
+  ignore_errors: yes
 
 - name: import the users
   command: bash -c 'ldapadd -c -h localhost -p 10389 -D "uid=admin,ou=system" -w secret < /tmp/create.ldif ; echo added_org'

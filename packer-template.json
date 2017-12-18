@@ -3,7 +3,7 @@
     {
       "type": "amazon-ebs",
       "access_key": "",
-      "secret_key": ""
+      "secret_key": "",
       "region": "ap-southeast-2",
       "source_ami": "ami-e2021d81",
       "instance_type": "t2.micro",

@@ -13,7 +13,18 @@
 # Added coloring and additional status
 # Added check for existence of the tomcat user
 #
- 
+
+### BEGIN INIT INFO
+# Provides: tomcat7
+# Required-Start: $network $syslog
+# Required-Stop: $network $syslog
+# Default-Start:  2 3 4 5
+# Default-Stop: 0 1 6
+# Description: Release implementation for Servlet 2.5 and JSP 2.1
+# Short-Description: start and stop tomcat
+### END INIT INFO
+
+
 #Location of JAVA_HOME (bin files)
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
  

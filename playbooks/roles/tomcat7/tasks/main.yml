@@ -31,15 +31,16 @@
   #notify: restart tomcat
 
 - name: Install Tomcat init script
-  copy: src=tomcat-initscript.sh dest=/etc/systemd/system/tomcat mode=0755
+  copy: src=tomcat-initscript.sh dest=/etc/init.d/tomcat mode=0755
+  #copy: src=tomcat-initscript.sh dest=/etc/systemd/system/tomcat mode=0755
 
 - name: systemd daemon-reload
   shell: systemctl daemon-reload
 
+
 - name: Start Tomcat
-  #service: name=tomcat state=started enabled=yes
-  command: bash -c '/usr/share/tomcat/bin/startup.sh'
-  become_user: tomcat
+  service: name=tomcat state=started enabled=yes
+  
 
 - name: wait for tomcat to start
   wait_for: port={{http_port}}
