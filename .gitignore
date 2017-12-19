@@ -45,3 +45,7 @@ sandi_meter/assets
 
 # Ignore vagrant dir
 /.vagrant
+
+
+# custom Ignores
+/catalina.out
