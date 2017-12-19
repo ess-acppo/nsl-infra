@@ -14,9 +14,7 @@
 -- If I did not have an end node, then I would have to keep a "status" field on the node table - I'd be spreading the info over two fields, two
 -- rdf and json properties, and creating a situation where inconsistent data becomes possible.
 
-TRUNCATE  table tree_arrangement cascade;
-TRUNCATE  table tree_node cascade;
-TRUNCATE  table tree_link cascade;
+
 
 insert into tree_arrangement(id, lock_version, tree_type, is_synthetic, label, description)
 values (0, 1, 'E', 'N', 'END-TREE', 'The END tree. This tree is the same abstract object across all instances of this data structure.');
@@ -43,6 +41,7 @@ update tree_arrangement set node_id = 0;
 
 -- The classification constructor in the NSL services admin page doesn't add "instances" to the "tree_nodes" it creates
 -- So, here we update the "tree_nodes" to add "instances"
+-- This is required for the taxonomic tree.
 CREATE OR REPLACE FUNCTION for_loop_through_treenode_update_instances()
   RETURNS VOID AS $$
 DECLARE

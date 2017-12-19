@@ -37,7 +37,8 @@
 - pause:
     prompt: "Do manual steps: 1. rebuild name tree BPNI. Check if names are populated"
 
-- name: Create tree
-  become: true
-  become_user: postgres
-  command: psql -f /tmp/create_tree.sql nsl
+# Uncomment this when we need to create taxonomic tree
+#- name: Create tree
+#  become: true
+#  become_user: postgres
+#  command: psql -f /tmp/create_taxonomic_tree.sql nsl
