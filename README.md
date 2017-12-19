@@ -66,9 +66,12 @@ It does the following:
     * Construct reference citation string
 * Human can continue the ansible script to finish tree creation.
 
+## Known issues
+1. At times during provisioning of a fresh machine ldap user creation doesn't work. If login fails due to domain/user not found then ldap config and user needs to be done manually. Relevant code to be run is: [create.ldif](https://github.com/ess-acppo/nsl-infra/blob/6ff2c4b78719592e405a2e4554a0383877b1c86e/playbooks/roles/apacheds/tasks/main.yml#L40) and [add_user.ldif](https://github.com/ess-acppo/nsl-infra/blob/6ff2c4b78719592e405a2e4554a0383877b1c86e/playbooks/roles/apacheds/tasks/main.yml#L43)
+
 
 ## Notes
-###Getting a fresh instance up in AWS:
+### Getting a fresh instance up in AWS:
 Some of these have been incorporated into above sections but this section gives the basic building blocks.
 1. Provision an new AWS env using [AWS env section](automated-provisioning-in-aws)
 1. To install all war files using ansible. ```sed -ie 's/.*instance_filters = tag:env=.*$/instance_filters = tag:env=aristotle/g' aws_utils/ec2.ini && ansible-playbook -i aws_utils/ec2.py -u ubuntu -vvv  playbooks/deploy.yml -e '{"nxl_env_name":"aristotle","apps":[{"app": "services"},{"app": "editor"},{"app": "mapper"}], "war_names": [{"war_name": "nsl#services##1.0123"},{"war_name": "nsl#editor##1.44"},{"war_name": "nsl#mapper##1.0017"}   ],   "war_source_dir": "~/agri/nsl-infra"}'```. Ensure that war_source_dir contains the matching war files
