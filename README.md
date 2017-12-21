@@ -77,3 +77,6 @@ Some of these have been incorporated into above sections but this section gives 
 1. To install all war files using ansible. ```sed -ie 's/.*instance_filters = tag:env=.*$/instance_filters = tag:env=aristotle/g' aws_utils/ec2.ini && ansible-playbook -i aws_utils/ec2.py -u ubuntu -vvv  playbooks/deploy.yml -e '{"nxl_env_name":"aristotle","apps":[{"app": "services"},{"app": "editor"},{"app": "mapper"}], "war_names": [{"war_name": "nsl#services##1.0123"},{"war_name": "nsl#editor##1.44"},{"war_name": "nsl#mapper##1.0017"}   ],   "war_source_dir": "~/agri/nsl-infra"}'```. Ensure that war_source_dir contains the matching war files
 1. Load data ( NXL specific ) ported from taxatree using [data loading](#Dataloading)
 1. Sets up tunnel to instance behind bastion `ssh -L 55432:localhost:5432 ubuntu@ip-172-31-52-196.ap-southeast-2.compute.internal`
+1. Command to update shard images :
+- ```sed -ie 's/.*instance_filters = tag:env=.*$/instance_filters = tag:env=aristotle/g' aws_utils/ec2.ini && ansible-playbook -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml --tags "configuration" --extra-vars "@shard_vars/iczn.json"```
+- OR ```ansible-playbook -i inventory/poc2 -u ubuntu playbooks/deploy.yml --tags "configuration" --extra-vars "@shard_vars/icn.json"```
