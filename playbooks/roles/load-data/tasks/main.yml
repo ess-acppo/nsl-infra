@@ -4,8 +4,8 @@
     src: "{{item.filename}}.j2"
     dest: "/tmp/{{item.filename}}"
   with_items:
-    - { filename: data_load.sql }
-    - { filename: create_tree.sql }
+    - { filename: "{{ shard_data_load_file }}" }
+#    - { filename: create_tree.sql }
 
 - name: Copy csv file
   copy:
@@ -31,7 +31,7 @@
 - name: Load data into NSL DB
   become: true
   become_user: postgres
-  command: psql -f /tmp/data_load.sql nsl
+  command: psql -f /tmp/{{ shard_data_load_file }} nsl
 
 
 - pause:
