@@ -1,0 +1,25 @@
+dn: cn={{ new_user }},ou=people,dc=example,dc=com
+changetype: add
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: {{ new_user }}
+givenName: RedHat
+surName: whetsell
+sn: {{ new_user }}
+ou: {{ new_user }}
+uid: {{ new_user }}
+userPassword: {{ new_user_password }}
+
+
+{% for grp in grps %}
+dn: cn={{ grp }},ou=groups,dc=example,dc=com
+changetype: modify
+add: uniqueMember
+uniqueMember: uid={{ new_user }}
+
+
+{% endfor %}
+
+

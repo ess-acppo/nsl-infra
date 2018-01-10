@@ -1,0 +1,26 @@
+---
+# Add this snippet to the top of your playbook. 
+# It will install python2 if missing (but checks first so no expensive repeated apt updates)
+# gwillem@gmail.com
+
+- hosts: all
+  gather_facts: False
+  become: yes
+  
+  tasks:
+  - name: copy ldif file to server
+    template: src=roles/apacheds/templates/add_user_with_group_membership.ldif.j2 dest=/tmp/add_user_with_group_membership.ldif
+
+
+  - name: run ldif
+    command: bash -c 'ldapadd -c -h localhost -p 10389 -D "uid=admin,ou=system" -w secret < /tmp/add_user_with_group_membership.ldif ; echo added_users'
+
+
+
+
+
+  
+  
+
+  
+
