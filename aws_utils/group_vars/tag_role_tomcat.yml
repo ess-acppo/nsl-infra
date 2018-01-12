@@ -36,7 +36,7 @@ Rails:
         ldap_user_base : "ou=people,dc=example,dc=com"
         ldap_users : "ou=people,dc=example,dc=com"
         ldap_groups : "ou=groups,dc=example,dc=com"
-        mapper_root_url : "https://{{ elb_dns }}/nxl/mapper/"
+        mapper_root_url : "https://{{ elb_dns }}/nsl/mapper/"
         tree_editor_url : "https://{{ elb_dns }}/nxl/tree-editor/"
         mapper_shard : "apni"
         action_mailer:
