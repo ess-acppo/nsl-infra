@@ -9,7 +9,7 @@
   ec2_vpc_subnet:
     state: present
     vpc_id: vpc-30d5ba54
-    cidr: 172.31.48.0/28
+    cidr: 172.31.50.0/23
     az: ap-southeast-2a
     map_public: true
     region: ap-southeast-2
