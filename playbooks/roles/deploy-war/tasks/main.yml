@@ -52,12 +52,13 @@
     - { filename: editor-database.yml }
     - { filename: services-config.groovy }
     - { filename: nsl-mapper-config.groovy }
-
+  tags:
+    - configuration
 
 - name: Copy image files
   copy:
     src: "{{item.filename}}"
-    dest: "{{ war_deploy_path }}/nsl#services##1.0123/assets"
+    dest: "{{ war_deploy_path }}/nxl#services##1.0123/assets"
   with_items: "{{ shard_images }}"
 #    - { filename: bpni-banner.png }
 #    - { filename: bpni-vert-200.png }

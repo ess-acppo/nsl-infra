@@ -34,7 +34,7 @@ node {
             projectDir = pwd() 
             def version = new File(projectDir+"/config/version.txt")
             def war = new File(projectDir+"/nsl-editor.war")
-            war.renameTo(projectDir+"/nsl#editor##${version.text.trim()}.war")
+            war.renameTo(projectDir+"/nxl#editor##${version.text.trim()}.war")
         }
         }
       }
@@ -43,7 +43,7 @@ node {
    }
    stage("Deploy to $INVENTORY_NAME") {
       dir('nsl-infra'){
-          def extra_vars = /'{"apps":[{"app": "editor"}], "war_names": [{"war_name": "nsl#editor##1.53"}   ],   "war_source_dir": "$projectDir"}'/
+          def extra_vars = /'{"apps":[{"app": "editor"}], "war_names": [{"war_name": "nxl#editor##1.53"}   ],   "war_source_dir": "$projectDir"}'/
           sh "ansible-playbook -vvv -i inventory/$INVENTORY_NAME -u ubuntu playbooks/deploy.yml -e $extra_vars"
       }
    }
