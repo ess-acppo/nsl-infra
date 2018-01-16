@@ -2,20 +2,13 @@
 
 
 
-- ec2_instance_facts:
+- name: destroy ASG
+  ec2_asg:
+    name: "{{ nxl_env_name }}_asg"
+    state: absent
     region: ap-southeast-2
-    filters:
-      "tag:Name": "{{ nxl_env_name }}_nxl"
-  register: nxl_instance
+    wait_for_instances: false
 
-# Creates one host with role tomcat,database and ldap. if required this can  be installed in separate machine.
-# But recommendation is to install in one machine as a multi machine deployment gives little / no benefit.
-- name: terminate an NXL instance
-  ec2:
-    state: 'absent'
-    region: ap-southeast-2
-    instance_id: "{{ nxl_instance.instances[0].instance_id }}"
-  register: nxl_instance
 
 
 # Create ELB  for exposing NXL to internet and attach a listener with logging enabled

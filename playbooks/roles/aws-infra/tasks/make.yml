@@ -83,34 +83,6 @@
         gateway_id: "{{ new_nat_gateway.nat_gateway_id }}"
   register: nat_route_table
 
-- name: get my public key
-  command: cat ~/.ssh/id_rsa.pub
-  register: mypubkey
-# Creates one host with role tomcat,database and ldap. if required this can  be installed in separate machine.
-# But recommendation is to install in one machine as a multi machine deployment gives little / no benefit.
-- name: launch an NXL instance
-  ec2:
-    id: "{{ nxl_env_name }}-{{ ansible_date_time.epoch }}"
-    region: ap-southeast-2
-    key_name: DAWRAWSSYD
-    group: NXL-app-sg
-    instance_type: t2.medium
-    image: "{{ nxl_ami | default('ami-6c24d20e') }}"
-    wait: yes
-    wait_timeout: 500
-    count: 1
-    instance_tags:
-       Name: "{{ nxl_env_name }}_nxl"
-       env: "{{ nxl_env_name }}"
-       role: tomcat,database,ldap
-    monitoring: yes
-    vpc_subnet_id: "{{ nxl_private_subnet.subnet.id }}"
-    assign_public_ip: no
-    user_data: |
-                   #!/bin/sh
-                   sudo  echo "{{ mypubkey.stdout }}" >> /home/ubuntu/.ssh/authorized_keys
-  register: nxl_instance
-
 
 # Create a target group with targets
 - name: Create target group to asign instance to
@@ -120,11 +92,6 @@
     protocol: http
     port: 8080
     vpc_id: vpc-30d5ba54
-    health_check_path: /
-    successful_response_codes: "200,250-260"
-    targets:
-      - Id: "{{ nxl_instance.instance_ids[0] }}"
-        Port: 8080
     state: present
     wait: False
   register: nxl_elb_target_group
@@ -159,3 +126,87 @@
             TargetGroupName: "{{ nxl_elb_target_group.target_group_name }}"# Required. The name of the target group
     state: present
   register: nxl_elb
+
+- name: get my public key
+  command: cat ~/.ssh/id_rsa.pub
+  register: mypubkey
+
+# Rolling ASG Updates
+
+# Below is an example of how to assign a new launch config to an ASG and terminate old instances.
+#
+# All instances in "myasg" that do not have the launch configuration named "my_new_lc" will be terminated in
+# a rolling fashion with instances using the current launch configuration, "my_new_lc".
+#
+# This could also be considered a rolling deploy of a pre-baked AMI.
+#
+# If this is a newly created group, the instances will not be replaced since all instances
+# will have the current launch configuration.
+
+- name: create launch config
+  ec2_lc:
+    name: "{{ nxl_env_name }}_lc"
+    image_id: "{{ nxl_ami | default('ami-6c24d20e') }}"
+    key_name: DAWRAWSSYD
+    region: ap-southeast-2
+    security_groups: NXL-app-sg
+    instance_type: t2.medium
+    assign_public_ip: no
+    instance_monitoring: true
+    user_data: |
+                    #!/bin/sh
+                    sudo  echo "{{ mypubkey.stdout }}" >> /home/ubuntu/.ssh/authorized_keys
+
+# Creates one host with role tomcat,database and ldap. if required this can  be installed in separate machine.
+# But recommendation is to install in one machine as a multi machine deployment gives little / no benefit.
+- name: create ASG
+  ec2_asg:
+    name: "{{ nxl_env_name }}_asg"
+    launch_config_name: "{{ nxl_env_name }}_lc"
+    health_check_period: 300
+    health_check_type: ELB
+    replace_all_instances: yes
+    min_size: 1
+    max_size: 1
+    desired_capacity: 1
+    vpc_zone_identifier: [ "{{ nxl_private_subnet.subnet.id }}" ]
+    region: ap-southeast-2
+    target_group_arns:
+      - "{{ nxl_elb_target_group.target_group_arn }}"
+    tags:
+      - Name: "{{ nxl_env_name }}_nxl"
+      - env: "{{ nxl_env_name }}"
+      - role: tomcat,database,ldap
+      - scheduler:ec2-startstop:standard: 2200;0700;utc;weekdays
+      - scheduler:ec2-startstop:stop-friday: none;2300;utc;fri
+    wait_for_instances: false
+
+## This is not used any more as the instance is being launched using launch configuration
+## Creates one host with role tomcat,database and ldap. if required this can  be installed in separate machine.
+## But recommendation is to install in one machine as a multi machine deployment gives little / no benefit.
+#- name: launch an NXL instance
+#  ec2:
+#    id: "{{ nxl_env_name }}-{{ ansible_date_time.epoch }}"
+#    region: ap-southeast-2
+#    key_name: DAWRAWSSYD
+#    group: NXL-app-sg
+#    instance_type: t2.medium
+#    image: "{{ nxl_ami | default('ami-6c24d20e') }}"
+#    wait: yes
+#    wait_timeout: 500
+#    count: 1
+#    instance_tags:
+#       Name: "{{ nxl_env_name }}_nxl"
+#       env: "{{ nxl_env_name }}"
+#       role: tomcat,database,ldap
+#    monitoring: yes
+#    vpc_subnet_id: "{{ nxl_private_subnet.subnet.id }}"
+#    assign_public_ip: no
+#    user_data: |
+#                   #!/bin/sh
+#                   sudo  echo "{{ mypubkey.stdout }}" >> /home/ubuntu/.ssh/authorized_keys
+#  register: nxl_instance
+
+
+
+
