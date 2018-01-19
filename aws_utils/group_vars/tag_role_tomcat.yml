@@ -44,7 +44,7 @@ Rails:
             perform_deliveries : true
             raise_delivery_errors : true
         relative_url_root : "/nxl/editor"
-        environment : "development"
+        environment : "production"
         session_key_tag : "test"
 
 
