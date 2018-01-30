@@ -66,6 +66,10 @@ It does the following:
     * Construct reference citation string
 * Human can continue the ansible script to finish tree creation.
 
+#How to create the data.tsv file
+* Export from excel as UTF-16LE file named "data16.tsv"
+* run command ```iconv -f UTF-16LE -t UTF-8 data16.tsv > data.tsv```
+
 ## Known issues
 1. At times during provisioning of a fresh machine ldap user creation doesn't work. If login fails due to domain/user not found then ldap config and user needs to be done manually. Relevant code to be run is: [create.ldif](https://github.com/ess-acppo/nsl-infra/blob/6ff2c4b78719592e405a2e4554a0383877b1c86e/playbooks/roles/apacheds/tasks/main.yml#L40) and [add_user.ldif](https://github.com/ess-acppo/nsl-infra/blob/6ff2c4b78719592e405a2e4554a0383877b1c86e/playbooks/roles/apacheds/tasks/main.yml#L43)
 
