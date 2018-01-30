@@ -176,6 +176,7 @@
     tags:
       - Name: "{{ nxl_env_name }}_nxl"
       - env: "{{ nxl_env_name }}"
+      - app: taxaas
       - role: tomcat,database,ldap
       - scheduler:ec2-startstop:standard: 2200;0700;utc;weekdays
       - scheduler:ec2-startstop:stop-friday: none;2300;utc;fri
