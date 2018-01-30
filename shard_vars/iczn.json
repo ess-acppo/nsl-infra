@@ -1,3 +1,4 @@
 {
-  "shard_images" : ["filename" : "bani-banner.png"  , "filename" : "bani-vert-200.png"]
+  "shard_images" : ["filename" : "bani-banner.png"  , "filename" : "bani-vert-200.png"],
+  "shard_data_load_file" : "data_load_animal.sql"
 }
