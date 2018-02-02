@@ -56,6 +56,8 @@ Jenkins plugins used ( not an exaustive list) :
 ## Dataloading
 The ansible role to load data into the NSl DB is load-data. It can be invoked by running the following command: 
 ```ansible-playbook  -i inventory/poc2 -u ubuntu --private-key ../DAWRAWSSYD.pem playbooks/bootstrap_db.yml --tags "load-data"```
+or
+```sed -ie 's/.*instance_filters = tag:env=.*$/instance_filters = tag:env=aristotle-ICN/g' aws_utils/ec2.ini & ansible-playbook -i aws_utils/ec2.py -u ubuntu --private-key ../DAWRAWSSYD.pem playbooks/bootstrap_db.yml --tags "load-data" --extra-vars "@shard_vars/icn.json"```
 It does the following:
 * copies the tab sperate file data.tsv into the server. 
 * Then runs the postgres pl sql script data_load.sql. 
