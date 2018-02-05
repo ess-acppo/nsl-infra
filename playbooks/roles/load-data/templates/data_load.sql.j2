@@ -7,13 +7,13 @@ INSERT INTO public.shard_config (id, name, value, deprecated) VALUES (nextval('h
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'BPNI description', 'The Biosecurity Plant Name Index (BPNI) is a tool for the biosecurity community that deals with plant names and their usage in the scientific literature, whether as a current name or synonym, for ICN-named organisms that are NOT native to, or naturalised in Australia. BPNI does not recommend any particular taxonomy or nomenclature. For a listing of currently accepted scientific names for ex-Australia algae, fungi or plants, please use the Biosecurity Plant Checklist (BPC) link above.');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'BPC description', 'The Biosecurity Plant Checklist (BPC) is a list of the accepted scientific names for the *******placeholder*******');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'menu label', 'Biosecurity Plants');
-INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'banner text', 'Aliena Plantis');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'banner text', 'Aliena Plantae');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree banner text', 'Biosecurity Plant Checklist');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name label', 'BPNI');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree description html', '<p>The Biosecurity Plant Checklist (BPC) is a *******placeholder*******</p>');
 INSERT INTO public.shard_config (id, name, value, deprecated) VALUES (nextval('hibernate_sequence'), 'tree label', 'BPC', true);
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree label text', 'Biosecurity Plant Checklist');
-INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'page title', 'Aliena Plantis');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'page title', 'Aliena Plantae');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree search help text html', 'The Biosecurity Plant Checklist (BPC) provides a listing of ************placeholder**************</p>');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'services path name element', 'bpni');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name search help text html', '<p>The Biosecurity Plant Name Index (BPNI) is a resource for ************placeholder**************</p>');
@@ -217,6 +217,8 @@ DECLARE
   ref_id BIGINT = NULL ;  --
   year_int INT;           -- holds corrected year ( non-negative , limit to 4 digit year )
   reference_ret_id BIGINT; -- holds the ref id from raw.reference_id
+  nmespc_id BIGINT;
+  default_author_id BIGINT;
 
 BEGIN
   -- clear tables
@@ -226,6 +228,23 @@ BEGIN
   select id into language_id from language where lower(name) = 'english';
   select id into ref_author_role_id from ref_author_role where lower(name) = 'unknown';
   select id into ref_type_id  from ref_type where lower(name) = 'unknown';
+  select id into nmespc_id from namespace where name = 'BPNI';
+
+  ref_text := concat('~placeholder for unidentified publication');
+
+  INSERT INTO public.author (  created_at, created_by, abbrev, name,  namespace_id, source_id_string, source_system, updated_at, updated_by, valid_record)
+  VALUES ( CURRENT_TIMESTAMP , 'DAWR', '', '' , nmespc_id,              '' ,           'NAQS',  CURRENT_TIMESTAMP , 'DAWR', true)
+  RETURNING id INTO  default_author_id;
+  INSERT INTO public.reference
+  (  author_id,       created_at,    created_by,  display_title,    namespace_id,             language_id,        ref_author_role_id, ref_type_id, source_id_string,         source_system,     title,                updated_at,        updated_by,  verbatim_author,   year)
+  VALUES (  default_author_id, CURRENT_TIMESTAMP, 'DAWR',  ref_text,          nmespc_id,         language_id      ,ref_author_role_id, ref_type_id, '',       'NAQS'     ,     ref_text,           CURRENT_TIMESTAMP,   'DAWR',      '', NULL)
+  RETURNING id INTO  reference_ret_id;
+
+  --UPDATE raw  SET  reference_id  = reference_ret_id   WHERE vchrauthor NOTNULL and trim(chrkingdomcode) in ('P','F','L');
+  EXECUTE 'UPDATE raw  SET  reference_id  = $1   WHERE vchrauthor ISNULL and trim(chrkingdomcode) in (''P'',''F'',''L'') '
+  USING reference_ret_id;
+
+
 
   FOR rec IN select intbiotaid, namespace_id, vchryearofpub, vchrauthor , regexp_matches(vchrauthor, author_regex)  cc
              from
@@ -289,11 +308,7 @@ BEGIN
 
     -- insert into references
     BEGIN
-      IF rec.vchryearofpub ISNULL THEN
-        ref_text := concat('~placeholder for unidentified publication');
-      ELSE
-        ref_text := concat('~placeholder for unidentified publication');
-      END IF;
+
       year_int = cast(NULLIF(trim(rec.vchryearofpub), '') as INT);
       IF year_int < 0 THEN
         year_int = year_int * -1;
@@ -301,6 +316,8 @@ BEGIN
         year_int = cast(NULLIF(substr(trim(rec.vchryearofpub),1,4), '') as INT);
       END IF;
       select id into author_id_for_ref  from author where lower(name) = (select lower(raw.author) from raw where intbiotaid = rec.intbiotaid);
+
+
 
       -- checks if the required reference is already entered in the DB
       IF year_int ISNULL THEN
