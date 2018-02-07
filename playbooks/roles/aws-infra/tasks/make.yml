@@ -8,57 +8,72 @@
 - name: Create subnet for bastion host
   ec2_vpc_subnet:
     state: present
-    vpc_id: vpc-30d5ba54
-    cidr: 172.31.50.0/23
+    vpc_id: "{{ VPC_ID }}"
+    cidr: "{{ public_subnet_cidr }}"
     az: ap-southeast-2a
     map_public: true
     region: ap-southeast-2
     resource_tags:
-      Name: Bastion host Subnet
+      Name: "Bastion host Subnet_{{ VPC_ID }}"
   register: bastion_host_subnet
+
+- name: Create subnet for bastion host in a 2nd AZ. But this doesn't actually have a host yet. Just needed to satisfy ELB creation
+  ec2_vpc_subnet:
+    state: present
+    vpc_id: "{{ VPC_ID }}"
+    cidr: "{{ public_subnet2_cidr }}"
+    az: ap-southeast-2b
+    map_public: true
+    region: ap-southeast-2
+    resource_tags:
+      Name: "Bastion host Subnet_{{ VPC_ID }}"
+  register: bastion_host_subnet2
 
 - debug:
     var: bastion_host_subnet.subnet.id
-
-## Use a template from a URL
-- name: launch ansible cloudformation example
-  cloudformation:
-    stack_name: "bastion-hosts"
-    state: present
-    region: ap-southeast-2
-    disable_rollback: true
-    template_url: https://s3.amazonaws.com/quickstart-reference/linux/bastion/latest/templates/linux-bastion.template
-  args:
-    template_parameters:
-      BastionAMIOS: Ubuntu-Server-16.04-LTS-HVM
-      BastionInstanceType: t2.micro
-      EnableBanner: "true"
-      KeyPairName: DAWRAWSSYD
-      NumBastionHosts: 1
-      EnableTCPForwarding: "true"
-      PublicSubnet1ID: "{{ bastion_host_subnet.subnet.id }}"
-      PublicSubnet2ID: "{{ bastion_host_subnet.subnet.id }}"
-      RemoteAccessCIDR: 0.0.0.0/0
-      VPCID: vpc-30d5ba54
-    tags:
-      Stack: ansible-cloudformation
-
-# Create security group
-# TO-DO
+#
+### Use a template from a URL
+#- name: launch ansible cloudformation example
+#  cloudformation:
+#    stack_name: "bastion-hosts-{{ VPC_ID }}-{{ bastion_host_subnet.subnet.id }}"
+#    state: present
+#    region: ap-southeast-2
+#    disable_rollback: true
+#    template_url: https://s3.amazonaws.com/quickstart-reference/linux/bastion/latest/templates/linux-bastion.template
+#  args:
+#    template_parameters:
+#      BastionAMIOS: Ubuntu-Server-16.04-LTS-HVM
+#      BastionInstanceType: t2.micro
+#      EnableBanner: "true"
+#      KeyPairName: DAWRAWSSYD
+#      NumBastionHosts: 1
+#      EnableTCPForwarding: "true"
+#      PublicSubnet1ID: "{{ bastion_host_subnet.subnet.id }}"
+#      PublicSubnet2ID: "{{ bastion_host_subnet.subnet.id }}"
+#      RemoteAccessCIDR: 0.0.0.0/0
+#      VPCID: "{{ VPC_ID }}"
+#    tags:
+#      Stack: ansible-cloudformation
+#
+## Create security group
+## TO-DO
 
 
 # Creates private subnet
 - name: Create private subnet for NXL host
   ec2_vpc_subnet:
     state: present
-    vpc_id: vpc-30d5ba54
-    cidr: 172.31.52.0/24
+    vpc_id: "{{ VPC_ID }}"
+    cidr: "{{ private_subnet_cidr }}"
     az: ap-southeast-2a
     map_public: false
     region: ap-southeast-2
     resource_tags:
-      Name: "nxl_private_subnet"
+      Name: "nxl_private_subnet_{{ VPC_ID }}"
   register: nxl_private_subnet
+
+
+
 
 # allocated a NAT gateway for this subnet
 - name: Create new nat gateway and allocate new EIP if a nat gateway does not yet exist in the subnet.
@@ -72,10 +87,10 @@
 
 - name: Set up NAT-protected route table
   ec2_vpc_route_table:
-    vpc_id: vpc-30d5ba54
+    vpc_id: "{{ VPC_ID }}"
     region: ap-southeast-2
     tags:
-      Name: "{{ nxl_env_name }}_nxl_Internal_route_table"
+      Name: "{{ nxl_env_name }}_nxl_Internal_route_table_{{ VPC_ID }}"
     subnets:
       - "{{ nxl_private_subnet.subnet.id }}"
     routes:
@@ -88,13 +103,28 @@
 - name: Create target group to asign instance to
   elb_target_group:
     region: ap-southeast-2
-    name: "{{ nxl_env_name }}-tg"
+    name: "{{ nxl_env_name }}-tg-{{ VPC_ID }}"
     protocol: http
     port: 8080
-    vpc_id: vpc-30d5ba54
+    vpc_id: "{{ VPC_ID }}"
     state: present
     wait: False
   register: nxl_elb_target_group
+
+- name: Create sg for taxaas ELB
+  ec2_group:
+    name: "NXL-lb-sg-{{ VPC_ID }}"
+    description: sg for taxaas ELB
+    vpc_id: "{{ VPC_ID }}"
+    region: ap-southeast-2
+    rules:
+      # 'ports' rule keyword was introduced in version 2.4. It accepts a single port value or a list of values including ranges (from_port-to_port).
+      - proto: tcp
+        ports:
+          - 80
+          - 443
+        cidr_ip: 0.0.0.0/0
+  register: nxl_lb_sg
 
 # Create ELB  for exposing NXL to internet and attach a listener with logging enabled
 - name: Create load balancer
@@ -103,12 +133,12 @@
     access_logs_enabled: yes
     access_logs_s3_bucket: "nxl"
     access_logs_s3_prefix: "{{ nxl_env_name }}-logs"
-    name: "{{ nxl_env_name }}-elb"
+    name: "{{ nxl_env_name }}-elb-{{ VPC_ID }}"
     security_groups:
-      - NXL-lb-sg
+      - "{{ nxl_lb_sg.group_id }}"
     subnets:
       - "{{ bastion_host_subnet.subnet.id }}"
-      - subnet-fedbbfa7
+      - "{{ bastion_host_subnet2.subnet.id }}"
     listeners:
       - Protocol: HTTP # Required. The protocol for connections from clients to the load balancer (HTTP or HTTPS) (case-sensitive).
         Port: 80 # Required. The port on which the load balancer is listening.
@@ -143,16 +173,39 @@
 # If this is a newly created group, the instances will not be replaced since all instances
 # will have the current launch configuration.
 
+- name: Create sg for taxaas ASG
+  ec2_group:
+    name: "NXL-app-sg-{{ VPC_ID }}"
+    description: sg for taxaas ASG
+    vpc_id: "{{ VPC_ID }}"
+    region: ap-southeast-2
+    rules:
+      # 'ports' rule keyword was introduced in version 2.4. It accepts a single port value or a list of values including ranges (from_port-to_port).
+      - proto: tcp
+        ports: 8080
+        group_name: "{{ nxl_lb_sg.group_id }}"
+      - proto: tcp
+        ports: 10389
+        group_name: "NXL-app-sg-{{ VPC_ID }}"
+      - proto: tcp
+        ports: 10389
+        group_name: jenkins-sg
+      - proto: tcp
+        ports: 22
+        group_name: sg-a947b3d0 # hard coded until cfn for bastion is working again.
+  register: nxl_app_sg
+
 - name: create launch config
   ec2_lc:
-    name: "{{ nxl_env_name }}_lc"
+    name: "{{ nxl_env_name }}_lc_{{ VPC_ID }}"
     image_id: "{{ nxl_ami | default('ami-6c24d20e') }}"
     key_name: DAWRAWSSYD
     region: ap-southeast-2
-    security_groups: NXL-app-sg
+    security_groups: "{{ nxl_app_sg.group_id }}"
     instance_type: t2.medium
     assign_public_ip: no
     instance_monitoring: true
+    vpc_id: "{{ VPC_ID }}"
     user_data: |
                     #!/bin/sh
                     sudo  echo "{{ mypubkey.stdout }}" >> /home/ubuntu/.ssh/authorized_keys
@@ -161,8 +214,8 @@
 # But recommendation is to install in one machine as a multi machine deployment gives little / no benefit.
 - name: create ASG
   ec2_asg:
-    name: "{{ nxl_env_name }}_asg"
-    launch_config_name: "{{ nxl_env_name }}_lc"
+    name: "{{ nxl_env_name }}_asg_{{ VPC_ID }}"
+    launch_config_name: "{{ nxl_env_name }}_lc_{{ VPC_ID }}"
     health_check_period: 300
     health_check_type: ELB
     replace_all_instances: yes
@@ -174,7 +227,7 @@
     target_group_arns:
       - "{{ nxl_elb_target_group.target_group_arn }}"
     tags:
-      - Name: "{{ nxl_env_name }}_nxl"
+      - Name: "{{ nxl_env_name }}_nxl_{{ VPC_ID }}"
       - env: "{{ nxl_env_name }}"
       - app: taxaas
       - role: tomcat,database,ldap
