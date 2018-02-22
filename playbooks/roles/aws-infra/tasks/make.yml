@@ -54,7 +54,7 @@
 #      VPCID: "{{ VPC_ID }}"
 #    tags:
 #      Stack: ansible-cloudformation
-#
+
 ## Create security group
 ## TO-DO
 
@@ -192,7 +192,7 @@
         group_name: jenkins-sg
       - proto: tcp
         ports: 22
-        group_name: sg-a947b3d0 # hard coded until cfn for bastion is working again.
+        group_name: sg-1821e461 # hard coded until cfn for bastion is working again.
   register: nxl_app_sg
 
 - name: create launch config

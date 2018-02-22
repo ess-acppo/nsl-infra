@@ -62,6 +62,4 @@ mapper:
         serverURL : "https://{{ elb_dns }}/nsl/mapper"
     resolverURL : "https://{{ elb_dns }}/nsl/mapper"
     shards:
-        icn:
-            name : bpni
-            baseURL : "https://{{ elb_dns }}"
+        baseURL : "https://{{ elb_dns }}"

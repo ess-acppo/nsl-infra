@@ -7,8 +7,8 @@ mapper {
 
     shards = [
 
-            {{mapper.shards.icn.name}}    : [
-                    baseURL: "{{mapper.shards.icn.baseURL}}",
+            {{ shard_namespace }}    : [
+                    baseURL: "{{mapper.shards.baseURL}}",
                     service: [
                             html: { ident ->
                                 "nxl/services/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"

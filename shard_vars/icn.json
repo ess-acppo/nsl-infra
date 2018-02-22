@@ -1,4 +1,6 @@
 {
+  "shard_name" : "icn",
+  "shard_namespace" : "bpni",
   "shard_images" : ["filename" : "bpni-banner.png"  , "filename" : "bpni-vert-200.png"],
   "shard_data_load_file" : "data_load.sql"
 }
