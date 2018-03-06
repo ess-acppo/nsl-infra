@@ -1,0 +1,580 @@
+-- setup shard_config
+truncate TABLE public.shard_config cascade;
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'config rules', 'All lower case names, space separated, follow the pattern hierachy');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name space', '{{ shard_namespace_UPPER }}');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name tree label', '{{ shard_namespace_UPPER }}');
+INSERT INTO public.shard_config (id, name, value, deprecated) VALUES (nextval('hibernate_sequence'), 'classification tree label', '{{ taxonomy_name }}', true);
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), '{{ shard_namespace_UPPER }} description', '{{ shard_namespace_UPPER_description }}');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), '{{ taxonomy_name }} description', '{{ taxonomy_name_description }}');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'menu label', '{{ menu_label }}');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'banner text', '{{ banner_text }}');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree banner text', '{{ tree_banner_text }}');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name label', "{{ shard_namespace_UPPER }}");
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree description html', '<p>The Biosecurity Animal Checklist ({{ taxonomy_name }}) is a *******placeholder*******</p>');
+INSERT INTO public.shard_config (id, name, value, deprecated) VALUES (nextval('hibernate_sequence'), 'tree label', '{{ taxonomy_name }}', true);
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree label text', '{{ tree_label_text }}');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'page title', '{{ tree_banner_text }}');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree search help text html', 'The Biosecurity Animal Checklist ({{ taxonomy_name }}) provides a listing of ************placeholder**************</p>');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'services path name element', 'bani');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name search help text html', '<p>The Biosecurity Animal Name Index ({{ shard_namespace_UPPER }}) is a resource for ************placeholder**************</p>');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'services path tree element', 'bac');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name link title', 'Biosecurity Animal Names in the Biosecurity Animal Names Index');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'menu link title', 'Biosecurity Animals');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name label text', 'Biosecurity Animal Name Index');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name banner text', 'Biosecurity Animal Name Index');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree link title', 'Biosecurity Animal Checklist Taxonomy');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name description html', '<p>The Biosecurity Animal Name Index ({{ shard_namespace_UPPER }}) is a ************placeholder**************</p>');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'banner image', '{{ shard_images[0]['filename'] }}');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'card image', '{{ shard_images[1]['filename'] }}');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'description html', '{{ description_html }}');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'classification tree key', '{{ taxonomy_name }}');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'shard group name', 'NXL');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'shards for SPARQL', 'NXL,NSL');
+
+
+-- Create table "raw" which stores a as-is copy of the input csv file
+drop table raw_raw CASCADE ;
+DROP table raw;
+create table raw_raw
+(
+  intbiotaid varchar(4000),
+  intparentid varchar(4000),
+  vchrepithet varchar(4000),
+  vchrfullname varchar(4000),
+  vchryearofpub varchar(4000),
+  vchrauthor varchar(4000),
+  vchrnamequalifier varchar(4000),
+  chrelemtype varchar(4000),
+  vchrrank varchar(4000),
+  chrkingdomcode varchar(4000),
+  intorder varchar(4000),
+  vchrparentage varchar(4000),
+  bitchangedcomb varchar(4000),
+  bitshadowed varchar(4000),
+  bitunplaced varchar(4000),
+  bitunverified varchar(4000),
+  bitavailablename varchar(4000),
+  bitliteraturename varchar(4000),
+  dtdatecreated varchar(4000),
+  vchrwhocreated varchar(4000),
+  dtdatelastupdated varchar(4000),
+  vchrwholastupdated varchar(4000),
+  txtdistqual varchar(4000),
+  guid varchar(4000),
+  exbaseauthor       VARCHAR(1000), -- non-original field holds parsed author
+  baseauthor         VARCHAR(1000), -- non-original field holds parsed author
+  exauthor           VARCHAR(1000), -- non-original field holds parsed author
+  author             VARCHAR(1000), -- non-original field holds parsed author
+  sanctioningauthor  VARCHAR(1000), -- non-original field holds parsed author
+  reference_id BIGINT -- non-original field holds the newly created reference id so that we can create an instance later via the table name_ref_mapping_dawr.
+)
+;
+-- Create table "name_rank_dawr" which servers as a mapping between Taxatree taxon names to NSL taxon names
+DROP TABLE name_rank_dawr;
+create table name_rank_dawr
+(
+  id varchar(100),
+  name varchar(100)
+)
+;
+
+-- Create table "name_ref_mapping" which servers as a mapping between names and the constructed references
+DROP TABLE name_ref_mapping_dawr;
+create table name_ref_mapping_dawr
+(
+  name_id BIGINT ,
+  ref_id BIGINT
+);
+
+-- Create table "synonyms"
+DROP TABLE dawr_synonyms;
+create table dawr_synonym
+(
+  accepted_name_id BIGINT ,
+  synonym_name_id BIGINT
+)
+;
+-- Setup the mapping between Taxatree taxon names to NSL taxon names
+truncate TABLE name_rank_dawr cascade;
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Regnum' , 'KING');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Division' , 'D');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Classis' , 'C');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subclassis' , 'SBC');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Superordo' , 'SPO');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Ordo' , 'O');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subordo' ,'SBO');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Familia', 'F');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subfamilia' ,'SF');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Tribus' ,'T');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subtribus' ,'SBT');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Genus' , 'G');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subgenus' ,'SG');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Sectio' , 'SCT');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subsectio', 'SSCT');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Series' , 'SRS');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subseries',  'SSRS');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Superspecies' , 'SGP');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Species' , 'SP');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subspecies' , 'SSP');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Varietas', 'V');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subvarietas', 'SV');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Forma' , 'FM');
+INSERT INTO public.name_rank_DAWR (id, name) VALUES  ('Subforma', 'SFM');
+
+
+-- create the namespace for BANI : Biosecurity Animal Name Index
+TRUNCATE table public.namespace cascade;
+INSERT INTO public.namespace (id, lock_version, name, description_html, rdf_id) VALUES (nextval('nsl_global_seq'), 0, '{{ shard_namespace_UPPER }}', '(description of <b>{{ shard_namespace_UPPER }}</b>)', '{{ shard_namespace }}');
+
+-- Load the csv into table "raw". Use below command to convert encoding
+-- iconv -f UTF-16LE -t UTF8 /tmp/Workbook2-utf16.txt > /tmp/data.tsv
+COPY raw_raw(intbiotaid ,
+         intparentid,
+         vchrepithet ,
+         vchrfullname,
+         vchryearofpub,
+         vchrauthor ,
+         vchrnamequalifier ,
+         chrelemtype ,
+         vchrrank ,
+         chrkingdomcode ,
+         intorder ,
+         vchrparentage ,
+         bitchangedcomb,
+         bitshadowed ,
+         bitunplaced ,
+         bitunverified ,
+         bitavailablename ,
+         bitliteraturename,
+         dtdatecreated ,
+         vchrwhocreated,
+         dtdatelastupdated ,
+         vchrwholastupdated,
+         txtdistqual ,
+         guid ) FROM '/tmp/data.tsv' WITH  (FORMAT csv, DELIMITER E'\t',  ENCODING UTF8 );
+
+
+CREATE table raw AS
+  select
+    trim(intbiotaid) intbiotaid ,
+    trim(intparentid) intparentid,
+    trim(vchrepithet) vchrepithet ,
+    trim(vchrfullname) vchrfullname,
+    trim(vchryearofpub) vchryearofpub,
+    trim(vchrauthor) vchrauthor ,
+    trim(vchrnamequalifier) vchrnamequalifier ,
+    trim(chrelemtype) chrelemtype ,
+    trim(vchrrank) vchrrank ,
+    trim(chrkingdomcode) chrkingdomcode ,
+    trim(intorder) intorder ,
+    trim(vchrparentage) vchrparentage ,
+    trim(bitchangedcomb) bitchangedcomb,
+    trim(bitshadowed) bitshadowed ,
+    trim(bitunplaced) bitunplaced ,
+    trim(bitunverified) bitunverified ,
+    trim(bitavailablename) bitavailablename ,
+    trim(bitliteraturename) bitliteraturename,
+    trim(dtdatecreated) dtdatecreated ,
+    trim(vchrwhocreated) vchrwhocreated,
+    trim(dtdatelastupdated) dtdatelastupdated ,
+    trim(vchrwholastupdated) vchrwholastupdated,
+    trim(txtdistqual) txtdistqual ,
+    trim(guid) guid,
+    cast(NULL as VARCHAR(1000)) exbaseauthor,-- non-original field holds parsed author
+    cast(NULL as VARCHAR(1000)) baseauthor , -- non-original field holds parsed author
+    cast(NULL as VARCHAR(1000)) exauthor           , -- non-original field holds parsed author
+    cast(NULL as VARCHAR(1000)) author             , -- non-original field holds parsed author
+    cast(NULL as VARCHAR(1000)) sanctioningauthor  , -- non-original field holds parsed author
+    CAST(NULL AS BIGINT) reference_id
+  from raw_raw order by intbiotaid asc;
+
+-- process each line of table "raw" to do the following:
+-- 1. Split each composite author into author bits.
+-- 1. Insert each bit along with the correct author_type into table "author"
+-- 1. Add ids of these new auhtor rows into the current "raw" record so that references can be constructed in next steps.
+-- 1. Add reference for each "raw" record using the composite author field.
+CREATE OR REPLACE FUNCTION for_loop_raw_process_authors()
+  RETURNS VOID AS $$
+DECLARE
+  rec RECORD;
+  x VARCHAR(100);
+  xx VARCHAR(100)[];
+  xxx VARCHAR(100);
+  i int;                       --( 1)   ( 2)     ( 3)  ( 4)|  ( 5)  (  6   )  ( 7)|( 8)  ( 9)|  (   10  )  (11)|(12)
+  author_regex varchar(200) = '\((.*)[Ee]x([^\)]+)\)(.*)[Ee]x(.*)|\((.*)[Ee]x([^\)]+)\)(.*)|(.*)[Ee]x(.*)|\(([^\)]+)\)(.*)|(.*)';
+  author_type VARCHAR(20);
+  i_xx int;
+  xxx_y VARCHAR(100)[];
+  ref_text VARCHAR(1000);
+  language_id BIGINT ;
+  ref_author_role_id BIGINT ;
+  ref_type_id BIGINT;
+  author_id_for_ref BIGINT;
+  publication_author VARCHAR(100);
+  ref_id BIGINT = NULL ;  --
+  year_int INT;           -- holds corrected year ( non-negative , limit to 4 digit year )
+  reference_ret_id BIGINT; -- holds the ref id from raw.reference_id
+  nmespc_id BIGINT;
+  default_author_id BIGINT;
+
+BEGIN
+  -- clear tables
+  TRUNCATE  table author cascade;
+  TRUNCATE  table reference cascade;
+
+  select id into language_id from language where lower(name) = 'english';
+  select id into ref_author_role_id from ref_author_role where lower(name) = 'unknown';
+  select id into ref_type_id  from ref_type where lower(name) = 'unknown';
+  select id into nmespc_id from namespace where name = "{{ shard_namespace_UPPER }}";
+
+  ref_text := concat('~placeholder for unidentified publication');
+
+  INSERT INTO public.author (  created_at, created_by, abbrev, name,  namespace_id, source_id_string, source_system, updated_at, updated_by, valid_record)
+  VALUES ( CURRENT_TIMESTAMP , 'DAWR', '', '' , nmespc_id,              '' ,           'NAQS',  CURRENT_TIMESTAMP , 'DAWR', true)
+  RETURNING id INTO  default_author_id;
+  INSERT INTO public.reference
+  (  author_id,       created_at,    created_by,  display_title,    namespace_id,             language_id,        ref_author_role_id, ref_type_id, source_id_string,         source_system,     title,                updated_at,        updated_by,  verbatim_author,   year)
+  VALUES (  default_author_id, CURRENT_TIMESTAMP, 'DAWR',  ref_text,          nmespc_id,         language_id      ,ref_author_role_id, ref_type_id, '',       'NAQS'     ,     ref_text,           CURRENT_TIMESTAMP,   'DAWR',      '', NULL)
+  RETURNING id INTO  reference_ret_id;
+
+  --UPDATE raw  SET  reference_id  = reference_ret_id   WHERE vchrauthor NOTNULL and trim(chrkingdomcode) in ('P','F','L');
+  EXECUTE 'UPDATE raw  SET  reference_id  = $1   WHERE vchrauthor ISNULL and trim(chrkingdomcode) in (''{}'') '
+  USING reference_ret_id;
+
+
+
+  FOR rec IN select intbiotaid, namespace_id, vchryearofpub, vchrauthor , regexp_matches(vchrauthor, author_regex)  cc
+             from
+               (SELECT intbiotaid, trim(vchryearofpub) vchryearofpub, trim(vchrauthor) vchrauthor, (select id from namespace where name = "{{ shard_namespace_UPPER }}") namespace_id FROM raw where vchrauthor NOTNULL and trim(chrkingdomcode) in ('{}') ) ii
+
+  LOOP
+    RAISE NOTICE '%', concat('Author processing ',rec.vchrauthor , '-->', rec.cc);
+    i := 1;
+    FOREACH x IN ARRAY rec.cc
+    LOOP
+
+      -- insert into author and enrich raw with author bits
+      IF x IS NOT NULL THEN
+        --RAISE NOTICE '%', concat('Processing author bit ',x);
+        CASE i
+          WHEN 1, 5 THEN
+          author_type := 'exbaseauthor';
+          WHEN 2, 6, 10 THEN
+          author_type := 'baseauthor';
+          WHEN 3, 8  THEN
+          author_type := 'exauthor';
+          WHEN 4, 7, 9, 11, 12 THEN
+          author_type := 'author';
+        ELSE
+          RAISE NOTICE '%', concat('invalid author type');
+        END CASE;
+        xx := regexp_matches(x, '(.*):(.*)|(.*)');
+        i_xx := 1;
+        FOREACH xxx IN ARRAY xx
+        LOOP
+          IF i_xx = 2 THEN
+            author_type := 'sanctioningauthor';
+          END IF;
+          IF xxx IS NOT NULL THEN
+            BEGIN
+              -- extract year if present
+              xxx_y := regexp_matches(xxx, '([^0-9]*)(\d*)\D*|(.*)');
+              IF xxx_y[2] NOTNULL THEN
+                xxx = xxx_y[1];
+              END IF;
+              -- insert into author
+              INSERT INTO public.author (  created_at, created_by, abbrev, name,  namespace_id, source_id_string, source_system, updated_at, updated_by, valid_record)
+              VALUES ( CURRENT_TIMESTAMP , 'DAWR', trim(xxx), trim(xxx) , rec.namespace_id,              rec.vchrauthor ,           'NAQS',  CURRENT_TIMESTAMP , 'DAWR', true);
+              EXCEPTION
+              WHEN unique_violation THEN
+                RAISE NOTICE '%', concat('duplicate entry of ',xxx,' prevented');
+            END;
+            -- update raw set author_type = xxx where raw.intbiotaid=rec.intbiotaid;
+            EXECUTE 'UPDATE raw '||
+                    ' SET ' || quote_ident(author_type) || ' = $1 ' ||
+                    ' WHERE raw.intbiotaid' || ' = $2 '
+            USING trim(xxx), rec.intbiotaid;
+            IF author_type = 'author' THEN
+              publication_author = trim(xxx);
+            END IF;
+          END IF;
+        END LOOP;
+      END IF ;
+      i := i + 1;
+    END LOOP;
+
+    -- insert into references
+    BEGIN
+
+      year_int = cast(NULLIF(trim(rec.vchryearofpub), '') as INT);
+      IF year_int < 0 THEN
+        year_int = year_int * -1;
+      ELSEIF year_int > cast(EXTRACT(YEAR FROM CURRENT_DATE) as int) THEN
+        year_int = cast(NULLIF(substr(trim(rec.vchryearofpub),1,4), '') as INT);
+      END IF;
+      select id into author_id_for_ref  from author where lower(name) = (select lower(raw.author) from raw where intbiotaid = rec.intbiotaid);
+
+
+
+      -- checks if the required reference is already entered in the DB
+      IF year_int ISNULL THEN
+          select id into ref_id from public.reference where author_id = author_id_for_ref and  year ISNULL and title = ref_text;
+        ELSE
+          select id into ref_id from public.reference where author_id = author_id_for_ref and year = year_int and title = ref_text;
+      END IF;
+
+      -- If the reference is not already entered; then enter the reference in the reference table
+      -- and updated raw.reference.id with the id of the newly created reference
+      IF ref_id ISNULL  THEN
+        RAISE NOTICE '%', concat('entering reference for author ',xxx);
+
+
+        INSERT INTO public.reference
+        (  author_id,       created_at,    created_by,  display_title,    namespace_id,             language_id,        ref_author_role_id, ref_type_id, source_id_string,         source_system,     title,                updated_at,        updated_by,  verbatim_author,   year)
+        VALUES (  author_id_for_ref, CURRENT_TIMESTAMP, 'DAWR',  ref_text,          rec.namespace_id,         language_id      ,ref_author_role_id, ref_type_id, rec.intbiotaid,       'NAQS'     ,     ref_text,           CURRENT_TIMESTAMP,   'DAWR',      rec.vchrauthor,              NULLIF(rec.vchryearofpub, '')::int)
+        RETURNING id INTO  reference_ret_id;
+
+        -- update raw set reference_id = (as retruned from above) where raw.intbiotaid=rec.intbiotaid;
+        EXECUTE 'UPDATE raw  SET  reference_id  = $1   WHERE intbiotaid = $2 '
+        USING reference_ret_id, rec.intbiotaid;
+      ELSE
+        -- update raw set reference_id = (as retruned from above) where raw.intbiotaid=rec.intbiotaid;
+        EXECUTE 'UPDATE raw  SET  reference_id  = $1   WHERE intbiotaid = $2 '
+        USING ref_id, rec.intbiotaid;
+      END IF;
+
+      EXCEPTION
+      WHEN invalid_text_representation THEN
+        RAISE NOTICE '%', concat('failed to insert year',rec.vchryearofpub ,' for reference ',ref_text);
+    END;
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+
+select for_loop_raw_process_authors();
+
+
+
+
+
+---------------------------------------------
+
+---------------------------------------------
+-- Clear table "name"
+truncate table name CASCADE ;
+
+
+-- process each line of "raw" create records of table "name"
+CREATE OR REPLACE FUNCTION for_loop_through_query_name()
+  RETURNS VOID AS $$
+DECLARE
+  rec RECORD;
+  name_ret_id BIGINT;
+
+BEGIN
+  FOR rec IN select vchrepithet,vchrauthor, (select id from author a where a.name = r.exbaseauthor ) exbaseauthor_id
+               ,  (select id from author a where a.name = r.baseauthor ) baseauthor_id
+               ,  (select id from author a where a.name = r.exauthor ) exauthor_id
+               ,  (select id from author a where a.name = r.author ) author_id
+               ,  (select id from author a where a.name = r.sanctioningauthor ) sanctioningauthor_id
+               ,intbiotaid, chrelemtype ,(select rr.id from name_rank rr where rr.name=rd.id ) rank_id
+               ,  (select id from name_status where name = 'legitimate') status_id
+               , (select id from name_type where name = 'scientific') type_id
+               , (select id from namespace where name = "{{ shard_namespace_UPPER }}") namespace_id
+               , r.reference_id reference_id
+
+             from
+               (select * from raw where trim(chrkingdomcode) in ('B') ) r
+               join
+               name_rank_dawr rd
+                 on trim(r.chrelemtype)=trim(rd.name)
+               order by r.intbiotaid asc
+  LOOP
+    RAISE NOTICE '%', concat('Epithet ',rec.vchrepithet);
+
+    -- create a name record and return the id of the newly created name
+    INSERT INTO public.name( ex_base_author_id, base_author_id, ex_author_id, author_id, sanctioning_author_id, created_at, created_by, full_name,  name_element,  name_rank_id, name_status_id, name_type_id, namespace_id,         source_id_string,                    source_system,   updated_at,          updated_by)
+    values  ( rec.exbaseauthor_id, rec.baseauthor_id, rec.exauthor_id, rec.author_id, rec.sanctioningauthor_id, CURRENT_TIMESTAMP , 'DAWR',  trim(rec.vchrepithet), trim(rec.vchrepithet), rec.rank_id,  rec.status_id,  rec.type_id,  rec.namespace_id,     (rec.intbiotaid),        'NAQS',          CURRENT_TIMESTAMP , 'DAWR')
+    RETURNING id INTO  name_ret_id;
+
+
+    -- create the mapping between name and reference so that it can be used later to create instances.
+    INSERT INTO name_ref_mapping_dawr(name_id,ref_id)
+                 VALUES (name_ret_id,rec.reference_id);
+
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+select  for_loop_through_query_name();
+
+
+------------------------
+------------------------
+
+-- process each record of name ( while joining them with corresponding "raw" record) to create parent child relationships in the table "name"
+CREATE OR REPLACE FUNCTION for_loop_through_query_child_parent()
+  RETURNS VOID AS $$
+DECLARE
+  rec RECORD;
+  prnt_id BIGINT;
+BEGIN
+  FOR rec IN select chld.vchrepithet child_name, prnt.name_element parent_name, chld.bitavailablename availablename, chld.id child,prnt.id parent , chld.intbiotaid intbiotaid ,prnt.source_id_string,chld.intparentid from
+    name prnt
+    join
+    (select n.id,r.intbiotaid,r.intparentid,r.vchrepithet,r.bitavailablename from name n join raw r on n.source_id_string = r.intbiotaid) chld
+      on prnt.source_id_string = chld.intparentid
+    order by intbiotaid
+  LOOP
+    IF trim(lower(rec.availablename)) = 'true' THEN
+      -- Case for handling synonyms a synonym get parent of parent
+      SELECT parent_id into prnt_id from name where id = rec.parent;
+      RAISE NOTICE '%', concat('parent-child name relationship Synonym ',rec.child_name , '-->', rec.parent_name);
+      update name set parent_id = prnt_id where id=rec.child;
+      -- record the accepted name for this synonym in a table synonyms( accepted_name_id , synonym_id )
+      INSERT INTO dawr_synonym VALUES (rec.parent,rec.child);
+    ELSE
+      RAISE NOTICE '%', concat('parent-child name relationship ',rec.child_name , '-->', rec.parent_name);
+      update name set parent_id = rec.parent where id=rec.child;
+    END IF;
+
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT for_loop_through_query_child_parent();
+
+---------------------
+---------------------
+-- insert 'Unknown' author and reference
+
+CREATE OR REPLACE FUNCTION insertUnknowns()
+  RETURNS VOID AS $$
+DECLARE
+
+  instance_type_id BIGINT;
+  namespace_id BIGINT;
+  author_id_unknown BIGINT;
+  language_id BIGINT ;
+  ref_author_role_id BIGINT ;
+  ref_type_id BIGINT;
+  ref_id_unknown BIGINT;
+BEGIN
+
+  select id into instance_type_id  from instance_type where lower(name)='secondary reference';
+  select id into namespace_id from namespace where name = "{{ shard_namespace_UPPER }}";
+  select id into language_id from language where lower(name) = 'english';
+  select id into ref_author_role_id from ref_author_role where lower(name) = 'unknown';
+  select id into ref_type_id  from ref_type where lower(name) = 'unknown';
+
+
+  -- insert an Unknown reference
+  INSERT INTO public.author (   created_at,         created_by, abbrev, name,           namespace_id,  updated_at, updated_by)
+  VALUES (                      CURRENT_TIMESTAMP , 'DAWR',     'Unknown author', '-' ,  namespace_id,    CURRENT_TIMESTAMP , 'DAWR');
+
+  select id into author_id_unknown  from author where lower(name) = '-';
+
+  INSERT INTO public.reference
+  (         author_id,          created_at        ,created_by ,  display_title,    namespace_id,          language_id,        ref_author_role_id, ref_type_id,              title,                updated_at,        updated_by,  verbatim_author)
+  VALUES (  author_id_unknown,  CURRENT_TIMESTAMP ,'DAWR'     ,  'Unknown reference'        ,namespace_id,         language_id         ,ref_author_role_id, ref_type_id,            'Unknown reference',           CURRENT_TIMESTAMP,   'DAWR',      'Unknown');
+
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT insertUnknowns();
+
+---------------------------------------------
+---------------------------------------------
+-- iterate through each "name" joined with corresponding "reference" to construct "instances"
+
+CREATE OR REPLACE FUNCTION for_loop_through_names_create_instances()
+  RETURNS VOID AS $$
+DECLARE
+rec RECORD;
+instance_type_id BIGINT;
+syn_instance_type_id BIGINT;
+namespace_id BIGINT;
+language_id BIGINT ;
+ref_author_role_id BIGINT ;
+ref_type_id BIGINT;
+ref_id_unknown BIGINT;
+synonym_instance_id BIGINT ;
+accepted_name BIGINT;
+accepted_name_instance_id BIGINT;
+
+BEGIN
+
+  -- truncate table instance
+  TRUNCATE  table instance cascade;
+
+  select id into instance_type_id  from instance_type where lower(name)='secondary reference';
+  select id into syn_instance_type_id  from instance_type where lower(name)='nomenclatural synonym';
+  select id into namespace_id from namespace where name = "{{ shard_namespace_UPPER }}";
+  select id into language_id from language where lower(name) = 'english';
+  select id into ref_author_role_id from ref_author_role where lower(name) = 'unknown';
+  select id into ref_type_id  from ref_type where lower(name) = 'unknown';
+  select id into ref_id_unknown from public.reference where title ILIKE 'Unknown reference';
+
+
+
+  -- joins name and name_ref_mapping_dawr tables on the name_id field in order to get the reference id.
+  -- Use that reference_id to create an instance.
+
+  FOR rec IN select nn.id name_id , nn.name_element name_element ,COALESCE(rr.ref_id,ref_id_unknown) reference_id from name nn left join name_ref_mapping_dawr rr on nn.id = rr.name_id order by nn.id asc
+  LOOP
+    RAISE NOTICE '%', concat('adding instance for name -->', rec.name_element);
+    INSERT into public.instance(created_at        ,created_by,instance_type_id,name_id    ,namespace_id ,reference_id ,updated_at         ,updated_by)
+    VALUES                     (CURRENT_TIMESTAMP ,'DAWR'    ,instance_type_id,rec.name_id,namespace_id ,rec.reference_id ,CURRENT_TIMESTAMP  ,'DAWR');
+
+
+
+  END LOOP;
+
+  FOR rec IN select nn.id name_id , nn.name_element name_element ,COALESCE(rr.ref_id,ref_id_unknown) reference_id from name nn left join name_ref_mapping_dawr rr on nn.id = rr.name_id order by nn.id asc
+  LOOP
+    -- Check if a synonym needs to be created
+    select accepted_name_id into accepted_name from dawr_synonym where synonym_name_id = rec.name_id;
+    IF accepted_name NOTNULL THEN
+      select id into synonym_instance_id        from instance where name_id = rec.name_id;
+      select id into accepted_name_instance_id  from instance where name_id = accepted_name;
+      RAISE NOTICE '%', concat('Making synonym  -  acpt_name--syn_name', accepted_name_instance_id , '--',synonym_instance_id);
+      INSERT into public.instance(created_at        ,created_by,instance_type_id,name_id    ,cited_by_id ,              cites_id,         namespace_id ,reference_id ,updated_at         ,updated_by)
+      VALUES                     (CURRENT_TIMESTAMP ,'DAWR'    ,syn_instance_type_id,rec.name_id,accepted_name_instance_id, synonym_instance_id,namespace_id ,rec.reference_id ,CURRENT_TIMESTAMP  ,'DAWR');
+
+    END IF;
+
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT for_loop_through_names_create_instances();
+
+
+
+
+------------------------
+-- mapper schema -------
+------------------------
+
+TRUNCATE  table mapper.identifier CASCADE;
+TRUNCATE  table mapper.match CASCADE;
+TRUNCATE  table mapper.host CASCADE;
+TRUNCATE  table mapper.db_version CASCADE;
+
+INSERT INTO mapper.db_version (id,version) VALUES (0,4);
+INSERT INTO mapper.host (host_name, preferred) VALUES ("{{ elb_dns }}/nsl/mapper", true);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
