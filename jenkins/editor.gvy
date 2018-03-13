@@ -46,7 +46,7 @@ node {
               def env_instance_name = "$ENVIRONMENT_NAME".split(",")[0]
               def env_name = env_instance_name.split("-")[0]
               def elb_dns = "$SHARD_TYPE"+"."+"$env_name"+".oztaxa.com"
-              def extra_vars = /'{"elb_dns": "elb_dns","nxl_env_name":"$ENVIRONMENT_NAME","apps":[{"app": "editor"}], "war_names": [{"war_name": "nxl#editor##1.53"}   ],   "war_source_dir": "$projectDir"}'/
+              def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$ENVIRONMENT_NAME","apps":[{"app": "editor"}], "war_names": [{"war_name": "nxl#editor##1.53"}   ],   "war_source_dir": "$projectDir"}'/
               sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$ENVIRONMENT_NAME/g' aws_utils/ec2.ini && ansible-playbook  -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml -e $extra_vars -e $shard_vars"
           }else if (INVENTORY_NAME){
               def extra_vars = /'{"nxl_env_name":"$INVENTORY_NAME","apps":[{"app": "editor"}], "war_names": [{"war_name": "nxl#editor##1.53"}   ],   "war_source_dir": "$projectDir"}'/
