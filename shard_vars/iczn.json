@@ -3,8 +3,8 @@
   "shard_namespace" : "bani",
   "shard_namespace_UPPER" : "BANI",
   "shard_images" : ["filename" : "bani-banner.png"  , "filename" : "bani-vert-200.png"],
-  "shard_data_load_file" : "data_load_animal.sql"
-  "shard_namespace_UPPER_description" : "The Biosecurity Animal Name Index ({{ shard_namespace_UPPER }}) is a tool for the biosecurity community that deals with animal names and their usage in the scientific literature, whether as a current name or synonym, for ICZN-named organisms that are NOT native to, nor naturalised in Australia. {{ shard_namespace_UPPER }} does not recommend any particular taxonomy or nomenclature. For a listing of currently accepted scientific names for ex-Australia animal organisms, please use the Biosecurity Animal Checklist ({{ {{ taxonomy_name }} }}) link above.",
+  "shard_data_load_file" : "data_load_animal.sql",
+  "shard_namespace_UPPER_description" : "The Biosecurity Animal Name Index ({{ shard_namespace_UPPER }}) is a tool for the biosecurity community that deals with animal names and their usage in the scientific literature, whether as a current name or synonym, for ICZN-named organisms that are NOT native to, nor naturalised in Australia. {{ shard_namespace_UPPER }} does not recommend any particular taxonomy or nomenclature. For a listing of currently accepted scientific names for ex-Australia animal organisms, please use the Biosecurity Animal Checklist ({{ taxonomy_name }}) link above.",
   "taxonomy_name" : "BAC",
   "taxonomy_name_description" : "The Biosecurity Animal Checklist ({{ taxonomy_name }}) is a working taxonomy for use by biosecurity specialists in Australia.",
   "tree_banner_text" : "Biosecurity Animal Checklist",
