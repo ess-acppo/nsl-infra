@@ -11,12 +11,18 @@ stage("Bootstrapping data into DB") {
         dir('nsl-infra'){
             def shard_vars = '@shard_vars/$SHARD_TYPE.json'
 
+            def shard_vars = ''
+
+            if(VERBOSE){
+                verbose = '-vvv'
+            }
+
             if (ENVIRONMENT_NAME) {
                 def env_instance_name = "$ENVIRONMENT_NAME".split(",")[0]
                 def env_name = env_instance_name.split("-")[0]
                 def elb_dns = "$SHARD_TYPE"+"."+"$env_name"+".oztaxa.com"
                 def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name"}'/
-                sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$env_instance_name/g' aws_utils/ec2.ini && ansible-playbook  -i aws_utils/ec2.py -u ubuntu playbooks/bootstrap_db.yml --tags \"load-data\" -e $extra_vars --extra-vars $shard_vars"
+                sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$env_instance_name/g' aws_utils/ec2.ini && ansible-playbook $verbose -i aws_utils/ec2.py -u ubuntu playbooks/bootstrap_db.yml --tags \"load-data\" -e $extra_vars --extra-vars $shard_vars"
             } else if (INVENTORY_NAME) { // not fully implemented
                 def env_name = "$INVENTORY_NAME".split(",")[0]
                 def extra_vars = /'{"nxl_env_name":"$env_name"}'/
