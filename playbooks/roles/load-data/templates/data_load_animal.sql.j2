@@ -9,7 +9,7 @@ INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_seq
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'menu label', '{{ menu_label }}');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'banner text', '{{ banner_text }}');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree banner text', '{{ tree_banner_text }}');
-INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name label', "{{ shard_namespace_UPPER }}");
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name label', '{{ shard_namespace_UPPER }}');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree description html', '<p>The Biosecurity Animal Checklist ({{ taxonomy_name }}) is a *******placeholder*******</p>');
 INSERT INTO public.shard_config (id, name, value, deprecated) VALUES (nextval('hibernate_sequence'), 'tree label', '{{ taxonomy_name }}', true);
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree label text', '{{ tree_label_text }}');
@@ -225,7 +225,7 @@ BEGIN
   select id into language_id from language where lower(name) = 'english';
   select id into ref_author_role_id from ref_author_role where lower(name) = 'unknown';
   select id into ref_type_id  from ref_type where lower(name) = 'unknown';
-  select id into nmespc_id from namespace where name = "{{ shard_namespace_UPPER }}";
+  select id into nmespc_id from namespace where name = '{{ shard_namespace_UPPER }}';
 
   ref_text := concat('~placeholder for unidentified publication');
 
@@ -245,7 +245,7 @@ BEGIN
 
   FOR rec IN select intbiotaid, namespace_id, vchryearofpub, vchrauthor , regexp_matches(vchrauthor, author_regex)  cc
              from
-               (SELECT intbiotaid, trim(vchryearofpub) vchryearofpub, trim(vchrauthor) vchrauthor, (select id from namespace where name = "{{ shard_namespace_UPPER }}") namespace_id FROM raw where vchrauthor NOTNULL and trim(chrkingdomcode) in ('{}') ) ii
+               (SELECT intbiotaid, trim(vchryearofpub) vchryearofpub, trim(vchrauthor) vchrauthor, (select id from namespace where name = '{{ shard_namespace_UPPER }}') namespace_id FROM raw where vchrauthor NOTNULL and trim(chrkingdomcode) in ('{}') ) ii
 
   LOOP
     RAISE NOTICE '%', concat('Author processing ',rec.vchrauthor , '-->', rec.cc);
@@ -381,7 +381,7 @@ BEGIN
                ,intbiotaid, chrelemtype ,(select rr.id from name_rank rr where rr.name=rd.id ) rank_id
                ,  (select id from name_status where name = 'legitimate') status_id
                , (select id from name_type where name = 'scientific') type_id
-               , (select id from namespace where name = "{{ shard_namespace_UPPER }}") namespace_id
+               , (select id from namespace where name = '{{ shard_namespace_UPPER }}') namespace_id
                , r.reference_id reference_id
 
              from
@@ -463,7 +463,7 @@ DECLARE
 BEGIN
 
   select id into instance_type_id  from instance_type where lower(name)='secondary reference';
-  select id into namespace_id from namespace where name = "{{ shard_namespace_UPPER }}";
+  select id into namespace_id from namespace where name = '{{ shard_namespace_UPPER }}';
   select id into language_id from language where lower(name) = 'english';
   select id into ref_author_role_id from ref_author_role where lower(name) = 'unknown';
   select id into ref_type_id  from ref_type where lower(name) = 'unknown';
@@ -510,7 +510,7 @@ BEGIN
 
   select id into instance_type_id  from instance_type where lower(name)='secondary reference';
   select id into syn_instance_type_id  from instance_type where lower(name)='nomenclatural synonym';
-  select id into namespace_id from namespace where name = "{{ shard_namespace_UPPER }}";
+  select id into namespace_id from namespace where name = '{{ shard_namespace_UPPER }}';
   select id into language_id from language where lower(name) = 'english';
   select id into ref_author_role_id from ref_author_role where lower(name) = 'unknown';
   select id into ref_type_id  from ref_type where lower(name) = 'unknown';
@@ -563,7 +563,7 @@ TRUNCATE  table mapper.host CASCADE;
 TRUNCATE  table mapper.db_version CASCADE;
 
 INSERT INTO mapper.db_version (id,version) VALUES (0,4);
-INSERT INTO mapper.host (host_name, preferred) VALUES ("{{ elb_dns }}/nsl/mapper", true);
+INSERT INTO mapper.host (host_name, preferred) VALUES ('{{ elb_dns }}/nsl/mapper', true);
 
 
 
