@@ -7,7 +7,7 @@ mapper {
 
     shards = [
 
-            '{{ shard_namespace_UPPER }}'    : [
+            '{{ shard_namespace }}'    : [
                     baseURL: "{{mapper.shards.baseURL}}",
                     service: [
                             html: { ident ->
