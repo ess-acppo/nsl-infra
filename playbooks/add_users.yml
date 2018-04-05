@@ -9,8 +9,13 @@
   
   tasks:
   - name: copy ldif file to server
-    template: src=roles/apacheds/templates/add_user_with_group_membership.ldif.j2 dest=/tmp/add_user_with_group_membership.ldif
+    template: src=roles/apacheds/templates/{{ item }}.ldif.j2 dest=/tmp/{{ item }}.ldif
+    with_items:
+        - create
+        - add_user_with_group_membership
 
+  - name: import the users
+    command: bash -c 'ldapadd -c -h localhost -p 10389 -D "uid=admin,ou=system" -w secret < /tmp/create.ldif ; echo added_org'
 
   - name: run ldif
     command: bash -c 'ldapadd -c -h localhost -p 10389 -D "uid=admin,ou=system" -w secret < /tmp/add_user_with_group_membership.ldif ; echo added_users'
