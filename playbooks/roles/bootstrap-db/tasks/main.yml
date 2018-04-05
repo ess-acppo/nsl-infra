@@ -4,7 +4,7 @@
     src: "{{item.filename}}.j2"
     dest: "/tmp/{{item.filename}}"
   with_items:
-    - { filename: nsl-ddl.sql }
+    - { filename: "{{ shard_nsl_ddl_file }}" }
     - { filename: mapper-ddl.sql }
 
 
@@ -22,7 +22,7 @@
 - name: Create nsl.public tables, views etc
   become: true
   become_user: postgres
-  command: psql -f /tmp/nsl-ddl.sql nsl
+  command: psql -f /tmp/"{{ shard_nsl_ddl_file }}" nsl
 
 - name: Create nsl.mapper tables, views etc
   become: true

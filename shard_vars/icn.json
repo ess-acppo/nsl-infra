@@ -12,5 +12,6 @@
   "banner_text" : "Aliena Animalia",
   "description_html" : "<p>This section of the National ex-Australia Species List infrastructure delivers names and taxonomies for organisms named according to the International Code of Zoological Nomenclature. The data comprise names, bibliographic information, and taxonomic concepts for organisms that are neither native to nor naturalised in Australia. The Biosecurity Animal Name Index ({{ shard_namespace_UPPER }}) provides names and bibliographic information. The Biosecurity Animal Checklist ({{ taxonomy_name }}) provides a provisional taxonomy.</p>",
   "menu_label" : "Biosecurity Animal",
-  "services_path_tree_element" : "bac"
+  "services_path_tree_element" : "bac",
+  "shard_nsl_ddl_file": "icn-nsl-ddl.sql"
 }
