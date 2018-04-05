@@ -24,8 +24,8 @@ INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_seq
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name banner text', 'Biosecurity Plant Name Index');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'tree link title', 'Biosecurity Plant Checklist Taxonomy');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'name description html', '<p>The Biosecurity Plant Name Index ({{ shard_namespace_UPPER }}) is a ************placeholder**************</p>');
-INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'banner image', '{{ shard_images[0][''filename''] }}');
-INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'card image', '{{ shard_images[1][''filename''] }}');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'banner image', '{{ shard_images[0]["filename"] }}');
+INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'card image', '{{ shard_images[1]["filename"] }}');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'description html', '{{ description_html }}');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'classification tree key', '{{ taxonomy_name }}');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'shard group name', 'NXL');
