@@ -1,0 +1,26 @@
+---
+# Add this snippet to the top of your playbook. 
+# It will install python2 if missing (but checks first so no expensive repeated apt updates)
+# gwillem@gmail.com
+
+- hosts: all
+  gather_facts: False
+  become: yes
+  
+  tasks:
+  - name: copy ldif file to server
+    template: src=roles/apacheds/templates/remove_user.ldif.j2 dest=/tmp/remove_user.ldif
+
+
+  - name: run ldif
+    command: bash -c 'ldapdelete -c -h localhost -p 10389 -D "uid=admin,ou=system" -w secret < /tmp/remove_user.ldif ; echo removed_users'
+
+
+
+
+
+  
+  
+
+  
+
