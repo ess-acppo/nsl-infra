@@ -106,6 +106,7 @@
     name: "{{ nxl_env_name }}-tg-{{ VPC_ID }}"
     protocol: http
     port: 8080
+    healthy_threshold_count: 10
     vpc_id: "{{ VPC_ID }}"
     state: present
     wait: False
