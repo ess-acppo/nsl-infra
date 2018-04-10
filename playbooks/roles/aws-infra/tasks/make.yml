@@ -151,7 +151,7 @@
         # The security policy that defines which ciphers and protocols are supported. The default is the current predefined security policy.
         SslPolicy: ELBSecurityPolicy-2016-08
         Certificates: # The ARN of the certificate (only one certficate ARN should be provided)
-          - CertificateArn: arn:aws:acm:ap-southeast-2:194924002687:certificate/af010859-5c5e-4586-a2b7-006a8d230541
+          - CertificateArn: arn:aws:acm:ap-southeast-2:194924002687:certificate/296164cd-fb30-4886-82cb-cd8bf7562db5
         DefaultActions:
           - Type: forward # Required. Only 'forward' is accepted at this time
             TargetGroupName: "{{ nxl_elb_target_group.target_group_name }}"# Required. The name of the target group
@@ -193,7 +193,7 @@
         group_name: jenkins-sg
       - proto: tcp
         ports: 22
-        group_name: sg-a947b3d0  #sg-1821e461 for Dev #sg-a947b3d0 for UAT # parameterised until cfn for bastion is working again.
+        group_name: sg-a947b3d0  #sg-1821e461 for Dev #sg-a947b3d0 for UAT # parameterised until cfn for bastion is working again. This not fixed in any other fashion to enforce fixing the Bastion CFN
   register: nxl_app_sg
 
 - name: create launch config
