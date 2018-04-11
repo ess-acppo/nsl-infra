@@ -19,13 +19,6 @@
       "inventory_directory": "aws_utils",
       "groups": ["tag_role_tomcat","tag_role_database","tag_role_ldap"],
       "extra_arguments": [  "--extra-vars", "shard_nsl_ddl_file={{user `shard_type`}}-nsl-ddl.sql" ]
-    },
-    {
-      "type": "ansible",
-      "playbook_file": "playbooks/site.yml",
-      "inventory_directory": "aws_utils",
-      "groups": ["tag_role_tomcat","tag_role_database","tag_role_ldap"],
-      "extra_arguments": [  "--extra-vars", "shard_nsl_ddl_file={{user `shard_type`}}-nsl-ddl.sql" ]
     }
   ]
 }
