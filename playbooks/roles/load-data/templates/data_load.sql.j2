@@ -588,7 +588,7 @@ TRUNCATE  table mapper.host CASCADE;
 TRUNCATE  table mapper.db_version CASCADE;
 
 INSERT INTO mapper.db_version (id,version) VALUES (0,4);
-INSERT INTO mapper.host (host_name, preferred) VALUES ('aristotle-icn-elb-844361005.ap-southeast-2.elb.amazonaws.com/nsl/mapper', true);
+INSERT INTO mapper.host (host_name, preferred) VALUES ('{{ elb_dns }}/nsl/mapper', true);
 
 
 
