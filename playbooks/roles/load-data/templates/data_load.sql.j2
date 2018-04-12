@@ -449,17 +449,19 @@ SELECT for_loop_through_query_child_parent();
 ---------------------
 -- insert 'Unknown' author and reference
 
-CREATE OR REPLACE FUNCTION insertUnknowns()
+CREATE OR REPLACE FUNCTION insertUnknownsAndDefaults()
   RETURNS VOID AS $$
 DECLARE
 
   instance_type_id BIGINT;
   namespace_id BIGINT;
   author_id_unknown BIGINT;
+  author_id_NAQS BIGINT;
   language_id BIGINT ;
   ref_author_role_id BIGINT ;
   ref_type_id BIGINT;
-  ref_id_unknown BIGINT;
+  ref_author__compiler_role_id BIGINT;
+  ref_type_database_id BIGINT;
 BEGIN
 
   select id into instance_type_id  from instance_type where lower(name)='secondary reference';
@@ -467,6 +469,9 @@ BEGIN
   select id into language_id from language where lower(name) = 'english';
   select id into ref_author_role_id from ref_author_role where lower(name) = 'unknown';
   select id into ref_type_id  from ref_type where lower(name) = 'unknown';
+  select id into ref_author__compiler_role_id from ref_author_role where lower(name) = 'compiler';
+  select id into ref_type_database_id  from ref_type where lower(name) = 'database';
+
 
 
   -- insert an Unknown reference
@@ -479,10 +484,26 @@ BEGIN
   (         author_id,          created_at        ,created_by ,  display_title,    namespace_id,          language_id,        ref_author_role_id, ref_type_id,              title,                updated_at,        updated_by,  verbatim_author)
   VALUES (  author_id_unknown,  CURRENT_TIMESTAMP ,'DAWR'     ,  'Unknown reference'        ,namespace_id,         language_id         ,ref_author_role_id, ref_type_id,            'Unknown reference',           CURRENT_TIMESTAMP,   'DAWR',      'Unknown');
 
+
+  -- insert an NAQS author and reference as per https://github.com/ess-acppo/services/issues/14#issuecomment-379653464
+  INSERT INTO public.author (   created_at,         created_by, abbrev, name,           namespace_id,  updated_at, updated_by)
+  VALUES (                      CURRENT_TIMESTAMP , 'DAWR',     'NAQS', 'Northern Australia Quarantine Strategy' ,  namespace_id,    CURRENT_TIMESTAMP , 'DAWR');
+
+  select id into author_id_NAQS  from author where abbrev = 'NAQS';
+
+  INSERT INTO public.reference
+  (author_id, created_at, created_by, display_title, namespace_id, language_id
+    , ref_author_role_id
+    , ref_type_id, title, updated_at, updated_by, verbatim_author)
+  VALUES (author_id_NAQS, CURRENT_TIMESTAMP, 'DAWR', 'NAQS Taxon Explorer', namespace_id, language_id
+    , ref_author__compiler_role_id
+    , ref_type_database_id
+    , 'NAQS Taxon Explorer', CURRENT_TIMESTAMP, 'DAWR', 'Northern Australia Quarantine Strategy');
+
 END;
 $$ LANGUAGE plpgsql;
 
-SELECT insertUnknowns();
+SELECT insertUnknownsAndDefaults();
 
 ---------------------------------------------
 ---------------------------------------------
@@ -499,6 +520,7 @@ language_id BIGINT ;
 ref_author_role_id BIGINT ;
 ref_type_id BIGINT;
 ref_id_unknown BIGINT;
+ref_id_naqs BIGINT;
 synonym_instance_id BIGINT ;
 accepted_name BIGINT;
 accepted_name_instance_id BIGINT;
@@ -515,6 +537,7 @@ BEGIN
   select id into ref_author_role_id from ref_author_role where lower(name) = 'unknown';
   select id into ref_type_id  from ref_type where lower(name) = 'unknown';
   select id into ref_id_unknown from public.reference where title ILIKE 'Unknown reference';
+  select id into ref_id_naqs from public.reference where title ILIKE 'NAQS Taxon Explorer';
 
 
 
@@ -527,6 +550,8 @@ BEGIN
     INSERT into public.instance(created_at        ,created_by,instance_type_id,name_id    ,namespace_id ,reference_id ,updated_at         ,updated_by)
     VALUES                     (CURRENT_TIMESTAMP ,'DAWR'    ,instance_type_id,rec.name_id,namespace_id ,rec.reference_id ,CURRENT_TIMESTAMP  ,'DAWR');
 
+    INSERT into public.instance(created_at        ,created_by,instance_type_id,name_id    ,namespace_id ,reference_id ,updated_at         ,updated_by)
+    VALUES                     (CURRENT_TIMESTAMP ,'DAWR'    ,instance_type_id,rec.name_id,namespace_id ,ref_id_naqs,CURRENT_TIMESTAMP  ,'DAWR');
 
 
   END LOOP;
