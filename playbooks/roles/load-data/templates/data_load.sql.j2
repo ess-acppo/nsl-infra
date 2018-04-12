@@ -331,7 +331,7 @@ BEGIN
 
         INSERT INTO public.reference
         (  author_id,       created_at,    created_by,  display_title,    namespace_id,             language_id,        ref_author_role_id, ref_type_id, source_id_string,         source_system,     title,                updated_at,        updated_by,  verbatim_author,   year)
-        VALUES (  author_id_for_ref, CURRENT_TIMESTAMP, 'DAWR',  ref_text,          rec.namespace_id,         language_id      ,ref_author_role_id, ref_type_id, rec.intbiotaid,       'NAQS'     ,     ref_text,           CURRENT_TIMESTAMP,   'DAWR',      rec.vchrauthor,              NULLIF(rec.vchryearofpub, '')::int)
+        VALUES (  author_id_for_ref, CURRENT_TIMESTAMP, 'DAWR',  ref_text,          rec.namespace_id,         language_id      ,ref_author_role_id, ref_type_id, rec.intbiotaid,       'NAQS'     ,     ref_text,           CURRENT_TIMESTAMP,   'DAWR',      rec.vchrauthor,              year_int)
         RETURNING id INTO  reference_ret_id;
 
         -- update raw set reference_id = (as retruned from above) where raw.intbiotaid=rec.intbiotaid;
