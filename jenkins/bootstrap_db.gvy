@@ -1,9 +1,3 @@
-/*
-Perquisites before this can be run in a machine ( irrespective of whether it run using Jenkins):
-1. Install boto
-2. Configure AWS KEYS
-3. Configure ssh to enable shh through bastion
-*/
 
 stage("Bootstrapping data into DB") {
     node{
