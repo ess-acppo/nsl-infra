@@ -5,7 +5,7 @@ default: &default
 
 production:
      <<: *default
-     host: localhost
+     host: devicv-vpc-b068bad7.ctp5yr3kk5uq.ap-southeast-2.rds.amazonaws.com
      database: "{{postgresql_databases[0].name}}"
      username: "{{postgresql_users[7].name}}"
      password: "{{postgresql_users[7].password}}"
