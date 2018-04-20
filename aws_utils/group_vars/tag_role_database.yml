@@ -17,4 +17,6 @@ postgresql_users:
   - name: nsldev
     password: nsldev
     role_attr_flags: SUPERUSER,LOGIN
-
+  - name: nslrds
+    password: supersecure
+    role_attr_flags: SUPERUSER,LOGIN
