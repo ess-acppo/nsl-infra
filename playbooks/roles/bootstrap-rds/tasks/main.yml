@@ -12,11 +12,11 @@
 
 - postgresql_schema:
     name: mapper
-    owner: "{{postgresql_users[7].name}}"
+    owner: "{{postgresql_users[0].name}}"
     database: "{{postgresql_databases[0].name}}"
     login_host: devicv-vpc-b068bad7.ctp5yr3kk5uq.ap-southeast-2.rds.amazonaws.com
-    login_user: "{{postgresql_users[7].name}}"
-    login_password: "{{postgresql_users[7].password}}"
+    login_user: "{{postgresql_users[0].name}}"
+    login_password: "{{postgresql_users[0].password}}"
 
 
 - name: Create nsl.public tables, views etc
