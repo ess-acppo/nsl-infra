@@ -2,18 +2,17 @@
 default: &default
   adapter: postgresql
   encoding: unicode
- 
+
 production:
      <<: *default
      host: localhost
      database: "{{postgresql_databases[0].name}}"
-     username: "{{postgresql_users[1].name}}"
-     password: "{{postgresql_users[1].password}}"
+     username: "{{postgresql_users[7].name}}"
+     password: "{{postgresql_users[7].password}}"
      pool: 10
 
 development:
   <<: *default
   database: "{{postgresql_databases[0].name}}"
-  username: "{{postgresql_users[1].name}}"
-  password: "{{postgresql_users[1].password}}"
-
+  username: "{{postgresql_users[7].name}}"
+  password: "{{postgresql_users[7].password}}"
