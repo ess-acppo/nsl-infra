@@ -1,5 +1,5 @@
-sshuser: ubuntu 
-version: 7 
+sshuser: ubuntu
+version: 7
 private_ip: "{{inventory_hostname}}"
 
 # Here are variables related to the Tomcat installation
@@ -13,7 +13,7 @@ admin_username: admin
 admin_password: adminsecret
 
 war_bucket: nslrepo
-war_names: 
+war_names:
     - { war_name: 'nxl#editor##1.44' }
     - { war_name: 'nxl#mapper##1.0017' }
     - { war_name: 'nxl#services##1.0122' }
@@ -55,7 +55,6 @@ services:
         mapperURL : "https://{{ elb_dns }}/nsl/mapper"
         internalMapperURL : "http://localhost:8080/nsl/mapper"
         editor : "https://{{ elb_dns }}/nxl/editor"
-
 
 mapper:
     grails:
