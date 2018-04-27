@@ -1,5 +1,5 @@
 
-stage("Bootstrapping data into DB") {
+stage("Bootstrapping data into RDS") {
     node{
         checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
         dir('nsl-infra'){
