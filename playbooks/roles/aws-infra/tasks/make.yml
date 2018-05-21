@@ -240,7 +240,7 @@
 ## Creates one host with role tomcat,database and ldap. if required this can  be installed in separate machine.
 ## But recommendation is to install in one machine as a multi machine deployment gives little / no benefit.
 - name: launch an NXL instance
- ec2:
+  ec2:
    id: "{{ nxl_env_name }}-{{ ansible_date_time.epoch }}"
    region: ap-southeast-2
    key_name: DAWRAWSSYD
