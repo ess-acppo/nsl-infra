@@ -225,15 +225,6 @@
     desired_capacity: 1
     vpc_zone_identifier: [ "{{ nxl_private_subnet.subnet.id }}" ]
     region: ap-southeast-2
-    suspend_processes:
-      - Launch
-      - Terminate
-      - HealthCheck
-      - ReplaceUnhealthy
-      - AZRebalance
-      - AlarmNotification
-      - ScheduledActions
-      - AddToLoadBalancer
     target_group_arns:
       - "{{ nxl_elb_target_group.target_group_arn }}"
     tags:
