@@ -181,7 +181,7 @@
     vpc_id: "{{ VPC_ID }}"
     region: ap-southeast-2
     rules:
-      # 'ports' rule keyword was introduced in version 2.4. It accepts a single port value or a list of values including ranges (from_port-to_port).
+# 'ports' rule keyword was introduced in version 2.4. It accepts a single port value or a list of values including ranges (from_port-to_port).
       - proto: tcp
         ports: 8080
         group_name: "{{ nxl_lb_sg.group_id }}"
@@ -196,71 +196,71 @@
         group_name: sg-1821e461  #sg-1821e461 for Dev #sg-a947b3d0 for UAT # parameterised until cfn for bastion is working again. This not fixed in any other fashion to enforce fixing the Bastion CFN
   register: nxl_app_sg
 
-- name: create launch config
-  ec2_lc:
-    name: "{{ nxl_env_name }}_lc_{{ VPC_ID }}"
-    image_id: "{{ nxl_ami | default('ami-6c24d20e') }}"
-    key_name: DAWRAWSSYD
-    region: ap-southeast-2
-    security_groups: "{{ nxl_app_sg.group_id }}"
-    instance_type: t2.medium
-    assign_public_ip: no
-    instance_monitoring: true
-    vpc_id: "{{ VPC_ID }}"
-    user_data: |
-                    #!/bin/sh
-                    sudo  echo "{{ mypubkey.stdout }}" >> /home/ubuntu/.ssh/authorized_keys
+# - name: create launch config
+#   ec2_lc:
+#     name: "{{ nxl_env_name }}_lc_{{ VPC_ID }}"
+#     image_id: "{{ nxl_ami | default('ami-6c24d20e') }}"
+#     key_name: DAWRAWSSYD
+#     region: ap-southeast-2
+#     security_groups: "{{ nxl_app_sg.group_id }}"
+#     instance_type: t2.medium
+#     assign_public_ip: no
+#     instance_monitoring: true
+#     vpc_id: "{{ VPC_ID }}"
+#     user_data: |
+#                     #!/bin/sh
+#                     sudo  echo "{{ mypubkey.stdout }}" >> /home/ubuntu/.ssh/authorized_keys
 
 # Creates one host with role tomcat,database and ldap. if required this can  be installed in separate machine.
 # But recommendation is to install in one machine as a multi machine deployment gives little / no benefit.
-- name: create ASG
-  ec2_asg:
-    name: "{{ nxl_env_name }}_asg_{{ VPC_ID }}"
-    launch_config_name: "{{ nxl_env_name }}_lc_{{ VPC_ID }}"
-    health_check_period: 300
-    health_check_type: ELB
-    replace_all_instances: yes
-    min_size: 1
-    max_size: 1
-    desired_capacity: 1
-    vpc_zone_identifier: [ "{{ nxl_private_subnet.subnet.id }}" ]
-    region: ap-southeast-2
-    target_group_arns:
-      - "{{ nxl_elb_target_group.target_group_arn }}"
-    tags:
-      - Name: "{{ nxl_env_name }}_nxl_{{ VPC_ID }}"
-      - env: "{{ nxl_env_name }}"
-      - app: taxaas
-      - role: tomcat,database,ldap
-      #- scheduler:ec2-startstop:standard: 2200;0700;utc;weekdays
-      #- scheduler:ec2-startstop:stop-friday: none;2300;utc;fri
-    wait_for_instances: false
+# - name: create ASG
+#   ec2_asg:
+#     name: "{{ nxl_env_name }}_asg_{{ VPC_ID }}"
+#     launch_config_name: "{{ nxl_env_name }}_lc_{{ VPC_ID }}"
+#     health_check_period: 300
+#     health_check_type: ELB
+#     replace_all_instances: yes
+#     min_size: 1
+#     max_size: 1
+#     desired_capacity: 1
+#     vpc_zone_identifier: [ "{{ nxl_private_subnet.subnet.id }}" ]
+#     region: ap-southeast-2
+#     target_group_arns:
+#       - "{{ nxl_elb_target_group.target_group_arn }}"
+#     tags:
+#       - Name: "{{ nxl_env_name }}_nxl_{{ VPC_ID }}"
+#       - env: "{{ nxl_env_name }}"
+#       - app: taxaas
+#       - role: tomcat,database,ldap
+#       #- scheduler:ec2-startstop:standard: 2200;0700;utc;weekdays
+#       #- scheduler:ec2-startstop:stop-friday: none;2300;utc;fri
+#     wait_for_instances: false
 
 ## This is not used any more as the instance is being launched using launch configuration
 ## Creates one host with role tomcat,database and ldap. if required this can  be installed in separate machine.
 ## But recommendation is to install in one machine as a multi machine deployment gives little / no benefit.
-#- name: launch an NXL instance
-#  ec2:
-#    id: "{{ nxl_env_name }}-{{ ansible_date_time.epoch }}"
-#    region: ap-southeast-2
-#    key_name: DAWRAWSSYD
-#    group: NXL-app-sg
-#    instance_type: t2.medium
-#    image: "{{ nxl_ami | default('ami-6c24d20e') }}"
-#    wait: yes
-#    wait_timeout: 500
-#    count: 1
-#    instance_tags:
-#       Name: "{{ nxl_env_name }}_nxl"
-#       env: "{{ nxl_env_name }}"
-#       role: tomcat,database,ldap
-#    monitoring: yes
-#    vpc_subnet_id: "{{ nxl_private_subnet.subnet.id }}"
-#    assign_public_ip: no
-#    user_data: |
-#                   #!/bin/sh
-#                   sudo  echo "{{ mypubkey.stdout }}" >> /home/ubuntu/.ssh/authorized_keys
-#  register: nxl_instance
+- name: launch an NXL instance
+ ec2:
+   id: "{{ nxl_env_name }}-{{ ansible_date_time.epoch }}"
+   region: ap-southeast-2
+   key_name: DAWRAWSSYD
+   group: NXL-app-sg
+   instance_type: t2.medium
+   image: "{{ nxl_ami | default('ami-6c24d20e') }}"
+   wait: yes
+   wait_timeout: 500
+   count: 1
+   instance_tags:
+      Name: "{{ nxl_env_name }}_nxl"
+      env: "{{ nxl_env_name }}"
+      role: tomcat,database,ldap
+   monitoring: yes
+   vpc_subnet_id: "{{ nxl_private_subnet.subnet.id }}"
+   assign_public_ip: no
+   user_data: |
+                  #!/bin/sh
+                  sudo  echo "{{ mypubkey.stdout }}" >> /home/ubuntu/.ssh/authorized_keys
+ register: nxl_instance
 
 
 
