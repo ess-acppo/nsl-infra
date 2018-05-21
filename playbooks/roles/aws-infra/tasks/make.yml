@@ -244,7 +244,7 @@
    id: "{{ nxl_env_name }}-{{ ansible_date_time.epoch }}"
    region: ap-southeast-2
    key_name: DAWRAWSSYD
-   group: NXL-app-sg
+   group: "{{ nxl_app_sg.group_id }}"
    instance_type: t2.medium
    image: "{{ nxl_ami | default('ami-6c24d20e') }}"
    wait: yes
