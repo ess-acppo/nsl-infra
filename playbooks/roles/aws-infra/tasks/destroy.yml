@@ -45,9 +45,9 @@
 #       - { sgname: "NXL-lb-sg-{{ VPC_ID }}" }
 #       - { sgname: "NXL-app-sg-{{ VPC_ID }}" }
 
-- name: launch an NXL instance
+- name: Destroy the NXL instance
   ec2:
-   id: "{{ nxl_env_name }}_nxl_{{ VPC_ID }}"
+   instance_ids: "{{ nxl_env_name }}_nxl_{{ VPC_ID }}"
    region: ap-southeast-2
    state: absent
    wait: True
