@@ -47,7 +47,7 @@
 
 - name: Destroy the NXL instance
   ec2:
-   instance_ids: "{{ nxl_env_name }}_nxl_{{ VPC_ID }}"
+   id: "{{ nxl_env_name }}"
    region: ap-southeast-2
    state: absent
    wait: True
