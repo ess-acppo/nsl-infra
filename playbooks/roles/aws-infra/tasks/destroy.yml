@@ -25,7 +25,7 @@
     wait: True
 
 - pause:
-    minutes: 1
+    seconds: 15
 
 # Create a target group with targets
 - name: Destroy target group
