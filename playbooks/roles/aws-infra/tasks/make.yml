@@ -251,7 +251,7 @@
    wait_timeout: 500
    count: 1
    instance_tags:
-      Name: "{{ nxl_env_name }}_nxl"
+      Name: "{{ nxl_env_name }}_nxl_{{ VPC_ID }}"
       env: "{{ nxl_env_name }}"
       role: tomcat,database,ldap
    monitoring: yes
