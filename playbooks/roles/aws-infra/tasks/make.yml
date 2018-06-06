@@ -254,6 +254,7 @@
       Name: "{{ nxl_env_name }}_nxl_{{ VPC_ID }}"
       env: "{{ nxl_env_name }}"
       role: tomcat,database,ldap
+      app: taxaas
    monitoring: yes
    vpc_subnet_id: "{{ nxl_private_subnet.subnet.id }}"
    assign_public_ip: no
