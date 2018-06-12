@@ -220,11 +220,23 @@
                   sudo  echo "{{ mypubkey.stdout }}" >> /home/ubuntu/.ssh/authorized_keys
   register: nxl_instance
 
-- name: print infomraiton about the instance
+- name: print informaiton about the instance
   debug: 
     var: nxl_instance
 
 
+- name: Add instance to target group
+  elb_target_group:
+    region: ap-southeast-2
+    name: "{{ nxl_env_name }}-tg-{{ VPC_ID }}"
+    protocol: http
+    vpc_id: "{{ VPC_ID }}"
+    state: present
+    wait: False
+    targets:
+      - Id: nxl_instance.instance_ids
+        Port: 8080
+  register: nxl_elb_target_group
 
 # - name: create launch config
 #   ec2_lc:
