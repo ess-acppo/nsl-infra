@@ -196,6 +196,36 @@
         group_name: sg-1821e461  #sg-1821e461 for Dev #sg-a947b3d0 for UAT # parameterised until cfn for bastion is working again. This not fixed in any other fashion to enforce fixing the Bastion CFN
   register: nxl_app_sg
 
+- name: launch an NXL instance
+  ec2:
+   id: "{{ nxl_env_name }}_nxl_{{ VPC_ID }}"
+   region: ap-southeast-2
+   key_name: DAWRAWSSYD
+   group_id: "{{ nxl_app_sg.group_id }}"
+   instance_type: t2.medium
+   image: "{{ nxl_ami | default('ami-6c24d20e') }}"
+   wait: yes
+   wait_timeout: 500
+   count: 1
+   instance_tags:
+      Name: "{{ nxl_env_name }}_nxl_{{ VPC_ID }}"
+      env: "{{ nxl_env_name }}"
+      role: tomcat,database,ldap
+      app: taxaas
+   monitoring: yes
+   vpc_subnet_id: "{{ nxl_private_subnet.subnet.id }}"
+   assign_public_ip: no
+   user_data: |
+                  #!/bin/sh
+                  sudo  echo "{{ mypubkey.stdout }}" >> /home/ubuntu/.ssh/authorized_keys
+  register: nxl_instance
+
+- name: print infomraiton about the instance
+  debug: 
+    var: nxl_instance
+
+
+
 # - name: create launch config
 #   ec2_lc:
 #     name: "{{ nxl_env_name }}_lc_{{ VPC_ID }}"
@@ -239,30 +269,4 @@
 ## This is not used any more as the instance is being launched using launch configuration
 ## Creates one host with role tomcat,database and ldap. if required this can  be installed in separate machine.
 ## But recommendation is to install in one machine as a multi machine deployment gives little / no benefit.
-- name: launch an NXL instance
-  ec2:
-   id: "{{ nxl_env_name }}_nxl_{{ VPC_ID }}"
-   region: ap-southeast-2
-   key_name: DAWRAWSSYD
-   group_id: "{{ nxl_app_sg.group_id }}"
-   instance_type: t2.medium
-   image: "{{ nxl_ami | default('ami-6c24d20e') }}"
-   wait: yes
-   wait_timeout: 500
-   count: 1
-   instance_tags:
-      Name: "{{ nxl_env_name }}_nxl_{{ VPC_ID }}"
-      env: "{{ nxl_env_name }}"
-      role: tomcat,database,ldap
-      app: taxaas
-   monitoring: yes
-   vpc_subnet_id: "{{ nxl_private_subnet.subnet.id }}"
-   assign_public_ip: no
-   user_data: |
-                  #!/bin/sh
-                  sudo  echo "{{ mypubkey.stdout }}" >> /home/ubuntu/.ssh/authorized_keys
-  register: nxl_instance
-
-
-
 
