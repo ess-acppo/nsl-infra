@@ -235,7 +235,7 @@
     Port: 8080
     wait: False
     targets:
-      - Id: nxl_instance.instance_ids
+      - Id: "{{ nxl_instance.instance_ids }}"
         Port: 8080
   register: nxl_elb_target_group
 
