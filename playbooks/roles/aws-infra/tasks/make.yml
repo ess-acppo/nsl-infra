@@ -232,6 +232,7 @@
     protocol: http
     vpc_id: "{{ VPC_ID }}"
     state: present
+    Port: 8080
     wait: False
     targets:
       - Id: nxl_instance.instance_ids
