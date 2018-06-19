@@ -224,20 +224,33 @@
   debug: 
     var: nxl_instance
 
-
-- name: Add instance to target group
+# Add target instance to target group
+  - name: Add target instance to target group
   elb_target_group:
     region: ap-southeast-2
-    name: "{{ nxl_env_name }}-tg-{{ VPC_ID }}"
+    name: "{{ env_name }}-tg-{{ VPC_ID }}"
     protocol: http
+    port: 8080
+    healthy_threshold_count: 10
     vpc_id: "{{ VPC_ID }}"
     state: present
-    Port: 8080
     wait: False
+    modify_targets: true
     targets:
-      - Id: "{{ nxl_instance.instance_ids }}"
+      - Id: "{{ nxl_instance.instance_ids[0] }}"
         Port: 8080
   register: nxl_elb_target_group
+
+# Add an alias record that points to an ROSCO elb
+- name: Add Route53 DNS entry for the new instance
+  route53:
+    command: create
+    zone: oztaxa.com
+    record: "{{ env_name }}.oztaxa.com"
+    type: A
+    value: "{{ nxl_elb.dns_name }}"
+    alias: True
+    alias_hosted_zone_id: "{{ nxl_elb.canonical_hosted_zone_id }}"
 
 # - name: create launch config
 #   ec2_lc:
