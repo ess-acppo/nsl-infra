@@ -225,7 +225,7 @@
     var: nxl_instance
 
 # Add target instance to target group
-  - name: Add target instance to target group
+- name: Add the created instance to target group
   elb_target_group:
     region: ap-southeast-2
     name: "{{ env_name }}-tg-{{ VPC_ID }}"
