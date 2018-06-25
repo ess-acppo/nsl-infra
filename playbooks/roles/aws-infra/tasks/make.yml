@@ -249,7 +249,7 @@
   route53:
     command: create
     zone: oztaxa.com
-    record: "{{ env_name }}.oztaxa.com"
+    record: "{{ nxl_env_name }}.oztaxa.com"
     type: A
     value: "{{ nxl_elb.dns_name }}"
     alias: True
