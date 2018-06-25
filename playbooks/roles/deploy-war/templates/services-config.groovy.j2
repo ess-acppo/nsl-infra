@@ -52,9 +52,9 @@ ldap {
 
 dataSource_nsl {
 //    jndiName = "java:comp/env/jdbc/apni"
-		username = "{{postgresql_users[0].name}}"
-		password = "{{postgresql_users[0].password}}"
-		url = "jdbc:postgresql://devicv-vpc-b068bad7.ctp5yr3kk5uq.ap-southeast-2.rds.amazonaws.com:5432/{{postgresql_databases[0].name}}"
+		username = "{{postgresql_users[1].name}}"
+		password = "{{postgresql_users[1].password}}"
+		url = "jdbc:postgresql://localhost:5432/{{postgresql_databases[0].name}}"
 }
 
 api.auth = [
