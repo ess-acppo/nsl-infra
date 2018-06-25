@@ -52,7 +52,7 @@
   - role: geerlingguy.postgresql
     become: yes
 
-Bootstrap the database
+# Bootstrap the database
 - hosts: tag_role_database
   become: yes
   roles:
