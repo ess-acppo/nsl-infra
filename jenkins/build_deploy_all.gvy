@@ -27,6 +27,15 @@ node {
 
     }
 
+    stage('Checkout versions of editor,mapper and services') {
+        dir('nsl-editor'){
+            sh "git checkout release-1.63"
+        }
+        dir('services') {
+            sh "git checkout release-1.0202"
+        }
+    }
+
     stage('Building wars for editor,mapper and services') {
         withEnv(['PATH+=/opt/jruby-9.1.13.0/bin']){
             dir('nsl-editor'){
