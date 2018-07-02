@@ -1,5 +1,5 @@
 sshuser: ubuntu
-version: 7
+version: 8
 private_ip: "{{inventory_hostname}}"
 
 # Here are variables related to the Tomcat installation
