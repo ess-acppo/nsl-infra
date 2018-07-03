@@ -49,7 +49,8 @@ node {
         }
 
         dir('mapper') {
-            sh 'cp ../nxl-private/bnti/build-nsl-apps.sh .'
+            sh 'cp -p ../nxl-private/bnti/build-nsl-apps.sh .'
+            sh 'chmod +x ./build-nsl-apps.sh'
             sh './build-nsl-apps.sh'
         }
 
