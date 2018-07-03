@@ -48,7 +48,7 @@ node {
         }
 
         dir('mapper') {
-            sh 'grails_version=`grep \'^app\.grails\.version=\' ./application.properties | sed -e \'s/^app\.grails\.version=//g\'`'
+            sh 'grails_version=`grep \'^app.grails.version=\' ./application.properties | sed -e \'s/^app.grails.version=//g\'`'
             sh 'sdk use grails $grails_version'
             sh 'echo $grails_version'
             sh 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64;$WORKSPACE/mapper/grailsw war;$WORKSPACE/mapper/grailsw "set-war-path nsl"'
