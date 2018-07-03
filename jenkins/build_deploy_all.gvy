@@ -42,7 +42,7 @@ node {
                 sh " echo $PATH; which jruby; JAVA_OPTS='-server -d64'; jruby -S bundle install --without development test;bundle exec rake assets:clobber;bundle exec rake assets:precompile  RAILS_ENV=production RAILS_GROUPS=assets;bundle exec warble"
                 script{
                     projectDir = pwd()
-                    sh 'mv nsl-editor.war nxl#editor##$(cat config/version.txt).war'
+                    sh 'mv nsl-editor.war nxl#editor##$(cat config/version.properties | sed -e \'s/.*=//g\').war'
                 }
             }
         }
