@@ -58,7 +58,7 @@ node {
                 sh 'cp ../nxl-private/bnti/build-nxl-services.sh .'
                 sh 'chmod +x ./build-nxl-services.sh'
                 sh './build-nxl-services.sh'
-                sh 'mv ./target/services##1.0204.war ./target/nxl#services##1.0204'
+                sh 'mv ./target/services##1.0204.war ./target/nxl#services##1.0204.war'
             }
 
     }
