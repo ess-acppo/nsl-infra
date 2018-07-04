@@ -62,7 +62,7 @@ node {
     }
     stage("Deploy services to $ENVIRONMENT_NAME") {
         dir('nsl-infra') {
-            warDir = pwd() + "/../services/target/"
+            warDir = pwd() + "/../services/target"
 
 
             if (ENVIRONMENT_NAME) {
