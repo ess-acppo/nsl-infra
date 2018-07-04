@@ -42,8 +42,8 @@
     - debug: var=version
  # choice the tomcat version
   roles:  
-    - { role: tomcat7, when: version == 7 }
-    - { role: tomcat8, when: version == 8 }
+    # - { role: tomcat7, when: version == 7 }
+    - role: tomcat8 #, when: version == 8 }
 
 # Install postgres server role
 - hosts: tag_role_database
