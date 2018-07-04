@@ -17,7 +17,7 @@ war_names:
     - { war_name: 'nxl#editor##1.44' }
     - { war_name: 'nxl#mapper##1.0017' }
     - { war_name: 'nxl#services##1.0122' }
-war_deploy_path: /opt/apache-tomcat-7.0.61/webapps
+war_deploy_path: /opt/apache-tomcat-8.5.13/webapps
 
 Rails:
     configuration:
