@@ -24,7 +24,11 @@
 
 - name: Configure Tomcat server
   template: src=server.xml dest=/usr/share/tomcat/conf/
-  notify: restart tomcat
+  notify: tomcat-8-restart
+
+- name: Configure Tomcat Manager
+  template: src=manager.xml dest=/usr/share/tomcat/conf/Catalina/localhost/manager.xml
+  notify: tomcat-8-restart
 
 - name: Configure Tomcat users
   template: src=tomcat-users.xml dest=/usr/share/tomcat/conf/
