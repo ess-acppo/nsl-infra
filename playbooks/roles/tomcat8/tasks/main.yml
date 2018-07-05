@@ -37,7 +37,7 @@
   shell: systemctl daemon-reload
 
 - name: tomcat-8-start
-  service: name=tomcat state=started enabled=yes
+  service: name=tomcat state=restarted enabled=yes
 
 - name: wait for tomcat to start
   wait_for: port={{http_port}}
