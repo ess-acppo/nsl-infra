@@ -53,10 +53,10 @@
     become: yes
 
 # Bootstrap the database
-- hosts: tag_role_database
-  become: yes
-  roles:
-    - bootstrap-db 
+# - hosts: tag_role_database
+#   become: yes
+#   roles:
+#     - bootstrap-db 
 
 # Install ApacheDS for ldap
 - hosts: tag_role_ldap
