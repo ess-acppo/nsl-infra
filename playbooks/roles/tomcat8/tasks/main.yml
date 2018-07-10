@@ -42,7 +42,9 @@
 
 - name: systemd daemon-reload
   shell: systemctl daemon-reload
-  notify: tomcat-8-restart
+
+- name: Start Tomcat First Time
+  command: bash -c '/usr/share/tomcat/bin/startup.sh'
 
 - name: wait for tomcat to start
   wait_for: port={{http_port}}
