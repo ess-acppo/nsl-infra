@@ -26,6 +26,9 @@
   template: src=server.xml dest=/usr/share/tomcat/conf/
   notify: tomcat-8-restart
 
+- name: Creates directory Catalina/localhost
+  file: path=/usr/share/tomcat/conf/Catalina/localhost state=directory 
+
 - name: Configure Tomcat Manager
   template: src=manager.xml dest=/usr/share/tomcat/conf/Catalina/localhost/manager.xml
   notify: tomcat-8-restart
