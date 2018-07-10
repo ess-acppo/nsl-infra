@@ -151,7 +151,7 @@
         # The security policy that defines which ciphers and protocols are supported. The default is the current predefined security policy.
         SslPolicy: ELBSecurityPolicy-2016-08
         Certificates: # The ARN of the certificate (only one certficate ARN should be provided)
-          - CertificateArn: arn:aws:acm:ap-southeast-2:194924002687:certificate/6ea06ff7-f1d1-4921-b3dd-8999c69546a7
+          - CertificateArn: arn:aws:acm:ap-southeast-2:194924002687:certificate/97b6421e-ba1e-4961-927a-aaf57163b4d0
         DefaultActions:
           - Type: forward # Required. Only 'forward' is accepted at this time
             TargetGroupName: "{{ nxl_elb_target_group.target_group_name }}"# Required. The name of the target group
