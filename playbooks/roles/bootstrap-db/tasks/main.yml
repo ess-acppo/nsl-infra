@@ -6,9 +6,7 @@
   with_items:
     - { filename: "{{ shard_nsl_ddl_file }}" }
     - { filename: mapper-ddl.sql }
-
-
-
+    - { filename: mapper-ddlv2.sql }
 
 - postgresql_schema:
     name: mapper
@@ -18,7 +16,7 @@
     login_user: "{{postgresql_users[1].name}}"
     login_password: "{{postgresql_users[1].password}}"
 
-
+# Update nsl/mapper schema and tables
 - name: Create nsl.public tables, views etc
   become: true
   become_user: postgres
@@ -27,4 +25,42 @@
 - name: Create nsl.mapper tables, views etc
   become: true
   become_user: postgres
+  command: psql -f /tmp/mapper-ddlv2.sql nsl
+
+- name: Update nsl.mapper tables, views etc
+  become: true
+  become_user: postgres
   command: psql -f /tmp/mapper-ddl.sql nsl
+
+# Upgrade cb version to 25
+- name: Upgrade the database version to 25
+  become: true
+  become_user: postgres
+  command: psql -f /opt/apache-tomcat-8.5.13/webapps/nxl#services##1.0204/plugins/nsl-domain-plugin-1.10/sql/update-to-25.sql
+
+# FIX: mapper.db_version table created, but empty
+- name: Create an entry in mapper.db_version table
+  become: true
+  become_user: postgres
+  command: psql -c 'INSERT INTO mapper.db_version (id, version) VALUES (1, 5);'
+
+# FIX: always make sure the mapper points to the localhost mapper
+- name: Make the mapper points to the localhost mapper
+  become: true
+  become_user: postgres
+  command: psql -c 'UPDATE mapper.host SET host_name = 'localhost:7070/nsl-mapper' where preferred = true;'
+
+# FIX: editor, add missing property
+- name: Add missing property in rails configuration
+  become: true
+  become_user: tomcat
+  command: echo 'Rails.configuration.nsl_linker = "http://localhost:7070/nsl-mapper/"' >> $CATALINA_HOME/.nsl/editor-config.rb
+
+- name: Add entry to mapper.host_name
+  become: true
+  become_user: postgres
+  command: psql -c 'INSERT INTO mapper.host (id, host_name, preferred) VALUES (0, 'localhost:7070/nsl-mapper', true);'
+
+# Restart tomcat
+- name: tomcat-8-restart
+  service: name=tomcat state=restarted
