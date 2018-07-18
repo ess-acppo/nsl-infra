@@ -91,6 +91,14 @@
 - name: systemd daemon-reload
   shell: systemctl daemon-reload
 
+- name: Copy setenv file
+  template:
+    src: "{{item.filename}}.j2"
+    dest: "/usr/share/tomcat/bin/{{item.filename}}"
+    mode: 0664
+  with_items:
+  - { filename: setenv.sh } 
+
 - name: Start Tomcat First Time
   command: bash -c '/usr/share/tomcat/bin/startup.sh'
 

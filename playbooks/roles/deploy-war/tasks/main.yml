@@ -6,14 +6,11 @@
   register: existing_wars
   with_items: "{{ apps }}"
 
-
-
 - name: Clean exisitng war dir
   file:
     state: absent
     path: "{{ item.path }}"
   with_items: "{{ existing_wars.results[0].files }}"
-
 
 - name: Clean artifact path
   file:
@@ -54,8 +51,6 @@
     - { filename: nsl-mapper-config.groovy }
   tags:
     - configuration
-
-
 
 - name: Copy setenv file
   template:
