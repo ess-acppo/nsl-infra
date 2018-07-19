@@ -67,12 +67,11 @@
   roles:
     - { role: deploy-war}
 
-
-# Bootstrap the database
-- hosts: tag_role_database
-  become: yes
-  roles:
-    - bootstrap-db 
+# # Bootstrap the database
+# - hosts: tag_role_database
+#   become: yes
+#   roles:
+#     - bootstrap-db 
 
 
   
