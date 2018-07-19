@@ -52,12 +52,6 @@
   - role: geerlingguy.postgresql
     become: yes
 
-# Bootstrap the database
-- hosts: tag_role_database
-  become: yes
-  roles:
-    - bootstrap-db 
-
 # Install ApacheDS for ldap
 - hosts: tag_role_ldap
   become: yes
@@ -72,6 +66,13 @@
   become_method: sudo
   roles:
     - { role: deploy-war}
+
+
+# Bootstrap the database
+- hosts: tag_role_database
+  become: yes
+  roles:
+    - bootstrap-db 
 
 
   
