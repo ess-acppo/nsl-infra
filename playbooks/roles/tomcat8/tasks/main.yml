@@ -95,9 +95,10 @@
   template:
     src: "{{item.filename}}.j2"
     dest: "/usr/share/tomcat/bin/{{item.filename}}"
-    mode: 0664
+    mode: 0775
   with_items:
   - { filename: setenv.sh } 
+  - { filename: startup.sh } 
 
 - name: Start Tomcat First Time
   command: bash -c '/usr/share/tomcat/bin/startup.sh'
