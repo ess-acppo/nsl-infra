@@ -101,7 +101,7 @@
   - { filename: startup.sh } 
 
 - name: Start Tomcat First Time
-  command: bash -c 'systemctl start "tomcat"
+  command: bash -c 'systemctl start "tomcat"'
   become: True
   become_method: sudo
 
