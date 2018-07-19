@@ -101,7 +101,9 @@
   - { filename: startup.sh } 
 
 - name: Start Tomcat First Time
-  command: bash -c '/usr/share/tomcat/bin/startup.sh'
+  command: bash -c 'systemctl start "tomcat"
+  become: True
+  become_method: sudo
 
 - name: wait for tomcat to start
   wait_for: port={{ http_port }}
