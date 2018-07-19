@@ -40,7 +40,7 @@
 - name: Upgrade the database version to 25
   become: true
   become_user: postgres
-  command: psql -f /var/lib/postgres/update-to-25.sql
+  command: psql -f /var/lib/postgresql/update-to-25.sql
 
 # FIX: mapper.db_version table created, but empty
 - name: Create an entry in mapper.db_version table
