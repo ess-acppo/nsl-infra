@@ -32,16 +32,15 @@
   become_user: postgres
   command: psql -f /tmp/mapper-ddl.sql nsl
 
-# Upgrade cb version to 25
-- name: Upgrade the database version to 25
-  become: true
-  file: dest=/opt/apache-tomcat-8.5.13/webapps/nxl#services##1.0204/plugins/nsl-domain-plugin-1.10/sql mode=777 recurse=yes
+# Copy script to postgres home dir
+- name: Copy script to postgres home dir
+  copy: src=/opt/apache-tomcat-8.5.13/webapps/nxl#services##1.0204/plugins/nsl-domain-plugin-1.10/sql dest=/var/lib/postgres owner=postgres mode=755
 
 # Upgrade cb version to 25
 - name: Upgrade the database version to 25
   become: true
   become_user: postgres
-  command: psql -f /opt/apache-tomcat-8.5.13/webapps/nxl#services##1.0204/plugins/nsl-domain-plugin-1.10/sql/update-to-25.sql
+  command: psql -f /var/lib/postgres/update-to-25.sql
 
 # FIX: mapper.db_version table created, but empty
 - name: Create an entry in mapper.db_version table
