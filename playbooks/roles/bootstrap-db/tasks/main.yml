@@ -48,22 +48,17 @@
   become_user: postgres
   command: psql "{{postgresql_databases[0].name}}" -c 'INSERT INTO mapper.db_version (id, version) VALUES (1, 5);'
 
-# FIX: always make sure the mapper points to the localhost mapper
-- name: Make the mapper points to the localhost mapper
+# FIX: always make sure the mapper point to the localhost mapper
+- name: Make the mapper point to the localhost mapper
   become: true
   become_user: postgres
-  command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE mapper.host SET host_name = \'localhost:7070/nsl-mapper\' WHERE preferred = true;'
+  command: psql "{{postgresql_databases[0].name}}" -c 'INSERT INTO mapper.host (id, host_name, preferred) VALUEs (1, \'localhost:7070/nsl-mapper\', true) ON CONFLICT (id) DO NOTHING;'
 
 # FIX: editor, add missing property
 - name: Add missing property in rails configuration
   become: true
   become_user: tomcat
   command: echo 'Rails.configuration.nsl_linker = "http://localhost:7070/nsl-mapper/"' >> $CATALINA_HOME/.nsl/editor-config.rb
-
-- name: Add entry to mapper.host_name
-  become: true
-  become_user: postgres
-  command: psql "{{postgresql_databases[0].name}}" -c 'INSERT INTO mapper.host (id, host_name, preferred) VALUES (0, 'localhost:7070/nsl-mapper', true);'
 
 # Restart tomcat
 - name: tomcat-8-restart
