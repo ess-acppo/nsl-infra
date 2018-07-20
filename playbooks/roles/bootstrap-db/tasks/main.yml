@@ -76,3 +76,7 @@
 # Restart tomcat
 - name: tomcat-8-restart
   service: name=tomcat state=restarted
+
+# Echo variable {{tomcat_dir}}
+- name: echo variable
+  command: echo {{tomcat_dir}}
