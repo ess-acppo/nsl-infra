@@ -49,10 +49,17 @@
   command: psql "{{postgresql_databases[0].name}}" -c 'INSERT INTO mapper.host (id, host_name, preferred) VALUEs (1, '\''localhost:7070/nsl-mapper'\'', true) ON CONFLICT (id) DO NOTHING;'
 
 # FIX: editor, add missing property
-- name: Add missing property in rails configuration
-  become: true
-  become_user: tomcat
-  command: echo 'Rails.configuration.nsl_linker = "http://localhost:7070/nsl-mapper/"' >> "{{tomcat_dir}}"/.nsl/editor-config.rb
+# - name: Add missing property in rails configuration
+#   become: true
+#   become_user: tomcat
+#   command: echo 'Rails.configuration.nsl_linker = "http://localhost:7070/nsl-mapper/"' >> "{{tomcat_dir}}"/.nsl/editor-config.rb
+- name: Add line in editor-config.rb for editor rails property
+  lineinfile:
+    dest: "{{tomcat_dir}}"/.nsl/editor-config.rb
+    line: 'Rails.configuration.nsl_linker = "http://localhost:7070/nsl-mapper/"'
+    insertafter: 'EOF'
+    regexp: 'Rails.configuration.nsl_linker = "http://localhost:7070/nsl-mapper/"'
+    state: present
 
 # Upgrade cb version to 25
 - name: Upgrade the database version to 25
