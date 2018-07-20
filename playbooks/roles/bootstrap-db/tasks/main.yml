@@ -52,7 +52,7 @@
 - name: Make the mapper points to the localhost mapper
   become: true
   become_user: postgres
-  command: psql -c "{{postgresql_databases[0].name}}" 'UPDATE mapper.host SET host_name = 'localhost:7070/nsl-mapper' where preferred = true;'
+  command: psql -c "{{postgresql_databases[0].name}}" 'UPDATE mapper.host SET host_name = "localhost:7070/nsl-mapper" where preferred = true;'
 
 # FIX: editor, add missing property
 - name: Add missing property in rails configuration
