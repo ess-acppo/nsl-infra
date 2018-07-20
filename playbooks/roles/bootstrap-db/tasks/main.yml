@@ -57,7 +57,7 @@
 # Upgrade cb version to 25
 - name: Upgrade the database version to 25
   become: true
-  become_user: tomcat
+  become_user: postgres
   command: psql "{{postgresql_databases[0].name}}" -f /var/lib/postgresql/update-to-25.sql
 
 # Cat the editor-config.rb file
