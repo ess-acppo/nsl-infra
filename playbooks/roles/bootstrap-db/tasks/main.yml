@@ -46,13 +46,13 @@
 - name: Create an entry in mapper.db_version table
   become: true
   become_user: postgres
-  command: psql {{ postgresql_databases.name[0] }} -c 'INSERT INTO mapper.db_version (id, version) VALUES (1, 5);'
+  command: psql "{{postgresql_databases[0].name}}" -c 'INSERT INTO mapper.db_version (id, version) VALUES (1, 5);'
 
 # FIX: always make sure the mapper points to the localhost mapper
 - name: Make the mapper points to the localhost mapper
   become: true
   become_user: postgres
-  command: psql -c {{ postgresql_databases.name[0] }} 'UPDATE mapper.host SET host_name = 'localhost:7070/nsl-mapper' where preferred = true;'
+  command: psql -c "{{postgresql_databases[0].name}}" 'UPDATE mapper.host SET host_name = 'localhost:7070/nsl-mapper' where preferred = true;'
 
 # FIX: editor, add missing property
 - name: Add missing property in rails configuration
@@ -63,7 +63,7 @@
 - name: Add entry to mapper.host_name
   become: true
   become_user: postgres
-  command: psql {{ postgresql_databases.name[0] }} -c 'INSERT INTO mapper.host (id, host_name, preferred) VALUES (0, 'localhost:7070/nsl-mapper', true);'
+  command: psql "{{postgresql_databases[0].name}}" -c 'INSERT INTO mapper.host (id, host_name, preferred) VALUES (0, 'localhost:7070/nsl-mapper', true);'
 
 # Restart tomcat
 - name: tomcat-8-restart
