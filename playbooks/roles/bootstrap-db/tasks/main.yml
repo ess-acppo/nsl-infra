@@ -36,12 +36,6 @@
 - name: Copy script to postgres home dir
   copy: src=/opt/apache-tomcat-8.5.13/webapps/nxl#services##1.0204/plugins/nsl-domain-plugin-1.10/sql/update-to-25.sql dest=/var/lib/postgresql/update-to-25.sql owner=postgres mode=755 remote_src=yes  
 
-# Upgrade cb version to 25
-- name: Upgrade the database version to 25
-  become: true
-  become_user: postgres
-  command: psql -f /var/lib/postgresql/update-to-25.sql
-
 # FIX: mapper.db_version table created, but empty
 - name: Create an entry in mapper.db_version table
   become: true
@@ -59,6 +53,18 @@
   become: true
   become_user: tomcat
   command: echo 'Rails.configuration.nsl_linker = "http://localhost:7070/nsl-mapper/"' >> $CATALINA_HOME/.nsl/editor-config.rb
+
+# Upgrade cb version to 25
+- name: Upgrade the database version to 25
+  become: true
+  become_user: tomcat
+  command: psql "{{postgresql_databases[0].name}}" -f /var/lib/postgresql/update-to-25.sql
+
+# Cat the editor-config.rb file
+- name: Upgrade the database version to 25
+  become: true
+  become_user: tomcat
+  command: cat $CATALINA_HOME/.nsl/editor-config.rb
 
 # Restart tomcat
 - name: tomcat-8-restart
