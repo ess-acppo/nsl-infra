@@ -4,7 +4,7 @@ private_ip: "{{inventory_hostname}}"
 jdk_dir: /opt/jdk1.8.0_171
 jdk_tar: jdk-8u171-linux-x64.tar.gz
 # Here are variables related to the Tomcat installation
-
+tomcat_dir: /opt/tomcat
 http_port: 8080
 https_port: 8443
 
