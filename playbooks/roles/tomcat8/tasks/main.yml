@@ -88,6 +88,22 @@
 - name: Install Tomcat init script
   copy: src=tomcat-initscript.sh dest=/etc/init.d/tomcat mode=0755
 
+- name: Start Start tomcat in all runlevels
+  command: bash -c 'update-rc.d tomcat defaults'
+  become: True
+  become_method: sudo
+
+- name: Create /conf/Catalina/localhost/rewrite.comfig file
+  file: path="{{ tomcat_dir }}/conf/Catalina/localhost/rewrite.comfig" state=touch mode=0755
+
+- name: Add rewrite intry from /nsl/* to /nxl/*
+  lineinfile:
+    dest: "{{ tomcat_dir }}/conf/Catalina/localhost/rewrite.comfig"
+    line: 'RewriteRule /nsl/editor/(.*) /nxl/editor/$1 [R,NE]'
+    insertafter: 'EOF'
+    regexp: 'RewriteRule /nsl/editor/(.*) /nxl/editor/$1 [R,NE]'
+    state: present
+
 - name: systemd daemon-reload
   shell: systemctl daemon-reload
 
