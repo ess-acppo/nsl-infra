@@ -94,7 +94,7 @@
   become_method: sudo
 
 - name: Create /conf/Catalina/localhost/rewrite.comfig file
-  file: path="{{ tomcat_dir }}/conf/Catalina/localhost/rewrite.comfig" state=touch mode=0755
+  file: path="{{ tomcat_dir }}/conf/Catalina/localhost/rewrite.comfig" state=file mode=0755
 
 - name: Add rewrite intry from /nsl/* to /nxl/*
   lineinfile:
