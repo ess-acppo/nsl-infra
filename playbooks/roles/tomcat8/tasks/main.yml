@@ -94,7 +94,7 @@
   become_method: sudo
 
 - name: Create /conf/Catalina/localhost/rewrite.comfig file
-  command: bash -c "echo 'RewriteRule /nsl/editor/(.*) /nxl/editor/$1 [R,NE]' > {{ tomcat_dir }}/conf/Catalina/localhost/rewrite.comfig"
+  command: bash -c "echo 'RewriteRule /nsl/editor/(.*) /nxl/editor/$1 [R,NE]' > {{ tomcat_dir }}/conf/Catalina/localhost/rewrite.config"
 
 - name: systemd daemon-reload
   shell: systemctl daemon-reload
