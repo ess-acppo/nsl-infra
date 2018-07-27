@@ -7,6 +7,11 @@ node {
     def env_name = env_instance_name.split("-")[0]
     def elb_dns = "$env_name"+"-"+"$SHARD_TYPE"+".oztaxa.com"
 
+    def git_tag_domain_plugin = '34e671f818c83dffba672a1938c060faa2d01db9'
+    def git_tag_services = 'e251bdd5f20e73832ec81501ae530b924e1dda2f'
+    def git_tag_mapper = '138d1ddd8e71c7a79c7405d3269fd6ceb00aa87f'
+    def git_tag_editor = '9675e53469f352fcf4a439b0d8eeacbd91f12285'
+
     stage("Prepare") { // for display purposes
         // Get some code from a GitHub repository
         slackSend color: 'good', message: "started ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
@@ -16,17 +21,17 @@ node {
         // Get some code from a GitHub repository
         sh 'whoami;  touch fake.war; rm *.war || echo "no war files"'
 
-        checkout([$class: 'GitSCM', branches: [[name: '9675e53469f352fcf4a439b0d8eeacbd91f12285']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-editor']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-editor.git']]])
+        checkout([$class: 'GitSCM', branches: [[name: ${git_tag_editor}]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-editor']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-editor.git']]])
 
-        checkout([$class: 'GitSCM', branches: [[name: '138d1ddd8e71c7a79c7405d3269fd6ceb00aa87f']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'mapper']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/mapper.git']]])
+        checkout([$class: 'GitSCM', branches: [[name: ${git_tag_mapper}]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'mapper']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/mapper.git']]])
 
-        checkout([$class: 'GitSCM', branches: [[name: 'e251bdd5f20e73832ec81501ae530b924e1dda2f']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'services']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/services.git']]])
+        checkout([$class: 'GitSCM',branches: [[name: ${git_tag_services}]],doGenerateSubmoduleConfigurations: false,extensions: [],submoduleCfg: [],userRemoteConfigs: [[url: 'https://github.com/bio-org-au/services.git']]])
 
         checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
 
         checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nxl-private']], submoduleCfg: [], userRemoteConfigs: [[url: '/var/lib/jenkins/nxl-private']]])
     
-        checkout([$class: 'GitSCM', branches: [[name: '34e671f818c83dffba672a1938c060faa2d01db9']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-domain-plugin']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/bio-org-au/nsl-domain-plugin.git']]])
+        checkout([$class: 'GitSCM', branches: [[name: ${git_tag_domain_plugin}]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-domain-plugin']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/bio-org-au/nsl-domain-plugin.git']]])
     }
 
     stage("Copy Ad-hoc Files from Private Repository"){
