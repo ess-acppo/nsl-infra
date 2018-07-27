@@ -34,7 +34,7 @@
 
 # Copy script to postgres home dir
 - name: Copy script to postgres home dir
-  copy: src=/opt/apache-tomcat-8.5.13/webapps/nxl#services##1.0205/plugins/nsl-domain-plugin-1.10/sql/update-to-25.sql dest=/var/lib/postgresql/update-to-25.sql owner=postgres mode=755 remote_src=yes  
+  copy: src=/opt/apache-tomcat-8.5.13/webapps/nxl#services##1.0205/plugins/nsl-domain-plugin-1.11-SNAPSHOT/sql/update-to-25.sql dest=/var/lib/postgresql/update-to-25.sql owner=postgres mode=755 remote_src=yes  
 
 # FIX: mapper.db_version table created, but empty
 - name: Create an entry in mapper.db_version table
