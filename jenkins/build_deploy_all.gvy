@@ -16,7 +16,7 @@ node {
         // Get some code from a GitHub repository
         sh 'whoami;  touch fake.war; rm *.war || echo "no war files"'
 
-        checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-editor']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-editor.git']]])
+        checkout([$class: 'GitSCM', branches: [[name: '*/release']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-editor']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-editor.git']]])
 
         checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'mapper']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/mapper.git']]])
 
@@ -84,10 +84,10 @@ node {
 
         dir('nsl-infra') {
             if (ENVIRONMENT_NAME) {
-                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$ENVIRONMENT_NAME","apps":[{"app": "editor"}], "war_names": [{"war_name": "nxl#editor##1.67"}   ],   "war_source_dir": "$projectDir"}'/
+                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$ENVIRONMENT_NAME","apps":[{"app": "editor"}], "war_names": [{"war_name": "nxl#editor##1.66"}   ],   "war_source_dir": "$projectDir"}'/
                 sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$ENVIRONMENT_NAME/g' aws_utils/ec2.ini && ansible-playbook  -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml -e $extra_vars -e $shard_vars"
             } else if (INVENTORY_NAME) {
-                def extra_vars = /'{"nxl_env_name":"$INVENTORY_NAME","apps":[{"app": "editor"}], "war_names": [{"war_name": "nxl#editor##1.67"}   ],   "war_source_dir": "$projectDir"}'/
+                def extra_vars = /'{"nxl_env_name":"$INVENTORY_NAME","apps":[{"app": "editor"}], "war_names": [{"war_name": "nxl#editor##1.66"}   ],   "war_source_dir": "$projectDir"}'/
                 sh "ansible-playbook -vvv -i inventory/$INVENTORY_NAME -u ubuntu playbooks/deploy.yml -e $extra_vars -e $shard_vars"
             }
         }
