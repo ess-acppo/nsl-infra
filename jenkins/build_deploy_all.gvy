@@ -134,7 +134,7 @@ node {
 
     stage("Run smoke test"){
         sleep(2)
-        slackSend color: "good", message: "${env.JOB_NAME} deployed ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
+        slackSend color: "good", message: "${env.JOB_NAME} completed successfully ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
 
     }
 
