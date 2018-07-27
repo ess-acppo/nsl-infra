@@ -21,9 +21,9 @@ node {
         // Get some code from a GitHub repository
         sh 'whoami;  touch fake.war; rm *.war || echo "no war files"'
 
-        checkout([$class: 'GitSCM', branches: [[name: "${git_tag_editor}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-editor']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-editor.git']]])
+        checkout([$class: 'GitSCM', branches: [[name: "${git_tag_editor}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-editor']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/bio-org-au/nsl-editor.git']]])
 
-        checkout([$class: 'GitSCM', branches: [[name: "${git_tag_mapper}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'mapper']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/mapper.git']]])
+        checkout([$class: 'GitSCM', branches: [[name: "${git_tag_mapper}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'mapper']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/bio-org-au/mapper.git']]])
 
         checkout([$class: 'GitSCM',branches: [[name: "${git_tag_services}"]],doGenerateSubmoduleConfigurations: false,extensions: [],submoduleCfg: [],userRemoteConfigs: [[url: 'https://github.com/bio-org-au/services.git']]])
 
@@ -36,6 +36,7 @@ node {
 
     stage("Copy Ad-hoc Files from Private Repository"){
         dir('nsl-infra') {
+                sh 'ls ../nsl-infra; ls ../nsl-editor; ls ../services; ls ../mapper'
                 sh 'cp ../nxl-private/bnti/jdk*.tar.gz playbooks/roles/tomcat8/files/'
                 sh 'cp ../nxl-private/bnti/tag_tole_database.yml aws_utils/group_vars/tag_role_database.yml'
         }
