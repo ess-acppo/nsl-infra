@@ -68,7 +68,7 @@ node {
                 sh 'cp ../nxl-private/bnti/build-nxl-services.sh .'
                 sh 'chmod +x ./build-nxl-services.sh'
                 sh './build-nxl-services.sh'
-                sh 'mv ./target/services##1.0204.war ./target/nxl#services##1.0204.war'
+                sh 'mv ./target/services##1.0205.war ./target/nxl#services##1.0205.war'
             }
 
     }
@@ -76,11 +76,11 @@ node {
         dir('nsl-infra') {
             warDir = pwd() + "/../services/target"
             if (ENVIRONMENT_NAME) {
-                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name","apps":[{"app": "services"}], "war_names": [{"war_name": "nxl#services##1.0204"}   ],   "war_source_dir": "$warDir"}'/
+                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name","apps":[{"app": "services"}], "war_names": [{"war_name": "nxl#services##1.0205"}   ],   "war_source_dir": "$warDir"}'/
                 sh 'echo "whoami: `whoami`"'  
                 sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$env_instance_name/g' aws_utils/ec2.ini && ansible-playbook  -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml -e $extra_vars --extra-vars $shard_vars"
             } else if (INVENTORY_NAME) {
-                def extra_vars = /'{"nxl_env_name":"$env_name","apps":[{"app": "services"}], "war_names": [{"war_name": "nxl#services##1.0204"}   ],   "war_source_dir": "$warDir"}'/
+                def extra_vars = /'{"nxl_env_name":"$env_name","apps":[{"app": "services"}], "war_names": [{"war_name": "nxl#services##1.0205"}   ],   "war_source_dir": "$warDir"}'/
                 sh "ansible-playbook  -i inventory/$env_name -u ubuntu playbooks/deploy.yml -e $extra_vars --extra-vars $shard_vars"
             }
         }
