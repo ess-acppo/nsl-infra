@@ -24,7 +24,7 @@ postgresql_hba_entries:
 
 # Debian only. Used to generate the locales used by PostgreSQL databases.
 postgresql_locales:
-  - 'en_US.UTF-8'
+  # - 'en_US.UTF-8'
   - 'en_AU.UTF-8'
 
 # Databases to ensure exist.
