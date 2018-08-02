@@ -24,6 +24,5 @@ stage("Running Bootstrap data Operation") {
                 def extra_vars = /'{"nxl_env_name":"$env_name"}'/
                 sh "ansible-playbook  -i inventory/$env_name -u ubuntu playbooks/deploy.yml -e $extra_vars --extra-vars $shard_vars"
             }
-        }
     }
 }
