@@ -102,7 +102,7 @@
 - name: Update mapper links in the tree
   become: true
   become_user: postgres
-  command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE tree_element SET instance_link = regexp_replace(instance_link, '\''https://'"{{elb_dns}}"\'', '\''https://'"{{elb_dns}}/nxl/mapper"\'''), name_link = regexp_replace(name_link, '\''https://'"{{elb_dns}}"\'', '\''https://'"{{elb_dns}}/nxl/mapper"\''');'
+  command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE tree_element SET instance_link = regexp_replace(instance_link, '\''https://'"{{elb_dns}}"\'', '\''https://'"{{elb_dns}}"'/nxl/mapper'\''), name_link = regexp_replace(name_link, '\''https://'"{{elb_dns}}"\'', '\''https://'"{{elb_dns}}"'/nxl/mapper'\'');'
 
 - name: Copy nsl config files
   template:
