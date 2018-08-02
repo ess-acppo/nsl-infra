@@ -13,5 +13,5 @@
   "description_html" : "<p>This section of the National ex-Australia Species List infrastructure delivers names and taxonomies for organisms named according to the International Code of Plant Nomenclature. The data comprise names, bibliographic information, and taxonomic concepts for organisms that are neither native to nor naturalised in Australia. The Biosecurity Plant Name Index ({{ shard_namespace_UPPER }}) provides names and bibliographic information. The Biosecurity Plant Checklist ({{ taxonomy_name }}) provides a provisional taxonomy.</p>",
   "menu_label" : "Biosecurity Plant",
   "services_path_tree_element" : "bpc",
-  "shard_nsl_ddl_file": "icn-nsl-ddl.sql"
+  "shard_nsl_ddl_file": "icn-ddl.sql"
 }
