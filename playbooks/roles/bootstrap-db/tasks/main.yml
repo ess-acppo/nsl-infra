@@ -22,7 +22,9 @@
   pause: seconds=5
 
 - name: Re-Create the nsl database
-  postgresql_db: name="{{postgresql_databases[0].name}}" state=present owner="{{postgresql_users[1].name}}"
+  command: psql -c 'create database '"{{postgresql_databases[0].name}}"';'
+  become: true
+  become_user: postgres
 
 - postgresql_schema:
     name: mapper
