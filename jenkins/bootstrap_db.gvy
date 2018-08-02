@@ -7,10 +7,6 @@ stage("Bootstrapping data into DB") {
 
             def verbose = ''
 
-            if(VERBOSE){
-                verbose = ''
-            }
-
             if (ENVIRONMENT_NAME) {
                 def env_instance_name = "$ENVIRONMENT_NAME".split(",")[0]
                 def env_name = env_instance_name.split("-")[0]

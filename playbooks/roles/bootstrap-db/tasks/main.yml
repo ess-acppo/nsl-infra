@@ -14,7 +14,7 @@
     - { filename: icn-tree-import.sql }
 
 - name: Drop the nsl database
-  command: dropdb "{{postgresql_databases[0].name}}"
+  command: psql -c 'drop database if exists '"{{postgresql_databases[0].name}}"';'
   become: true
   become_user: postgres
 
