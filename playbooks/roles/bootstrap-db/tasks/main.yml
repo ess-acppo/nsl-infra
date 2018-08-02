@@ -40,20 +40,8 @@
   become_user: postgres
   command: psql -f /tmp/"{{ shard_nsl_ddl_file }}" -d "{{postgresql_databases[0].name}}"
 
-# - name: Get todays date into variable
-#   set_fact: today_date="{{lookup('pipe','date +%Y%m%d'}}"
-
-- name: Get todays date into variable
-  shell: 'date +%Y%m%d'
-  register: today_date
-
-# - debug:
-#     var=today_date
 - name: Copy tblBiota_date file to tmp folder
-  command: echo "{{today_date}}"
-
-- name: Copy tblBiota_date file to tmp folder
-  copy: src="{{sftp_user_home}}/tblBiota_{{today_date}}" dest=/tmp/tblbiota.csv mode=0777
+  copy: src=tblbiota.csv dest=/tmp/tblbiota.csv mode=0644
 
 - name: Create nsl.public tables, views etc
   become: true
@@ -160,3 +148,15 @@
 #   become: true
 #   become_user: postgres
 #   command: psql -f /tmp/mapper-ddl.sql nsl
+
+# - name: Get todays date into variable
+#   set_fact: today_date="{{lookup('pipe','date +%Y%m%d'}}"
+
+# - name: Get todays date into variable
+#   shell: 'date +%Y%m%d'
+#   register: today_date
+
+# # - debug:
+# #     var=today_date
+# - name: Copy tblBiota_date file to tmp folder
+#   command: echo "{{today_date}}"
