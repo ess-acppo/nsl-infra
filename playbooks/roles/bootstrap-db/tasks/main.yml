@@ -14,7 +14,9 @@
     - { filename: icn-tree-import.sql }
 
 - name: Drop the nsl database
-  postgresql_db: name="{{postgresql_databases[0].name}}" state=absent
+  command: dropdb "{{postgresql_databases[0].name}}"
+  become: true
+  become_user: postgres
 
 - name: Sleep 5 sec
   pause: seconds=5
