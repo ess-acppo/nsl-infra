@@ -40,7 +40,7 @@ node {
                throw e
         }
     }
-
+        slackSend color: 'good', message: "Building war files in ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
     stage("Copy Ad-hoc Files from Private Repository"){
         dir('nsl-infra') {
                 sh 'cp ../nxl-private/bnti/jdk*.tar.gz playbooks/roles/tomcat8/files/'
@@ -78,6 +78,9 @@ node {
                 sh 'mv ./target/services##1.0205.war ./target/nxl#services##1.0205.war'
             }
 
+
+        slackSend color: 'good', message: "Preparing to Deploy war files in ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
+
     }
     stage("Deploy services to $ENVIRONMENT_NAME") {
         dir('nsl-infra') {
@@ -109,19 +112,23 @@ node {
         dir('nsl-infra') {
             warDir = pwd() + "/../mapper/target/"
             if (ENVIRONMENT_NAME) {
-                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name","apps":[{"app": "mapper"}], "war_names": [{"war_name": "nsl#mapper##1.0022"}   ],   "war_source_dir": "$warDir"}'/
+                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name","apps":[{"app": "mapper"}], "war_names": [{"war_name": "nxl#mapper##1.0022"}   ],   "war_source_dir": "$warDir"}'/
                 sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$env_instance_name/g' aws_utils/ec2.ini && ansible-playbook  -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml -e $extra_vars --extra-vars $shard_vars"
             } else if (INVENTORY_NAME) {
 
-                def extra_vars = /'{"nxl_env_name":"$env_name","apps":[{"app": "mapper"}], "war_names": [{"war_name": "nsl#mapper##1.0022"}   ],   "war_source_dir": "$warDir"}'/
+                def extra_vars = /'{"nxl_env_name":"$env_name","apps":[{"app": "mapper"}], "war_names": [{"war_name": "nxl#mapper##1.0022"}   ],   "war_source_dir": "$warDir"}'/
                 sh "ansible-playbook  -i inventory/$env_name -u ubuntu playbooks/deploy.yml -e $extra_vars --extra-vars $shard_vars"
             }
         }
     }
+        
 
     stage("Bootstrapping data into DB") {
     node{
         checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
+
+        slackSend color: 'good', message: "Starting bootstrap process for DB in ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
+
         dir('nsl-infra'){
             def verbose = ''
             if(VERBOSE){

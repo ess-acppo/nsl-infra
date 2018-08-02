@@ -6,6 +6,9 @@ node{
                 sh 'cp /home/dawr/tblBiota_$(date +%Y%m%d).csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
     }
     stage("Running Bootstrap data Operation") {
+
+        slackSend color: 'good', message: "Started Job ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
+
         dir('nsl-infra'){
             def shard_vars = '@shard_vars/$SHARD_TYPE.json'
 
@@ -22,6 +25,8 @@ node{
                 def extra_vars = /'{"nxl_env_name":"$env_name"}'/
                 sh "ansible-playbook  -i inventory/$env_name -u ubuntu playbooks/deploy.yml -e $extra_vars --extra-vars $shard_vars"
             }
+
+            slackSend color: 'good', message: "Successfully finished: ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
         }
     }
 }
