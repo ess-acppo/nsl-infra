@@ -63,7 +63,7 @@ node {
                 sh 'cp ../nxl-private/bnti/build-nxl-mapper.sh .'
                 sh 'chmod +x ./build-nxl-mapper.sh'
                 sh './build-nxl-mapper.sh'
-                sh 'mv ./target/nsl-mapper##1.0022.war ./target/nsl#mapper##1.0022.war'
+                sh 'mv ./target/nsl-mapper##1.0022.war ./target/nxl#mapper##1.0022.war'
             }
             dir('nsl-domain-plugin') {
                 sh 'cp ../nxl-private/bnti/services-BuildConfig.groovy ./grails-app/conf/BuildConfig.groovy'
