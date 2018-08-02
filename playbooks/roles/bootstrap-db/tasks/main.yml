@@ -87,12 +87,12 @@
 - name: Update the tree group name to treebuilder
   become: true
   become_user: postgres
-  command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE tree SET group_name = treebuilder;'
+  command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE tree SET group_name = '\''treebuilder'\'';'
 
 - name: Update the host_name for mapper in mapper.host table
   become: true
   become_user: postgres
-  command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE mapper.host SET host_name = '"{{elb_dns}}"';'
+  command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE mapper.host SET host_name = '\'"{{elb_dns}}"\'';'
 
 - name: Update namespace in mapper identifier table
   become: true
@@ -102,7 +102,7 @@
 - name: Update mapper links in the tree
   become: true
   become_user: postgres
-  command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE tree_element SET instance_link = regexp_replace(instance_link, https://'"{{elb_dns}}"', https://'"{{elb_dns}}/nxl/mapper"'), name_link = regexp_replace(name_link, https://'"{{elb_dns}}"', https://'"{{elb_dns}}/nxl/mapper"');'
+  command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE tree_element SET instance_link = regexp_replace(instance_link, '\''https://'"{{elb_dns}}"\'', '\''https://'"{{elb_dns}}/nxl/mapper"\'''), name_link = regexp_replace(name_link, '\''https://'"{{elb_dns}}"\'', '\''https://'"{{elb_dns}}/nxl/mapper"\''');'
 
 - name: Copy nsl config files
   template:
