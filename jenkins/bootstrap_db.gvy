@@ -1,7 +1,14 @@
+stage("Prepare  $ENVIRONMENT_NAME") {
+        dir('nsl-infra') {
+                checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
+                sh 'mkdir playbooks/roles/bootstrap-db/files/'
+                sh 'cp /home/dawr/tblBiota_$(date +%Y%m%d).csv playbooks/roles/bootstrap-db/files/tblbiota.csv'
+            }
+        }
+    }
 
 stage("Bootstrapping data into DB") {
     node{
-        checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
         dir('nsl-infra'){
             def shard_vars = '@shard_vars/$SHARD_TYPE.json'
 
