@@ -1,3 +1,4 @@
+db_host: localhost
 postgresql_databases:
   - name: nsl
 postgresql_users:
@@ -23,3 +24,5 @@ postgresql_users:
 
 jdk_dir: /opt/jdk1.8.0_171
 tomcat_dir: /opt/tomcat
+sftp_user: dawr
+sftp_user_home: /home/dawr
