@@ -2,6 +2,7 @@ node{
 stage("Prepare env-name= $ENVIRONMENT_NAME for play") {
 
         dir('nsl-infra') {
+                sh 'rm -rf *'
                 checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
                 //sh 'mkdir playbooks/roles/bootstrap-db/files/'
                 sh 'cp /home/dawr/tblBiota_$(date +%Y%m%d).csv playbooks/roles/bootstrap-db/files/tblbiota.csv'
