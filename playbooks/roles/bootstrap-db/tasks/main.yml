@@ -43,20 +43,20 @@
 - name: Copy tblBiota_date file to tmp folder
   copy: src=tblbiota.csv dest=/tmp/tblbiota.csv mode=0644
 
-- name: Create nsl.public tables, views etc
+- name: Running icn-import sql script
   become: true
   become_user: postgres
   command: psql -f /tmp/icn-import.sql -d "{{postgresql_databases[0].name}}"
 
-- name: Create nsl.public tables, views etc
+- name: Running Tree import sql script
   become: true
   become_user: postgres
   command: psql -f /tmp/icn-tree-import.sql -d "{{postgresql_databases[0].name}}"
 
-- name: Create nsl.mapper tables, views etc
+- name: Create nsl.mapper tables, views using mapper v2 sql script
   become: true
   become_user: postgres
-  command: psql -f /tmp/mapper-ddlv2.sql nsl -d "{{postgresql_databases[0].name}}"
+  command: psql -f /tmp/mapper-ddlv2.sql -d "{{postgresql_databases[0].name}}"
 
 # Copy script to postgres home dir
 - name: Copy script to postgres home dir
