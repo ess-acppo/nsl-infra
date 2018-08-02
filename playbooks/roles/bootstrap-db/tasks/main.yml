@@ -1,4 +1,7 @@
 ---
+- name: Stop tomcat to import data
+  service: name=tomcat state=stopped
+
 - name: Copy ddl files
   template:
     src: "{{item.filename}}.j2"
@@ -7,34 +10,63 @@
     - { filename: "{{ shard_nsl_ddl_file }}" }
     - { filename: mapper-ddl.sql }
     - { filename: mapper-ddlv2.sql }
+    - { filename: icn-import.sql }
+    - { filename: icn-tree-import.sql }
+
+- name: Drop the nsl database
+  postgresql_db: name="{{postgresql_databases[0].name}}" state=absent
+
+- name: Sleep 5 sec
+  pause: seconds=5
+
+- name: Re-Create the nsl database
+  postgresql_db: name="{{postgresql_databases[0].name}}" state=present owner="{{postgresql_users[1].name}}"
 
 - postgresql_schema:
     name: mapper
     owner: "{{postgresql_users[1].name}}"
     database: "{{postgresql_databases[0].name}}"
-    login_host: 127.0.0.1
+    login_host: "{{db_host}}"
     login_user: "{{postgresql_users[1].name}}"
     login_password: "{{postgresql_users[1].password}}"
 
-# Update nsl/mapper schema and tables
+# Update nsl/mapper schema and tables using shard-ddl-file
 - name: Create nsl.public tables, views etc
   become: true
   become_user: postgres
-  command: psql -f /tmp/"{{ shard_nsl_ddl_file }}" nsl
+  command: psql -f /tmp/"{{ shard_nsl_ddl_file }}" -d "{{postgresql_databases[0].name}}"
+
+# - name: Get todays date into variable
+#   set_fact: today_date="{{lookup('pipe','date +%Y%m%d'}}"
+
+- name: Get todays date into variable
+  shell: 'date +%Y%m%d'
+  register: today_date
+
+# - debug:
+#     var=today_date
+
+- name: Copy tblBiota_date file to tmp folder
+  copy: src="{{sftp_user_home}}/tblBiota_{{today_date}}" dest=/tmp/tblbiota.csv mode=0777
+
+- name: Create nsl.public tables, views etc
+  become: true
+  become_user: postgres
+  command: psql -f /tmp/icn-import.sql -d "{{postgresql_databases[0].name}}"
+
+- name: Create nsl.public tables, views etc
+  become: true
+  become_user: postgres
+  command: psql -f /tmp/icn-tree-import.sql -d "{{postgresql_databases[0].name}}"
 
 - name: Create nsl.mapper tables, views etc
   become: true
   become_user: postgres
-  command: psql -f /tmp/mapper-ddlv2.sql nsl
-
-- name: Update nsl.mapper tables, views etc
-  become: true
-  become_user: postgres
-  command: psql -f /tmp/mapper-ddl.sql nsl
+  command: psql -f /tmp/mapper-ddlv2.sql nsl -d "{{postgresql_databases[0].name}}"
 
 # Copy script to postgres home dir
 - name: Copy script to postgres home dir
-  copy: src=/opt/apache-tomcat-8.5.13/webapps/nxl#services##1.0205/plugins/nsl-domain-plugin-1.11-SNAPSHOT/sql/update-to-25.sql dest=/var/lib/postgresql/update-to-25.sql owner=postgres mode=755 remote_src=yes  
+  copy: src=/opt/tomcat/webapps/nxl#services##1.0205/plugins/nsl-domain-plugin-1.11-SNAPSHOT/sql/update-to-25.sql dest=/var/lib/postgresql/update-to-25.sql owner=postgres mode=755 remote_src=yes  
 
 # FIX: mapper.db_version table created, but empty
 - name: Create an entry in mapper.db_version table
@@ -46,26 +78,41 @@
 - name: Make the mapper point to the localhost mapper
   become: true
   become_user: postgres
-  command: psql "{{postgresql_databases[0].name}}" -c 'INSERT INTO mapper.host (id, host_name, preferred) VALUEs (1, '\''localhost:7070/nsl-mapper'\'', true) ON CONFLICT (id) DO NOTHING;'
+  command: psql "{{postgresql_databases[0].name}}" -c 'INSERT INTO mapper.host (id, host_name, preferred) VALUEs (1, '\''"{{elb_dns}}/nxl/mapper"'\'', true) ON CONFLICT (id) DO NOTHING;'
 
-# FIX: editor, add missing property
-# - name: Add missing property in rails configuration
-#   become: true
-#   become_user: tomcat
-#   command: echo 'Rails.configuration.nsl_linker = "http://localhost:7070/nsl-mapper/"' >> "{{tomcat_dir}}"/.nsl/editor-config.rb
-- name: Add line in editor-config.rb for editor rails property
-  lineinfile:
-    dest: "{{tomcat_dir}}/.nsl/editor-config.rb"
-    line: 'Rails.configuration.nsl_linker = "http://localhost:7070/nsl-mapper/"'
-    insertafter: 'EOF'
-    regexp: 'Rails.configuration.nsl_linker = "http://localhost:7070/nsl-mapper/"'
-    state: present
-
-# Upgrade cb version to 25
-- name: Upgrade the database version to 25
+- name: Update the tree hostname to point to mapper fqdn url
   become: true
   become_user: postgres
-  command: psql "{{postgresql_databases[0].name}}" -f /var/lib/postgresql/update-to-25.sql
+  command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE tree SET host_name = https://'"{{elb_dns}}"'/nxl/mapper;'
+
+- name: Update the tree hostname to point to mapper fqdn url
+  become: true
+  become_user: postgres
+  command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE tree SET group_name = treebuilder;'
+
+- name: Update the host_name for mapper in mapper.host table
+  become: true
+  become_user: postgres
+  command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE mapper.host SET host_name = '"{{elb_dns}}"';'
+
+- name: Update namespace in mapper identifier table
+  become: true
+  become_user: postgres
+  command: psql "{{postgresql_databases[0].name}}" -c 'update mapper.identifier set name_space ='\''bpni'\'' where name_space ='\''apni'\'';'
+
+- name: Update mapper links in the tree
+  become: true
+  become_user: postgres
+  command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE tree_element SET instance_link = regexp_replace(instance_link, https://'"{{elb_dns}}"', https://'"{{elb_dns}}/nxl/mapper"'), name_link = regexp_replace(name_link, https://'"{{elb_dns}}"', https://'"{{elb_dns}}/nxl/mapper"');'
+
+- name: Copy nsl config files
+  template:
+    src: "{{item.filename}}.j2"
+    dest: "/opt/tomcat/.nsl/{{item.filename}}"
+  with_items:
+    - { filename: editor-config.rb }
+    - { filename: nsl-mapper-config.groovy }
+    - { filename: services-config.groovy }
 
 # Cat the editor-config.rb file
 - name: Print the editor config file
@@ -75,8 +122,35 @@
 
 # Restart tomcat
 - name: tomcat-8-restart
-  service: name=tomcat state=restarted
+  service: name=tomcat state=started
 
 # Echo variable {{tomcat_dir}}
 - name: echo variable
   command: echo {{tomcat_dir}}
+
+# NOT USED AT THIS STAGE: CAN BE REMOVED IN THE FUTURE
+#   # Upgrade cb version to 25
+# - name: Upgrade the database version to 25
+#   become: true
+#   become_user: postgres
+#   command: psql "{{postgresql_databases[0].name}}" -f /var/lib/postgresql/update-to-25.sql
+
+# FIX: editor, add missing property
+# - name: Add missing property in rails configuration
+#   become: true
+#   become_user: tomcat
+#   command: echo 'Rails.configuration.nsl_linker = "http://localhost:7070/nsl-mapper/"' >> "{{tomcat_dir}}"/.nsl/editor-config.rb
+
+# - name: Add line in editor-config.rb for editor rails property
+#   lineinfile:
+#     dest: "{{tomcat_dir}}/.nsl/editor-config.rb"
+#     line: 'Rails.configuration.nsl_linker = "http://localhost:7070/nsl-mapper/"'
+#     insertafter: 'EOF'
+#     regexp: 'Rails.configuration.nsl_linker = "http://localhost:7070/nsl-mapper/"'
+#     state: present
+
+
+# - name: Update nsl.mapper tables, views etc
+#   become: true
+#   become_user: postgres
+#   command: psql -f /tmp/mapper-ddl.sql nsl
