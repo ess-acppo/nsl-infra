@@ -53,6 +53,11 @@
   become_user: postgres
   command: psql -f /tmp/icn-tree-import.sql -d "{{postgresql_databases[0].name}}"
 
+- name: Create nsl.mapper tables, views using mapper v1 sql script
+  become: true
+  become_user: postgres
+  command: psql -f /tmp/mapper-ddl.sql nsl
+
 - name: Create nsl.mapper tables, views using mapper v2 sql script
   become: true
   become_user: postgres
