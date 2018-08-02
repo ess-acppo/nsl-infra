@@ -49,6 +49,8 @@
 
 # - debug:
 #     var=today_date
+- name: Copy tblBiota_date file to tmp folder
+  command: echo "{{today_date}}"
 
 - name: Copy tblBiota_date file to tmp folder
   copy: src="{{sftp_user_home}}/tblBiota_{{today_date}}" dest=/tmp/tblbiota.csv mode=0777

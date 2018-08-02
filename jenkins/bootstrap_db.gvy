@@ -5,7 +5,7 @@ stage("Bootstrapping data into DB") {
         dir('nsl-infra'){
             def shard_vars = '@shard_vars/$SHARD_TYPE.json'
 
-            def verbose = ''
+            def verbose = '-vv'
 
             if (ENVIRONMENT_NAME) {
                 def env_instance_name = "$ENVIRONMENT_NAME".split(",")[0]
