@@ -1,0 +1,39 @@
+
+Rails.configuration.services_clientside_root_url = "https://{{ elb_dns }}/nxl/services/"
+Rails.configuration.nsl_services = "https://{{ elb_dns }}/nxl/services/"
+Rails.configuration.nsl_links = "https://{{ elb_dns }}/nxl/services/"
+
+Rails.configuration.services = "https://{{ elb_dns }}/nxl/services/"
+Rails.configuration.name_services = "https://{{ elb_dns }}/nxl/services/name/bpni/"
+Rails.configuration.reference_services = "https://{{ elb_dns }}/nxl/services/reference/bpni/"
+Rails.configuration.api_key = "d0d1e81d-test-apni-editor"
+
+Rails.configuration.ldap_admin_username = "uid=admin,ou=system"
+Rails.configuration.ldap_admin_password = "secret"
+Rails.configuration.ldap_base = "ou=people,dc=example,dc=com"
+Rails.configuration.ldap_host = "localhost"
+Rails.configuration.ldap_port = "10389"
+Rails.configuration.ldap_user_base = "ou=people,dc=example,dc=com"
+Rails.configuration.ldap_users = "ou=people,dc=example,dc=com"
+Rails.configuration.ldap_groups = "ou=groups,dc=example,dc=com"
+
+Rails.configuration.mapper_root_url = "https://{{ elb_dns }}/nxl/mapper/"
+#Rails.configuration.tree_editor_url = "https://{{ elb_dns }}/nxl/tree-editor/"
+Rails.configuration.mapper_shard = "bpni"
+Rails.configuration.action_mailer.delivery_method = ":sendmail"
+Rails.configuration.action_mailer.perform_deliveries = "True"
+Rails.configuration.action_mailer.raise_delivery_errors = "True"
+
+
+
+if ENV['PRECOMPILING_FOR_PRODUCTION']=='true'
+  Rails.configuration.relative_url_root = "/nxl/editor"
+else
+  Rails.configuration.relative_url_root = "/nxl/editor"
+end
+
+Rails.configuration.environment = "production"
+Rails.configuration.session_key_tag = "test"
+
+Rails.configuration.nsl_linker = "http://localhost:8080/nxl/mapper/"
+~                                                                      

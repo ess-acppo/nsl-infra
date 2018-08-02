@@ -1,0 +1,68 @@
+grails.serverURL = "https://{{ elb_dns }}/nxl/services"
+
+shard {
+    system.message.file = "/home/pmcneil/.nsl/broadcast.txt"
+    product = "Don't use this"
+    temp.file.directory = "/tmp"
+    colourScheme = "local"
+    webUser = "webmoss"
+}
+
+services {
+
+    mapper {
+        apikey = '558aaeb5-3e5b-4dd3-ad03-d17c2689b70d'
+    }
+
+    link {
+        mapperURL = "https://{{ elb_dns }}/nxl/mapper"
+        internalMapperURL = "http://localhost:8080/nxl/mapper"
+        editor = "https://{{ elb_dns }}/nxl/editor"
+    }
+
+    photoService {
+        url = "http://www.anbg.gov.au/cgi-bin/apiiDigital?name=%&FORMAT=CSV"
+        search = { String name ->
+            "http://staging.anbg.gov.au/cgi-bin/apiiName2?name=${name.encodeAsURL()}"
+        }
+    }
+
+    googleAnalytics = """"""
+
+}
+
+ldap {
+    domain = 'domain'
+    server.url = 'ldap://localhost:10389'
+    search {
+        base = 'ou=people,dc=example,dc=com'
+        user = 'uid=admin,ou=system'
+        pass = 'secret'
+
+        group {
+            name = 'ou=groups,dc=example,dc=com'
+            member {
+                element = 'uniqueMember'
+                prefix = 'uid='
+                postfix = ''
+            }
+        }
+    }
+}
+
+dataSource_nsl {
+//    jndiName = "java:comp/env/jdbc/apni"
+                username = "nsldev"
+                password = "nsldev"
+                url = "jdbc:postgresql://localhost:5432/nsl"
+}
+
+api.auth = [
+        'd0d1e81d-test-apni-editor': [
+                application: 'nsl/editor',
+                roles      : ['admin'] //,
+                //host       : 'ip-192-168-1-233.ap-southeast-2.compute.internal' //TODO: check internal aws ip addr use
+        ]
+]
+
+nslServices.jwt.secret = 'poobarbee'

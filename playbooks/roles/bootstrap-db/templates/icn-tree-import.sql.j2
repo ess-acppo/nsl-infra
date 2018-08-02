@@ -1,0 +1,165 @@
+-- NOTE it is important to recreate all names before creating the tree otherwise the formatting of all the displays
+-- will be wrong
+
+
+-- create a tree element for every stand alone instance that isn't a synonym in tblbiota_blah
+
+INSERT INTO public.tree_element (
+  display_html,
+  excluded,
+  instance_id,
+  instance_link,
+  name_element,
+  name_id,
+  name_link,
+  previous_element_id,
+  profile,
+  rank,
+  simple_name,
+  source_shard,
+  synonyms,
+  synonyms_html,
+  updated_at,
+  updated_by)
+
+  (SELECT
+     '<data>' || n.full_name_html || '<citation>' || r.citation_html || '</citation></data>' AS display_html,
+     false                                                                                   AS excluded,
+     i.id                                                                                    AS instance_id,
+     'https://{{ elb_dns }}' || '/instance/bpni/' || i.id                             AS instance_link,
+     coalesce(n.name_element, '?')                                                           AS name_element,
+     i.name_id :: BIGINT                                                                     AS name_id,
+     'https://{{ elb_dns }}' || '/name/bpni/' || i.name_id                            AS name_link,
+     NULL                                                                                    AS previous_element_id,
+     '{}' :: jsonb                                                                           AS profile,
+     rank.name                                                                               AS rank,
+     n.simple_name                                                                           AS simple_name,
+     'BNPI'                                                                                  AS source_shard,
+     synonyms_as_jsonb(i.id, '{{ elb_dns }}')                                         AS synonyms,
+     coalesce(synonyms_as_html(i.id), '<synonyms></synonyms>')                               AS synonyms_html,
+     now()                                                                                   AS updated_at,
+     'import'                                                                                AS updated_by
+   FROM instance i
+     join instance_type it on i.instance_type_id = it.id
+     join name n on i.name_id = n.id
+     join name_rank rank on n.name_rank_id = rank.id
+     join reference r on i.reference_id = r.id
+     join tblbiota bio on bio.intbiotaid = n.source_id
+   where it.standalone
+         and bio.bitavailablename = false
+         and bio.bitliteraturename = false
+  );
+
+-- create all the tree_version_elements at the top of the tree
+
+WITH RECURSIVE walk (element_id, name_id, tree_path, depth, parent_id, name_path) AS (
+  SELECT
+    te.id        AS element_id,
+    n.id as name_id,
+    '/' || te.id AS tree_path,
+  1,
+    null :: BIGINT,
+    '/' || te.name_element
+  FROM tree_element te join name n on te.name_id = n.id
+  WHERE n.parent_id IS NULL
+  UNION ALL
+  SELECT
+    te.id                          AS element_id,
+    n.id as name_id,
+    walk.tree_path || '/' || te.id AS tree_path,
+    walk.depth + 1,
+    walk.element_id,
+    walk.name_path || '/' || te.name_element
+  FROM walk, tree_element te join name n on te.name_id = n.id
+  WHERE n.parent_id = walk.name_id
+)
+INSERT INTO public.tree_version_element (
+  element_link,
+  depth,
+  name_path,
+  parent_id,
+  taxon_id,
+  taxon_link,
+  tree_element_id,
+  tree_path,
+  tree_version_id,
+  updated_at,
+  updated_by)
+  (SELECT
+     '/tree/' || t.default_draft_tree_version_id ||'/' || te.id,
+     walk.depth,
+     walk.name_path,
+     '/tree/' || t.default_draft_tree_version_id ||'/' || walk.parent_id,
+     te.id,
+     '/taxonid/bpni/' || te.id,
+     te.id,
+     walk.tree_path,
+     t.default_draft_tree_version_id,
+     now(),
+     'import'
+   from walk, tree t, tree_element te
+   where t.name = 'BPC'
+    and te.id = walk.element_id
+  );
+
+-- update the mapper links
+
+-- insert identifiers for all tree version elements
+
+INSERT INTO mapper.identifier (id, id_number, version_number, name_space, object_type, deleted, reason_deleted, updated_at, updated_by, preferred_uri_id)
+      SELECT nextval('mapper.mapper_sequence'), tree_element_id, tree_version_id, 'bpni', 'treeElement', FALSE,
+        NULL, now(), 'pmcneil', NULL
+      FROM tree_version_element;
+
+
+create index if not exists identifier_type_space_idx on mapper.identifier (object_type, name_space);
+
+-- make a temp column on match to link back to the identifier
+alter table mapper.match add column temp bigint;
+-- make the urls
+INSERT INTO mapper.match (id, uri, deprecated, updated_at, updated_by, temp)
+    SELECT nextval('mapper.mapper_sequence'), ('tree/' || version_number || '/' || id_number :: TEXT), FALSE,
+    now(), 'pmcneil', i.id
+    FROM mapper.identifier i
+    WHERE i.object_type = 'treeElement'
+      AND i.name_space = 'bpni';
+
+--set the preferred uris of the identifiers
+create index match_temp_idx on mapper.match (temp);
+UPDATE mapper.identifier i
+    SET preferred_uri_id = m.id
+    FROM mapper.match m
+    WHERE i.preferred_uri_id is null
+      and i.object_type = 'treeElement'
+      AND i.name_space = 'bpni'
+      AND m.updated_at > now() - interval '20 minutes'
+      AND m.temp = i.id;
+
+-- insert identifier_identities
+INSERT INTO
+mapper.identifier_identities (match_id, identifier_id)
+SELECT m.id, i.id
+FROM mapper.identifier i
+JOIN mapper.match m ON i.preferred_uri_id = m.id
+WHERE i.object_type LIKE 'tree%'
+    AND i.name_space = 'bpni'
+    and m.temp is not null
+    AND NOT exists(SELECT 1
+                    FROM mapper.identifier_identities ii
+                    WHERE ii.identifier_id = i.id AND ii.match_id = m.id);
+
+-- and add the default hosts
+INSERT INTO mapper.match_host (match_hosts_id, host_id)
+SELECT m.id, (SELECT h.id FROM mapper.host h WHERE h.preferred)
+FROM mapper.match m
+WHERE m.temp is not null
+      and NOT exists(SELECT 1
+                  FROM mapper.match_host mh
+                  WHERE mh.match_hosts_id = m.id);
+
+drop index mapper.match_temp_idx;
+alter table mapper.match drop column temp;
+
+VACUUM ANALYSE;
+
+
