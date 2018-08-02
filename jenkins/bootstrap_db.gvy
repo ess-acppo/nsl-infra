@@ -8,7 +8,7 @@ stage("Bootstrapping data into DB") {
             def verbose = ''
 
             if(VERBOSE){
-                verbose = '-vvv'
+                verbose = ''
             }
 
             if (ENVIRONMENT_NAME) {
