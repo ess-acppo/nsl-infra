@@ -3449,6 +3449,12 @@ GRANT SELECT, UPDATE ON nsl_global_seq TO web;
 GRANT SELECT, UPDATE ON hibernate_sequence TO web;
 GRANT SELECT ON shard_config TO web;
 
+-- Added later
+GRANT SELECT, INSERT, UPDATE, DELETE ON tree TO web;
+GRANT SELECT, INSERT, UPDATE, DELETE ON tree_version TO web;
+GRANT SELECT, INSERT, UPDATE, DELETE ON tree_version_element TO web;
+GRANT SELECT, INSERT, UPDATE, DELETE ON tree_element TO web;
+
 GRANT SELECT ON instance_resource_vw TO web;
 GRANT SELECT ON name_detail_synonyms_vw TO web;
 GRANT SELECT ON name_details_vw TO web;
