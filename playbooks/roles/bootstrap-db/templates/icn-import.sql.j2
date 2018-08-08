@@ -282,14 +282,14 @@ drop table tmp_path_fam;
 
 -- select * from name order by name_path;
 
--- create a dawr database author
+-- create a NAQS database author
 INSERT INTO public.author (abbrev, created_at, created_by, name, namespace_id, notes, updated_at, updated_by)
-VALUES ('D.Sm.', '2018-07-20 02:29:39.135000', 'pmcneil', 'DAWR', (select id
+VALUES ('D.Sm.', '2018-07-20 02:29:39.135000', 'pmcneil', 'NAQS', (select id
                                                                    from namespace
                                                                    where name = 'BPNI'),
         'database author', '2018-07-20 02:29:39.135000', 'pmcneil');
 
--- create a dawr database reference
+-- create a NAQS database reference
 INSERT INTO public.reference (author_id, citation, citation_html,
                               created_at, created_by, display_title,
                               language_id,
@@ -300,10 +300,10 @@ INSERT INTO public.reference (author_id, citation, citation_html,
                               title, updated_at, updated_by)
 VALUES ((select id
          from author
-         where name = 'DAWR'),
-  'DAWR database.',
-  '<ref data-id=''10894''><ref-database><author>DAWR</author> <ref-title>DAWR database.</ref-title></ref-database></ref>',
-  '2018-07-20 02:30:23.926000', 'pmcneil', 'DAWR',
+         where name = 'NAQS'),
+  'TopWatch database',
+  '<ref data-id=''10894''><ref-database><author>NAQS</author> <ref-title>TopWatch database</ref-title></ref-database></ref>',
+  '2018-07-20 02:30:23.926000', 'pmcneil', 'NAQS',
   (select id
    from language
    where name = 'English'),
@@ -317,7 +317,7 @@ VALUES ((select id
   (select id
    from ref_type
    where name = 'Database'),
-        'DAWR database.', '2018-07-20 02:30:24.506000', 'pmcneil'
+        'TopWatch database', '2018-07-20 02:30:24.506000', 'pmcneil'
 );
 
 -- create an instance using the database reference for every name
@@ -337,7 +337,7 @@ INSERT INTO public.instance (created_at, created_by, draft, instance_type_id, na
      where name = 'BPNI'),
     (select id
      from reference
-     where citation = 'DAWR database.'),
+     where citation = 'TopWatch database'),
     now(),
     'pmcneil'
   from name n;
