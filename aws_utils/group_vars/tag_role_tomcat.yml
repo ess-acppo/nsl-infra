@@ -1,3 +1,4 @@
+---
 sshuser: ubuntu
 version: 8
 private_ip: "{{inventory_hostname}}"
