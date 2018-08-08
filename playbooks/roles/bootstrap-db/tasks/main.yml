@@ -89,11 +89,6 @@
   become_user: postgres
   command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE tree SET group_name = '\''treebuilder'\'';'
 
-- name: Update the host_name for mapper in mapper.host table
-  become: true
-  become_user: postgres
-  command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE mapper.host SET host_name = '\'"{{elb_dns}}"\'';'
-
 - name: Update namespace in mapper identifier table
   become: true
   become_user: postgres
@@ -133,6 +128,11 @@
 #   become: true
 #   become_user: postgres
 #   command: psql "{{postgresql_databases[0].name}}" -f /var/lib/postgresql/update-to-25.sql
+
+# - name: Update the host_name for mapper in mapper.host table
+#   become: true
+#   become_user: postgres
+#   command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE mapper.host SET host_name = '\'"{{elb_dns}}"\'';'
 
 # FIX: editor, add missing property
 # - name: Add missing property in rails configuration
