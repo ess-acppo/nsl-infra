@@ -1,7 +1,7 @@
 grails.serverURL = "https://{{ elb_dns }}/nxl/services"
 
 shard {
-    system.message.file = "/home/pmcneil/.nsl/broadcast.txt"
+    system.message.file = "/home/tomcat/.nsl/broadcast.txt"
     product = "Don't use this"
     temp.file.directory = "/tmp"
     colourScheme = "local"
@@ -51,7 +51,7 @@ ldap {
 }
 
 dataSource_nsl {
-//    jndiName = "java:comp/env/jdbc/apni"
+
                 username = "nsldev"
                 password = "nsldev"
                 url = "jdbc:postgresql://localhost:5432/nsl"
@@ -61,7 +61,7 @@ api.auth = [
         'd0d1e81d-test-apni-editor': [
                 application: 'nsl/editor',
                 roles      : ['admin'] //,
-                //host       : 'ip-192-168-1-233.ap-southeast-2.compute.internal' //TODO: check internal aws ip addr use
+                //TODO: check internal aws ip addr use
         ]
 ]
 
