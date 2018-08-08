@@ -9,7 +9,7 @@ stage("Creating AMI") {
             sh 'whoami'
             sh 'echo "ANSIBLE VERSION :" && ansible --version'
             sh 'echo "PYTHON VERSION :" && python --version'
-            sh 'echo "JAVA VERSION :" && java --version'
+            sh 'echo "JAVA VERSION :" && java -version'
             def extra_vars = /'shard_type=$SHARD_TYPE'/
             sh "packer build -var $extra_vars packer-template.json "
 

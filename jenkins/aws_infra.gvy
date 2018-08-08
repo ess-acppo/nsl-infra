@@ -14,7 +14,7 @@ slackSend color: 'good', message: "Started Job: ${env.JOB_NAME} ${env.BUILD_NUMB
     sh 'whoami'
     sh 'echo "ANSIBLE VERSION :" && ansible --version'
     sh 'echo "PYTHON VERSION :" && python --version'
-    sh 'echo "JAVA VERSION :" && java --version'
+    sh 'echo "JAVA VERSION :" && java -version'
     def extra_vars = /'{"nxl_env_name":"$ENVIRONMENT_NAME","nxl_ami": "$AMI_ID", "VPC_ID": "$VPC_ID","public_subnet_cidr" : "$public_subnet_cidr", "public_subnet2_cidr" : "$public_subnet2_cidr", "private_subnet_cidr": "$private_subnet_cidr"}'/
     sh "ansible-playbook -v playbooks/infra.yml  -e $extra_vars"
  }

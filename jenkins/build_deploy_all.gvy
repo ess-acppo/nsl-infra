@@ -20,7 +20,7 @@ node {
             sh 'whoami'
             sh 'echo "ANSIBLE VERSION :" && ansible --version'
             sh 'echo "PYTHON VERSION :" && python --version'
-            sh 'echo "JAVA VERSION :" && java --version'
+            sh 'echo "JAVA VERSION :" && java -version'
             sh 'rm -rf *'
 
             // Get some code from a GitHub repository

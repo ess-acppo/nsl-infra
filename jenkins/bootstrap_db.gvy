@@ -4,7 +4,7 @@ node{
                 sh 'whoami'
                 sh 'echo "ANSIBLE VERSION :" && ansible --version'
                 sh 'echo "PYTHON VERSION :" && python --version'
-                sh 'echo "JAVA VERSION :" && java --version'
+                sh 'echo "JAVA VERSION :" && java -version'
                 checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
                 //sh 'mkdir playbooks/roles/bootstrap-db/files/'
                 sh 'cp /home/dawr/tblBiota_$(date +%Y%m%d).csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
