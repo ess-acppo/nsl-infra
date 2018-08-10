@@ -77,12 +77,12 @@
 - name: Make the mapper point to the localhost mapper
   become: true
   become_user: postgres
-  command: psql "{{postgresql_databases[0].name}}" -c 'INSERT INTO mapper.host (id, host_name, preferred) VALUEs (1, '\''"{{elb_dns}}/nxl/mapper"'\'', true) ON CONFLICT (id) DO NOTHING;'
+  command: psql "{{postgresql_databases[0].name}}" -c 'INSERT INTO mapper.host (id, host_name, preferred) VALUEs (1, '\''{{elb_dns}}/nxl/mapper'\'', true) ON CONFLICT (id) DO NOTHING;'
 
 - name: Update the tree hostname to point to mapper fqdn url
   become: true
   become_user: postgres
-  command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE tree SET host_name = '\''"{{elb_dns}}"''/nxl/mapper'\'';'
+  command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE tree SET host_name = '\''{{elb_dns}}''/nxl/mapper'\'';'
 
 - name: Update the tree group name to treebuilder
   become: true
