@@ -2970,36 +2970,35 @@ INSERT INTO TREE_VALUE_URI (
 -- default APNI values for shard config - please change for new shards
 
 INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'config rules', null, 'All lower case names, space separated, follow the pattern hierachy');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name space', null, 'BPNI');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name tree label', null, 'BPNI');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), true, 'classification tree label', null, 'BPC');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'BPNI description', null, 'The Biosecurity Plant Name Index (BPNI) is a tool for the biosecurity community that deals with plant names and their usage in the scientific literature, whether as a current name or synonym, for ICN-named organisms that are NOT native to, or naturalised in Australia. BPNI does not recommend any particular taxonomy or nomenclature. For a listing of currently accepted scientific names for ex-Australia algae, fungi or plants, please use the Biosecurity Plant Checklist (BPC) link above.');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'BPC description', null, 'The Biosecurity Plant Checklist (BPC) is a list of the accepted scientific names for the *******placeholder*******');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'menu label', null, 'Biosecurity Plants');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'banner text', null, 'Aliena Plantae');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'tree banner text', null, 'Biosecurity Plant Checklist');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name label', null, 'BPNI');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'tree description html', null, '<p>The Biosecurity Plant Checklist (BPC) is a *******placeholder*******</p>');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), true, 'tree label', null, 'BPC');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'tree label text', null, 'Biosecurity Plant Checklist');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'page title', null, 'Aliena Plantae');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'tree search help text html', null, 'The Biosecurity Plant Checklist (BPC) provides a listing of ************placeholder**************</p>');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'services path name element', null, 'bpni');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name search help text html', null, '<p>The Biosecurity Plant Name Index (BPNI) is a resource for ************placeholder**************</p>');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'services path tree element', null, 'bpc');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name link title', null, 'Biosecurity Plant Names in the Biosecurity Plant Names Index');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'menu link title', null, 'Biosecurity Plants');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name label text', null, 'Biosecurity Plant Name Index');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name banner text', null, 'Biosecurity Plant Name Index');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'tree link title', null, 'Biosecurity Plant Checklist Taxonomy');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name description html', null, '<p>The Biosecurity Plant Name Index (BPNI) is a ************placeholder**************</p>');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'banner image', null, 'bpni-banner.png');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'card image', null, 'bpni-vert-200.png');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'description html', null, '<p>This section of the National ex-Australia Species List infrastructure delivers names and taxonomies for organisms named according to the International Code of Nomenclature for algae, fungi, and plants, and the International Code of Nomenclature for Cultivated Plants. The data comprise names, bibliographic information, and taxonomic concepts for organisms that are neither native to nor naturalised in Australia.
-The Biosecurity Plant Name Index (BPNI) provides names and bibliographic information.
-The Biosecurity Plant Checklist (BPC) provides a provisional taxonomy.
-');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'classification tree key', null, 'BPC');
+
+-- Update shard specific config
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name space', null, '{{ shard_namespace_UPPER }}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name tree label', null, '{{ shard_namespace_UPPER }}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), true, 'classification tree label', null, '{{taxonomy_name}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'BPNI description', null, '{{shard_namespace_UPPER_description}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'BPC description', null, '{{taxonomy_name_description}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'menu label', null, '{{menu_label}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'banner text', null, '{{banner_text}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'tree banner text', null, '{{tree_banner_text}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name label', null, '{{shard_namespace_UPPER}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'tree description html', null, '<p>{{taxonomy_name_description}}</p>');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), true, 'tree label', null, '{{taxonomy_name}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'tree label text', null, '{{tree_banner_text}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'page title', null, '{{banner_text}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'tree search help text html', null, '<p>{{taxonomy_name_description}}</p>');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'services path name element', null, '{{shard_namespace}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name search help text html', null, '<p>{{taxonomy_name_description}}</p>');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'services path tree element', null, '{{services_path_tree_element}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name link title', null, '{{shard_namespace_full}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'menu link title', null, '{{menu_label}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name label text', null, '{{shard_namespace_full}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name banner text', null, '{{shard_namespace_full}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'tree link title', null, '{{tree_banner_text}} Taxonomy');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name description html', null, '{{description_html}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'banner image', null, '{{ shard_images[0]["filename"] }}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'card image', null, '{{ shard_images[1]["filename"] }}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'description html', null, '{{description_html}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'classification tree key', null, '{{taxonomy_name}}');
 INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'shard group name', null, 'NXL');
 INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'shards for SPARQL', null, 'NXL,NSL');
 
