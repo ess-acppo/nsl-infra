@@ -22,5 +22,5 @@
   "taxonomy_name_description" : "The {{tree_banner_text}} ({{ taxonomy_name }}) is a working taxonomy for use by biosecurity specialists in Australia.",
   "description_html" : "<p>This section of the National ex-Australia Species List infrastructure delivers names and taxonomies for organisms named according to the {{shard_name_full}}. The data comprise names, bibliographic information, and taxonomic concepts for organisms that are neither native to nor naturalised in Australia. The {{shard_namespace_full}} ({{ shard_namespace_UPPER }}) provides names and bibliographic information. The {{tree_banner_text}} ({{ taxonomy_name }}) provides a provisional taxonomy.</p>",
   "shard_data_load_file" : "data_load_bacteria.sql",
-  "shard_nsl_ddl_file": "icnp-nsl-ddl.sql"
+  "shard_nsl_ddl_file": "icn-ddl.sql"
 }
