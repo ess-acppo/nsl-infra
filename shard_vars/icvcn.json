@@ -14,7 +14,7 @@
   "tree_label_text" : "{{ tree_banner_text }}",
   "banner_text" : "Viruses",
   "taxonomy_name" : "BVC",
-  "shard_images" : ["filename" : "bbni-banner.png"  , "filename" : "bbni-vert-200.png"],
+  "shard_images" : ["filename" : "bvni-banner.png"  , "filename" : "bvni-vert-200.png"],
   "menu_label" : "Biosecurity {{target_kingdom_ccase}}",
   "services_path_tree_element" : "bvc",
   "taxonomy_message" : "The {{tree_banner_text}} ({{taxonomy_name}}) is a working taxonomy for the species that have been referenced in a biosecurity context in Australia",
