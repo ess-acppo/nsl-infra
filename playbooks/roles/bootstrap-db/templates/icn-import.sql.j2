@@ -583,8 +583,7 @@ mapper.identifier_identities (match_id, identifier_id)
 SELECT m.id, i.id
 FROM mapper.identifier i
        JOIN mapper.match m ON i.preferred_uri_id = m.id
-WHERE i.preferred_uri_id
-  AND i.name_space = 'bpni'
+WHERE i.name_space = 'bpni'
   and m.temp is not null
   AND NOT exists(SELECT 1
                  FROM mapper.identifier_identities ii
