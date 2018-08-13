@@ -196,7 +196,8 @@
         group_name: jenkins-sg
       - proto: tcp
         ports: 22
-        group_name: sg-1821e461  #sg-1821e461 for Dev #sg-a947b3d0 for UAT # parameterised until cfn for bastion is working again. This not fixed in any other fashion to enforce fixing the Bastion CFN
+        group_name: "{{ BAS_HOST_SG }}" 
+          #sg-1821e461 for Dev #sg-a947b3d0 for UAT # parameterised until cfn for bastion is working again. This not fixed in any other fashion to enforce fixing the Bastion CFN
   register: nxl_app_sg
 
 - name: launch an NXL instance
