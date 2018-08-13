@@ -58,20 +58,20 @@
   become_user: postgres
   command: psql -f /tmp/mapper-ddl.sql -d "{{postgresql_databases[0].name}}"
 
-- name: Create nsl.mapper tables, views using mapper v2 sql script
-  become: true
-  become_user: postgres
-  command: psql -f /tmp/mapper-ddlv2.sql -d "{{postgresql_databases[0].name}}"
+# - name: Create nsl.mapper tables, views using mapper v2 sql script
+#   become: true
+#   become_user: postgres
+#   command: psql -f /tmp/mapper-ddlv2.sql -d "{{postgresql_databases[0].name}}"
 
 # Copy script to postgres home dir
 - name: Copy script to postgres home dir
   copy: src=/opt/tomcat/webapps/nxl#services##1.0205/plugins/nsl-domain-plugin-1.11-SNAPSHOT/sql/update-to-25.sql dest=/var/lib/postgresql/update-to-25.sql owner=postgres mode=755 remote_src=yes  
 
 # FIX: mapper.db_version table created, but empty
-- name: Create an entry in mapper.db_version table
-  become: true
-  become_user: postgres
-  command: psql "{{postgresql_databases[0].name}}" -c 'INSERT INTO mapper.db_version (id, version) VALUES (1, 5);'
+# - name: Create an entry in mapper.db_version table
+#   become: true
+#   become_user: postgres
+#   command: psql "{{postgresql_databases[0].name}}" -c 'INSERT INTO mapper.db_version (id, version) VALUES (1, 5);'
 
 # FIX: always make sure the mapper point to the localhost mapper
 - name: Make the mapper point to the localhost mapper
