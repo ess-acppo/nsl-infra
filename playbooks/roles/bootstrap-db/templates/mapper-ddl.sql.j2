@@ -117,12 +117,3 @@
         add constraint FK_iw1fva74t5r4ehvmoy87n37yr 
         foreign key (match_hosts_id) 
         references mapper.match;
-
-
-
-
-
-    -- update db_version
-    UPDATE mapper.db_version
-    SET version = 5
-    WHERE id = 1;
