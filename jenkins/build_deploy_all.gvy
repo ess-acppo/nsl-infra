@@ -133,9 +133,21 @@ node {
 
         slackSend color: 'good', message: "Starting bootstrap process for DB in ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
         
-        //sh 'mkdir playbooks/roles/bootstrap-db/files/'
-        //sh 'cp /home/dawr/tblBiota_$(date +%Y%m%d).csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
-        sh 'cp /var/lib/jenkins/nxl-private/bnti/tblbiota_base.csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
+        def ds_val = "${DATA_SOURCE}"
+        def date_val = "${DATE_TO_USE}"
+        echo "${ds_val}"
+        if (ds_val == "base") {
+            sh 'cp /var/lib/jenkins/nxl-private/bnti/tblbiota_base.csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
+        } else {
+            if (ds_val == "today") {
+                sh 'cp /home/dawr/tblBiota_$(date +%Y%m%d).csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota_pp.csv'
+                sh 'nsl-infra/playbooks/roles/bootstrap-db/templates/clean-tblbiota.sh nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota_pp.csv > nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
+            } else {
+                echo "${DATE_TO_USE}"
+                sh 'cp /home/dawr/tblBiota_"${DATE_TO_USE}".csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota_pp.csv'
+                sh 'nsl-infra/playbooks/roles/bootstrap-db/templates/clean-tblbiota.sh nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota_pp.csv > nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
+            }
+        }
 
         dir('nsl-infra'){
             def verbose = ''
