@@ -26,10 +26,10 @@
 
     drop table if exists mapper.match_host cascade;
 
-    drop sequence mapper.hibernate_sequence;
+    drop sequence if exists mapper.hibernate_sequence;
     create sequence mapper.hibernate_sequence;
 
-    drop sequence mapper.mapper_sequence;
+    drop sequence if exists mapper.mapper_sequence;
     create sequence mapper.mapper_sequence;
 
     create table mapper.db_version (

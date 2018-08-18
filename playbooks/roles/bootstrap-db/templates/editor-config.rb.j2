@@ -3,9 +3,9 @@ Rails.configuration.services_clientside_root_url = "https://{{ elb_dns }}/nxl/se
 Rails.configuration.nsl_services = "https://{{ elb_dns }}/nxl/services/"
 Rails.configuration.nsl_links = "https://{{ elb_dns }}/nxl/services/"
 
-Rails.configuration.services = "https://localhost:8080/nxl/services/"
+Rails.configuration.services = "http://localhost:8080/nxl/services/"
 Rails.configuration.name_services = "http://localhost:8080/nxl/services/rest/name/bpni/"
-Rails.configuration.reference_services = "https://localhost:8080/nxl/services/rest/reference/bpni/"
+Rails.configuration.reference_services = "http://localhost:8080/nxl/services/rest/reference/bpni/"
 Rails.configuration.api_key = "d0d1e81d-test-apni-editor"
 
 Rails.configuration.ldap_admin_username = "uid=admin,ou=system"
