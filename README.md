@@ -12,17 +12,19 @@ Technologies used are:
 # Manual steps in any cloud or Datacenter
 1. Provision a ubuntu / redhat machine possibly in AWS ( or elsewhere) ( If using Vagrant Oracle VirtualBox is used to automatically provision a VM) 
 1. Include the public ip/hostname and the private ip in the inventory/*your_env_name_file*
+1. You could also use a IP based discovery dynamic inventory file
 1. Create corresponding dir and files under group_vars. Use the existing env dir/files as examples
 1. Run the following ansible-playbook command to install
     1. Tomcat
     1. Postgres
     1. ApacheDS
+######Command: 
 ```ansible-playbook  -i inventory/*your_env_name_file* -u ubuntu --private-key ../KEY.pem playbooks/site.yml ```
 1. Run the following ansible-playbook command to deploy war files for the NSL apps
 ```ansible-playbook  -i inventory/*your_env_name_file* -u ubuntu --private-key ../KEY.pem playbooks/deploy.yml ```
 
 # Automated provisioning in AWS
-1. The following ansible command stands up a set of AWS resources ```ansible-playbook -vvv playbooks/infra.yml  -e "nxl_env_name=$ENVIRONMENT_NAME"```. The anisble provisioners are not run. We use a pre-existing AMI which contains all previously provisioned software components. The full list of such components can be found in ansible ( site.yml , Step 4 under [manual deployment](#manual-steps-in-any-cloud-or-datacenter)])
+1. The following ansible command stands up a set of AWS resources ```ansible-playbook -vvv playbooks/infra.yml -e "nxl_env_name=$ENVIRONMENT_NAME"```. The anisble provisioners are not run. We use a pre-existing AMI which contains all previously provisioned software components. The full list of such components can be found in ansible ( site.yml , Step 4 under [manual deployment](#manual-steps-in-any-cloud-or-datacenter)])
 1. The following ansible command will deploy a default set of war files and corresponding configuration into tomcat ```sed -ie \'s/.*instance_filters = tag:env=.*$/instance_filters = tag:env=$ENVIRONMENT_NAME/g\' aws_utils/ec2.ini && ansible-playbook -i aws_utils/ec2.py -u ubuntu  playbooks/deploy.yml -e '{"nxl_env_name":"$ENVIRONMENT_NAME","apps":[{"app": "services"},{"app": "editor"},{"app": "mapper"}], "war_names": [{"war_name": "nsl#services##1.0123"},{"war_name": "nsl#editor##1.44"},{"war_name": "nsl#mapper##1.0017"}   ],   "war_source_dir": "~/agri/nsl-infra"}'```
 
 The above ansible commands has also been configured to run via Jenkins using the jenkins/aws_infra.gvy and jenkins/services.gvy ( for services)
@@ -48,17 +50,40 @@ Jenkins plugins used ( not an exaustive list) :
 * Build Token Root Plugin (https://wiki.jenkins.io/display/JENKINS/Build+Token+Root+Plugin) to enable build trigger without authentication.
 * Pipeline to enable pipeline as code (https://jenkins.io/solutions/pipeline/)
 
+To stand up an environment run the Jenkins jobs in the following order:
+    1. create_environment
+        1. Stands up a linux debian server with our default SOE
+        1. Creates all underlying aws infrastructure for a private/public subnet isolated architecture
+        1. Attach ssl certficates
+        1. Create DNS entries using alias
+
+    2. build_deploy_NXL
+        1. prep the server
+        1. Install three war files to tomcat
+        1. Finally import data from one of the below options)
+
+    3. bootstrap_db
+        1. Drops the existing database
+        1. Creates necessary db and sschemas
+        1. Reloads data from a coice of three options
+            * baseline working dataset tested throughly
+            * today's data import
+            * dataset extract from certain date
+        1. Perform inistial cleanup on the dataset
+        1. Create NSL tables, mapper tables and tree tables
+        1. Perform configuration management of the NSL applications nessesary for the data to be imported
 
 ### Report bugs using github issues
-
-
+Please raise issues on github if any of the above does not work and we are happy to assist you...
 
 ## Dataloading
-The ansible role to load data into the NSl DB is load-data. It can be invoked by running the following command: 
+We also have an ansible role to just load data into the NSL DB. It can be invoked by running the following command: 
 ```ansible-playbook  -i inventory/poc2 -u ubuntu --private-key ../KEY.pem playbooks/bootstrap_db.yml --tags "load-data"```
 or
 ```sed -ie 's/.*instance_filters = tag:env=.*$/instance_filters = tag:env=aristotle-ICN/g' aws_utils/ec2.ini & ansible-playbook -i aws_utils/ec2.py -u ubuntu --private-key ../KEY.pem playbooks/bootstrap_db.yml --tags "load-data" --extra-vars "@shard_vars/icn.json"```
+
 It does the following:
+
 * copies the tab sperate file data.tsv into the server. 
 * Then runs the postgres pl sql script data_load.sql. 
 * Waits for a human to perform following steps in the service web UI.
@@ -84,10 +109,8 @@ Some of these have been incorporated into above sections but this section gives 
 1. Load data ( NXL specific ) ported from taxatree using [data loading](#Dataloading)
 1. Sets up tunnel to instance behind bastion `ssh -L 55432:localhost:5432 ubuntu@ip-172-31-52-196.ap-southeast-2.compute.internal`
 1. Command to update shard images :
-- ```sed -ie 's/.*instance_filters = tag:env=.*$/instance_filters = tag:env=aristotle/g' aws_utils/ec2.ini && ansible-playbook -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml --tags "configuration" --extra-vars "@shard_vars/iczn.json" -e '{"nxl_env_name":"dev-iczn","elb_dns":"iczn.dev.oztaxa.com"}```
+- ```sed -ie 's/.*instance_filters = tag:env=.*$/instance_filters = tag:env=aristotle/g' aws_utils/ec2.ini && ansible-playbook -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml --tags "configuration" --extra-vars "@shard_vars/iczn.json" -e '{"nxl_env_name":"dev-iczn","elb_dns":"dev-iczn.oztaxa.com"}```
 - OR ```ansible-playbook -i inventory/poc2 -u ubuntu playbooks/deploy.yml --tags "configuration" --extra-vars "@shard_vars/icn.json"```
-
-
 
 # How create a fresh AMI
 1. Install mapper --> sed -ie 's/.*instance_filters = tag:env=.*$/instance_filters = tag:env=dis-iczn /g' aws_utils/ec2.ini && ansible-playbook -i aws_utils/ec2.py -u ubuntu -vvv playbooks/deploy.yml -e '{"elb_dns":"iczn.dis.oztaxa.com", "nxl_env_name":"dis-iczn","apps":[{"app": "mapper"}], "war_names": [{"war_name": "nsl#mapper##1.0017"} ], "war_source_dir": "~/agri/nsl-infra"}
