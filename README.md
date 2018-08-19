@@ -113,10 +113,3 @@ Some of these have been incorporated into above sections but this section gives 
 1. Command to update shard images :
 - ```sed -ie 's/.*instance_filters = tag:env=.*$/instance_filters = tag:env=aristotle/g' aws_utils/ec2.ini && ansible-playbook -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml --tags "configuration" --extra-vars "@shard_vars/iczn.json" -e '{"nxl_env_name":"dev-iczn","elb_dns":"dev-iczn.oztaxa.com"}```
 - OR ```ansible-playbook -i inventory/poc2 -u ubuntu playbooks/deploy.yml --tags "configuration" --extra-vars "@shard_vars/icn.json"```
-
-# How create a fresh AMI
-1. Install mapper --> sed -ie 's/.*instance_filters = tag:env=.*$/instance_filters = tag:env=dis-iczn /g' aws_utils/ec2.ini && ansible-playbook -i aws_utils/ec2.py -u ubuntu -vvv playbooks/deploy.yml -e '{"elb_dns":"iczn.dis.oztaxa.com", "nxl_env_name":"dis-iczn","apps":[{"app": "mapper"}], "war_names": [{"war_name": "nsl#mapper##1.0017"} ], "war_source_dir": "~/agri/nsl-infra"}
-1. Install services --> Run Jenkins job
-1. Install editor --> Run Jenkins job
-1. Load data i.e bootstrap --> 
-
