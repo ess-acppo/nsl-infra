@@ -18,8 +18,7 @@ Technologies used are:
     1. Tomcat
     1. Postgres
     1. ApacheDS
-######Command: 
-```ansible-playbook  -i inventory/*your_env_name_file* -u ubuntu --private-key ../KEY.pem playbooks/site.yml ```
+    1. Command: ```ansible-playbook  -i inventory/*your_env_name_file* -u ubuntu --private-key ../KEY.pem playbooks/site.yml ```
 1. Run the following ansible-playbook command to deploy war files for the NSL apps
 ```ansible-playbook  -i inventory/*your_env_name_file* -u ubuntu --private-key ../KEY.pem playbooks/deploy.yml ```
 
