@@ -51,6 +51,7 @@ Jenkins plugins used ( not an exaustive list) :
 * Pipeline to enable pipeline as code (https://jenkins.io/solutions/pipeline/)
 
 To stand up an environment run the Jenkins jobs in the following order:
+```
     1. create_environment
         1. Stands up a linux debian server with our default SOE
         1. Creates all underlying aws infrastructure for a private/public subnet isolated architecture
@@ -72,6 +73,7 @@ To stand up an environment run the Jenkins jobs in the following order:
         1. Perform inistial cleanup on the dataset
         1. Create NSL tables, mapper tables and tree tables
         1. Perform configuration management of the NSL applications nessesary for the data to be imported
+```
 
 ### Report bugs using github issues
 Please raise issues on github if any of the above does not work and we are happy to assist you...
