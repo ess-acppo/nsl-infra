@@ -9,7 +9,7 @@ mapper {
     defaultResolver = { ident ->
         println "nsl-mapper-config.groovy; ident: ${ident}"
         Map serviceHosts = [
-                bpni: 'https://{{ elb_dns }}'
+                {{shard_namespace}}: 'https://{{ elb_dns }}'
         ]
 //TODO: add proper debug/diagnostic logging/info
         String host = serviceHosts[ident.nameSpace]
