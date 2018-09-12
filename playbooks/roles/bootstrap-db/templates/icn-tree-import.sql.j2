@@ -34,7 +34,7 @@ INSERT INTO public.tree_element (
      '{}' :: jsonb                                                                           AS profile,
      rank.name                                                                               AS rank,
      n.simple_name                                                                           AS simple_name,
-     'BNPI'                                                                                  AS source_shard,
+     '{{shard_namespace_UPPER}}'                                                                                  AS source_shard,
      synonyms_as_jsonb(i.id, '{{ elb_dns }}')                                         AS synonyms,
      coalesce(synonyms_as_html(i.id), '<synonyms></synonyms>')                               AS synonyms_html,
      now()                                                                                   AS updated_at,
@@ -49,6 +49,8 @@ INSERT INTO public.tree_element (
          and bio.bitavailablename = false
          and bio.bitliteraturename = false
   );
+
+select 'found ' || count(*) || ' tree-elements' from tree_element;
 
 -- create all the tree_version_elements at the top of the tree
 
