@@ -100,7 +100,7 @@ INSERT INTO public.tree_version_element (
      now(),
      'import'
    from walk, tree t, tree_element te
-   where t.name = 'BPC'
+   where t.name = '{{taxonomy_name}}'
     and te.id = walk.element_id
   );
 
