@@ -26,10 +26,10 @@ INSERT INTO public.tree_element (
      '<data>' || n.full_name_html || '<citation>' || r.citation_html || '</citation></data>' AS display_html,
      false                                                                                   AS excluded,
      i.id                                                                                    AS instance_id,
-     'https://{{ elb_dns }}' || '/instance/bpni/' || i.id                             AS instance_link,
+     'https://{{ elb_dns }}' || '/instance/{{shard_namespace}}/' || i.id                             AS instance_link,
      coalesce(n.name_element, '?')                                                           AS name_element,
      i.name_id :: BIGINT                                                                     AS name_id,
-     'https://{{ elb_dns }}' || '/name/bpni/' || i.name_id                            AS name_link,
+     'https://{{ elb_dns }}' || '/name/{{shard_namespace}}/' || i.name_id                            AS name_link,
      NULL                                                                                    AS previous_element_id,
      '{}' :: jsonb                                                                           AS profile,
      rank.name                                                                               AS rank,
@@ -91,7 +91,7 @@ INSERT INTO public.tree_version_element (
      walk.name_path,
      '/tree/' || t.default_draft_tree_version_id ||'/' || walk.parent_id,
      te.id,
-     '/taxonid/bpni/' || te.id,
+     '/taxonid/{{shard_namespace}}/' || te.id,
      te.id,
      walk.tree_path,
      t.default_draft_tree_version_id,
@@ -107,7 +107,7 @@ INSERT INTO public.tree_version_element (
 -- insert identifiers for all tree version elements
 
 INSERT INTO mapper.identifier (id, id_number, version_number, name_space, object_type, deleted, reason_deleted, updated_at, updated_by, preferred_uri_id)
-      SELECT nextval('mapper.mapper_sequence'), tree_element_id, tree_version_id, 'bpni', 'treeElement', FALSE,
+      SELECT nextval('mapper.mapper_sequence'), tree_element_id, tree_version_id, '{{shard_namespace}}', 'treeElement', FALSE,
         NULL, now(), 'pmcneil', NULL
       FROM tree_version_element;
 
@@ -122,7 +122,7 @@ INSERT INTO mapper.match (id, uri, deprecated, updated_at, updated_by, temp)
     now(), 'pmcneil', i.id
     FROM mapper.identifier i
     WHERE i.object_type = 'treeElement'
-      AND i.name_space = 'bpni';
+      AND i.name_space = '{{shard_namespace}}';
 
 --set the preferred uris of the identifiers
 create index match_temp_idx on mapper.match (temp);
@@ -131,7 +131,7 @@ UPDATE mapper.identifier i
     FROM mapper.match m
     WHERE i.preferred_uri_id is null
       and i.object_type = 'treeElement'
-      AND i.name_space = 'bpni'
+      AND i.name_space = '{{shard_namespace}}'
       AND m.updated_at > now() - interval '20 minutes'
       AND m.temp = i.id;
 
@@ -142,7 +142,7 @@ SELECT m.id, i.id
 FROM mapper.identifier i
 JOIN mapper.match m ON i.preferred_uri_id = m.id
 WHERE i.object_type LIKE 'tree%'
-    AND i.name_space = 'bpni'
+    AND i.name_space = '{{shard_namespace}}'
     and m.temp is not null
     AND NOT exists(SELECT 1
                     FROM mapper.identifier_identities ii

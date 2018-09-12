@@ -34,7 +34,7 @@ COPY tblbiota from '/tmp/tblbiota.csv' WITH CSV HEADER;
 INSERT INTO public.author (abbrev, created_at, created_by, name, namespace_id, updated_at, updated_by)
 VALUES ('-', '2018-07-20 09:03:08.438000', 'pmcneil', 'dunno', (select id
                                                                 from namespace
-                                                                where name = 'BPNI'), '2018-07-20 09:03:59.380000',
+                                                                where name = '{{shard_namespace_UPPER}}'), '2018-07-20 09:03:59.380000',
         'pmcneil');
 
 insert into author (abbrev, created_at, created_by, name, namespace_id, updated_at, updated_by)
@@ -45,7 +45,7 @@ insert into author (abbrev, created_at, created_by, name, namespace_id, updated_
     vchrauthor,
     (select id
      from namespace
-     where name = 'BPNI'),
+     where name = '{{shard_namespace_UPPER}}'),
     now(),
     'import'
   from tblbiota
@@ -167,7 +167,7 @@ insert into name (author_id, created_at, created_by, full_name, full_name_html, 
      where name = 'scientific'),
     (select id
      from namespace
-     where name = 'BPNI'),
+     where name = '{{shard_namespace_UPPER}}'),
     null,
     null,
     null,
@@ -286,7 +286,7 @@ drop table tmp_path_fam;
 INSERT INTO public.author (abbrev, created_at, created_by, name, namespace_id, notes, updated_at, updated_by)
 VALUES ('D.Sm.', '2018-07-20 02:29:39.135000', 'pmcneil', 'NAQS', (select id
                                                                    from namespace
-                                                                   where name = 'BPNI'),
+                                                                   where name = '{{shard_namespace_UPPER}}'),
         'database author', '2018-07-20 02:29:39.135000', 'pmcneil');
 
 -- create a NAQS database reference
@@ -309,7 +309,7 @@ VALUES ((select id
    where name = 'English'),
   (select id
    from namespace
-   where name = 'BPNI'),
+   where name = '{{shard_namespace_UPPER}}'),
   true,
   (select id
    from ref_author_role
@@ -334,7 +334,7 @@ INSERT INTO public.instance (created_at, created_by, draft, instance_type_id, na
     n.id,
     (select id
      from namespace
-     where name = 'BPNI'),
+     where name = '{{shard_namespace_UPPER}}'),
     (select id
      from reference
      where citation = 'TopWatch database'),
@@ -484,7 +484,7 @@ INSERT INTO public.instance (
      syn.id                                                         as name_id,
      (select id
       from namespace
-      where name = 'BPNI'),
+      where name = '{{shard_namespace_UPPER}}'),
      of_inst.reference_id,
      syn.source_id,
      syn.source_id_string,
@@ -528,7 +528,7 @@ INSERT INTO public.instance (
      syn.id                                                         as name_id,
      (select id
       from namespace
-      where name = 'BPNI'),
+      where name = '{{shard_namespace_UPPER}}'),
      of_inst.reference_id,
      syn.source_id,
      syn.source_id_string,
@@ -550,12 +550,12 @@ INSERT INTO public.instance (
 create index if not exists identifier_type_space_idx on mapper.identifier (object_type, name_space);
 
 INSERT INTO mapper.identifier (id, id_number, version_number, name_space, object_type, deleted, reason_deleted, updated_at, updated_by, preferred_uri_id)
-SELECT nextval('mapper.mapper_sequence'), n.id, null, 'bpni', 'name', FALSE,
+SELECT nextval('mapper.mapper_sequence'), n.id, null, '{{shard_namespace}}', 'name', FALSE,
        NULL, now(), 'pmcneil', NULL
 FROM name n;
 
 INSERT INTO mapper.identifier (id, id_number, version_number, name_space, object_type, deleted, reason_deleted, updated_at, updated_by, preferred_uri_id)
-SELECT nextval('mapper.mapper_sequence'), i.id, null, 'bpni', 'instance', FALSE,
+SELECT nextval('mapper.mapper_sequence'), i.id, null, '{{shard_namespace}}', 'instance', FALSE,
        NULL, now(), 'pmcneil', NULL
 FROM instance i;
 
@@ -566,7 +566,7 @@ INSERT INTO mapper.match (id, uri, deprecated, updated_at, updated_by, temp)
 SELECT nextval('mapper.mapper_sequence'), (i.object_type ||'/'|| i.name_space || '/' || id_number :: TEXT), FALSE,
        now(), 'pmcneil', i.id
 FROM mapper.identifier i
-WHERE i.name_space = 'bpni';
+WHERE i.name_space = '{{shard_namespace}}';
 
 --set the preferred uris of the identifiers
 create index match_temp_idx on mapper.match (temp);
@@ -574,7 +574,7 @@ UPDATE mapper.identifier i
 SET preferred_uri_id = m.id
 FROM mapper.match m
 WHERE i.preferred_uri_id is null
-  AND i.name_space = 'bpni'
+  AND i.name_space = '{{shard_namespace}}'
   AND m.temp = i.id;
 
 -- insert identifier_identities
@@ -583,7 +583,7 @@ mapper.identifier_identities (match_id, identifier_id)
 SELECT m.id, i.id
 FROM mapper.identifier i
        JOIN mapper.match m ON i.preferred_uri_id = m.id
-WHERE i.name_space = 'bpni'
+WHERE i.name_space = '{{shard_namespace}}'
   and m.temp is not null
   AND NOT exists(SELECT 1
                  FROM mapper.identifier_identities ii
@@ -609,12 +609,12 @@ delete from notification;
 
 INSERT INTO tree (group_name, name, config, description_html, accepted_tree, host_name)
 VALUES ('treebuilder',
-        'BPC',
+        '{{taxonomy_name}}',
         '{
-          "distribution_key": "BPC Dist.",
-          "comment_key": "BPC Comment"
+          "distribution_key": "{{taxonomy_name}} Dist.",
+          "comment_key": "{{taxonomy_name}} Comment"
         }' :: JSONB,
-        '<p>The Biosecurity Plant Checklist (BPC) provides a listing of stuff</p>',
+        '<p>The Biosecurity {{target_kingdom_ccase}} Checklist ({{taxonomy_name}}) provides a listing of stuff</p>',
         TRUE,
         'https://{{ elb_dns }}'
 );
@@ -641,14 +641,14 @@ values (
   'pmcneil',
   (select id
    from tree
-   where name = 'BPC')
+   where name = '{{taxonomy_name}}')
 );
 
 UPDATE tree t
 SET current_tree_version_id = (SELECT max(id)
                                FROM tree_version v
                                WHERE v.tree_id = t.id)
-WHERE name = 'BPC';
+WHERE name = '{{taxonomy_name}}';
 
 -- create a default draft version of the tree
 INSERT INTO tree_version
@@ -672,12 +672,12 @@ values (
   'pmcneil',
   (select id
    from tree
-   where name = 'BPC')
+   where name = '{{taxonomy_name}}')
 );
 
 UPDATE tree t
 SET default_draft_tree_version_id = (SELECT max(id)
                                      FROM tree_version v
                                      WHERE v.tree_id = t.id and published = false)
-WHERE name = 'BPC';
+WHERE name = '{{taxonomy_name}}';
 

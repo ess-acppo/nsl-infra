@@ -2340,7 +2340,7 @@ INSERT INTO public.namespace (id, lock_version, name, description_html, rdf_id) 
 INSERT INTO public.namespace (id, lock_version, name, description_html, rdf_id) VALUES (nextval('nsl_global_seq'), 0, 'Algae', '(description of <b>Algae</b>)', 'algae');
 INSERT INTO public.namespace (id, lock_version, name, description_html, rdf_id) VALUES (nextval('nsl_global_seq'), 0, 'Lichen', '(description of <b>Lichen</b>)', 'lichen');
 INSERT INTO public.namespace (id, lock_version, name, description_html, rdf_id) VALUES (nextval('nsl_global_seq'), 0, 'Fungi', '(description of <b>Fungi</b>)', 'fungi');
-INSERT INTO public.namespace (id, lock_version, description_html, name, rdf_id) VALUES (nextval('nsl_global_seq'), 0, '(description of <b>BPNI</b>)', 'BPNI', 'bpni');
+INSERT INTO public.namespace (id, lock_version, description_html, name, rdf_id) VALUES (nextval('nsl_global_seq'), 0, '(description of <b>{{shard_namespace_UPPER}}</b>)', '{{shard_namespace_UPPER}}', '{{shard_namespace}}');
 --language
 INSERT INTO public.language (id, lock_version, iso6391code, iso6393code, name) VALUES (nextval('nsl_global_seq'), 0, null, 'mul', 'Multiple languages');
 INSERT INTO public.language (id, lock_version, iso6391code, iso6393code, name) VALUES (nextval('nsl_global_seq'), 0, null, 'zxx', 'No linguistic content');
@@ -2975,8 +2975,8 @@ INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES 
 INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name space', null, '{{ shard_namespace_UPPER }}');
 INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'name tree label', null, '{{ shard_namespace_UPPER }}');
 INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), true, 'classification tree label', null, '{{taxonomy_name}}');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'BPNI description', null, '{{shard_namespace_UPPER_description}}');
-INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'BPC description', null, '{{taxonomy_name_description}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, '{{shard_namespace_UPPER}} description', null, '{{shard_namespace_UPPER_description}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, '{{taxonomy_name}} description', null, '{{taxonomy_name_description}}');
 INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'menu label', null, '{{menu_label}}');
 INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'banner text', null, '{{banner_text}}');
 INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'tree banner text', null, '{{tree_banner_text}}');
