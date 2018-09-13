@@ -10,7 +10,7 @@ node{
                 //sh 'cp /home/dawr/tblBiota_$(date +%Y%m%d).csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
                 sh 'cp /var/lib/jenkins/nxl-private/bnti/tblbiota_base.csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
     }
-    stage("Running Bootstrap data Operation") {
+    stage("Running Bootstrap data Operation env-name= $ENVIRONMENT_NAME") {
 
         slackSend color: 'good', message: "Started Job ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
                 
@@ -19,6 +19,9 @@ node{
         echo "${ds_val}"
         
         slackSend color: 'good', message: "Processing csv files ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
+
+        sh 'cp /var/lib/jenkins/nxl-private/bnti/reconstruct-name-strings.sh nsl-infra/playbooks/roles/bootstrap-db/files/reconstruct-name-strings.sh'
+        sh 'chmod +x nsl-infra/playbooks/roles/bootstrap-db/files/reconstruct-name-strings.sh'
 
         if (ds_val == "base") {
             sh 'cp /var/lib/jenkins/nxl-private/bnti/tblbiota_base.csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'

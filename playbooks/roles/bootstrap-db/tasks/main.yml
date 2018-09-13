@@ -54,21 +54,30 @@
 - name: Copy tblBiota_date file to tmp folder
   copy: src=tblbiota.csv dest=/tmp/tblbiota.csv mode=0644
 
-- name: Running icn-import sql script
+- name: Running import of tblbiota csv script
   become: true
   become_user: postgres
   command: psql -f /tmp/icn-import.sql -d "{{postgresql_databases[0].name}}"
 
-- name: Running Tree import sql script
+# Restart tomcat
+- name: tomcat-8-restart
+  service: name=tomcat state=started
+
+- name: Sleep 15 sec
+  pause: seconds=15
+
+- name: Reconstruct names using apikey
+  become: true
+  become_user: postgres
+  command: sh reconstruct-name-strings.sh
+
+- name: Sleep 15 sec
+  pause: seconds=15
+
+  - name: Running Tree import sql script
   become: true
   become_user: postgres
   command: psql -f /tmp/icn-tree-import.sql -d "{{postgresql_databases[0].name}}"
-
-
-# - name: Create nsl.mapper tables, views using mapper v2 sql script
-#   become: true
-#   become_user: postgres
-#   command: psql -f /tmp/mapper-ddlv2.sql -d "{{postgresql_databases[0].name}}"
 
 # Copy script to postgres home dir
 - name: Copy script to postgres home dir
@@ -117,13 +126,19 @@
 
 # Restart tomcat
 - name: tomcat-8-restart
-  service: name=tomcat state=started
+  service: name=tomcat state=restarted
 
-# Echo variable {{tomcat_dir}}
-- name: echo variable
-  command: echo {{tomcat_dir}}
+# # Echo variable {{tomcat_dir}}
+# - name: echo variable
+#   command: echo {{tomcat_dir}}
 
 # NOT USED AT THIS STAGE: CAN BE REMOVED IN THE FUTURE
+
+# - name: Create nsl.mapper tables, views using mapper v2 sql script
+#   become: true
+#   become_user: postgres
+#   command: psql -f /tmp/mapper-ddlv2.sql -d "{{postgresql_databases[0].name}}"
+
 #   # Upgrade cb version to 25
 # - name: Upgrade the database version to 25
 #   become: true
