@@ -49,7 +49,7 @@ insert into author (abbrev, created_at, created_by, name, namespace_id, updated_
     now(),
     'import'
   from tblbiota
-  where vchrauthor is not null and chrkingdomcode = '{{shard_kingdom_code}}';
+  where vchrauthor is not null and {{shard_kingdom_code}};
 
 -- map the ranks to NSL ranks
 update tblbiota
@@ -186,7 +186,7 @@ insert into name (author_id, created_at, created_by, full_name, full_name_html, 
   from tblbiota t
     left outer join author a on a.name = t.vchrauthor
     left outer join name_rank r on r.name = t.chrelemtype
-  where chrkingdomcode = '{{shard_kingdom_code}}';
+  where {{shard_kingdom_code}};
 
 -- now update parents
 
