@@ -74,7 +74,7 @@
 - name: Sleep 15 sec
   pause: seconds=15
 
-  - name: Running Tree import sql script
+- name: Running Tree import sql script
   become: true
   become_user: postgres
   command: psql -f /tmp/icn-tree-import.sql -d "{{postgresql_databases[0].name}}"
