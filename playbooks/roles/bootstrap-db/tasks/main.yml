@@ -69,7 +69,7 @@
 - name: Reconstruct names using apikey
   become: true
   become_user: postgres
-  command: sh reconstruct-name-strings.sh
+  script: reconstruct-name-strings.sh
 
 - name: Sleep 15 sec
   pause: seconds=15
