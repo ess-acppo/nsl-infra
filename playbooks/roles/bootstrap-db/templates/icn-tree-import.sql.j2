@@ -61,7 +61,7 @@ WITH RECURSIVE walk (element_id, name_id, tree_path, depth, parent_id, name_path
     '/' || te.id AS tree_path,
   1,
     null :: BIGINT,
-    te.name_element
+    te.name_element :: text
   FROM tree_element te join name n on te.name_id = n.id
   WHERE n.parent_id IS NULL
   UNION ALL
