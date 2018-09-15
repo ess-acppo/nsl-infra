@@ -80,8 +80,8 @@
   command: psql -f /tmp/icn-tree-import.sql -d "{{postgresql_databases[0].name}}"
 
 # Copy script to postgres home dir
-- name: Copy script to postgres home dir
-  copy: src=/opt/tomcat/webapps/nxl#services##1.0205/plugins/nsl-domain-plugin-1.11-SNAPSHOT/sql/update-to-25.sql dest=/var/lib/postgresql/update-to-25.sql owner=postgres mode=755 remote_src=yes  
+# - name: Copy script to postgres home dir
+#   copy: src=/opt/tomcat/webapps/nxl#services##1.0205/plugins/nsl-domain-plugin-1.11-SNAPSHOT/sql/update-to-25.sql dest=/var/lib/postgresql/update-to-25.sql owner=postgres mode=755 remote_src=yes  
 
 # FIX: always make sure the mapper point to the localhost mapper
 - name: Make the mapper point to the localhost mapper
