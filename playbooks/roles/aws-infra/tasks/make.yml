@@ -97,7 +97,7 @@
     access_logs_enabled: yes
     access_logs_s3_bucket: "nxl"
     access_logs_s3_prefix: "{{ nxl_env_name }}-logs"
-    name: "{{ nxl_env_name }}-elb{{ VPC_ID }}"
+    name: "{{ nxl_env_name }}-elb"
     security_groups:
       - "{{ nxl_lb_sg.group_id }}"
     subnets:
