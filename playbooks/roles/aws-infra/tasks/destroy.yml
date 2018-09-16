@@ -3,7 +3,7 @@
 - name: Destroy load balancer
   elb_application_lb:
     region: ap-southeast-2
-    name: "{{ nxl_env_name }}-elb-{{ VPC_ID }}"
+    name: "{{ nxl_env_name }}-elb"
     state: absent
     wait: True
 
@@ -14,7 +14,7 @@
 - name: Destroy target group
   elb_target_group:
     region: ap-southeast-2
-    name: "{{ nxl_env_name }}-tg-{{ VPC_ID }}"
+    name: "{{ nxl_env_name }}-targrp"
     state: absent
     wait: True
 
