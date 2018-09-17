@@ -13,6 +13,7 @@ slackSend color: 'good', message: "Started Job: ${env.JOB_NAME} ${env.BUILD_NUMB
 sh 'rm -rf *'
 if(OLD_VERSION) {
     dir('nsl-infra') {
+        sh 'pwd && ls -l'
         sh 'git checkout bc390261cac796aff26093cd35c5dfa45bc5958d'
     }
 } else {
