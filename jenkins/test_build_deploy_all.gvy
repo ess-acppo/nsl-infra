@@ -8,7 +8,7 @@ node {
     def elb_dns = "$env_name"+"-"+"$SHARD_TYPE"+".oztaxa.com"
 
     def git_tag_domain_plugin = '34e671f818c83dffba672a1938c060faa2d01db9'
-    def git_tag_services = '5ae528a5b7c637950f769e714ffa12c8a7c746a3'
+    def git_tag_services = '*/BNTi-customize_name_construction'
     def git_tag_mapper = '138d1ddd8e71c7a79c7405d3269fd6ceb00aa87f'
     def git_tag_editor = '9675e53469f352fcf4a439b0d8eeacbd91f12285'
 
