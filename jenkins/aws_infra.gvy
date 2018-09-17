@@ -12,8 +12,9 @@ checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmo
 slackSend color: 'good', message: "Started Job: ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
 sh 'rm -rf *'
 if(OLD_VERSION) {
-    sh 'cd nsl-infra'
-    sh 'git checkout bc390261cac796aff26093cd35c5dfa45bc5958d'
+    dir('nsl-infra') {
+        sh 'git checkout bc390261cac796aff26093cd35c5dfa45bc5958d'
+    }
 } else {
     sh 'echo "Building top of the branch"'
 }
