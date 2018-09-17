@@ -8,9 +8,10 @@ Perquisites before this can be run in a machine ( irrespective of whether it run
 
 stage("Creating environment") {
 node{
+sh 'rm -rf *'
 checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
 slackSend color: 'good', message: "Started Job: ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
-sh 'rm -rf *'
+
 if(OLD_VERSION) {
     dir('nsl-infra') {
         sh 'pwd && ls -l'
