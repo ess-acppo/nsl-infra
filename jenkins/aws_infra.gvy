@@ -11,7 +11,7 @@ node{
 checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
 slackSend color: 'good', message: "Started Job: ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
 sh 'rm -rf *'
-if($OLD_VERSION) {
+if(OLD_VERSION) {
     sh 'git checkout bc390261cac796aff26093cd35c5dfa45bc5958d'
 } else {
     sh 'echo "Building top of the branch"'
