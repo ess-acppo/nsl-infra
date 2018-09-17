@@ -8,7 +8,7 @@ node {
     def elb_dns = "$env_name"+"-"+"$SHARD_TYPE"+".oztaxa.com"
 
     def git_tag_domain_plugin = '34e671f818c83dffba672a1938c060faa2d01db9'
-    def git_tag_services = 'e251bdd5f20e73832ec81501ae530b924e1dda2f'
+    def git_tag_services = '5ae528a5b7c637950f769e714ffa12c8a7c746a3'
     def git_tag_mapper = '138d1ddd8e71c7a79c7405d3269fd6ceb00aa87f'
     def git_tag_editor = '9675e53469f352fcf4a439b0d8eeacbd91f12285'
 
@@ -129,7 +129,7 @@ node {
 
     stage("Bootstrapping data into DB") {
     node{
-        checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
+        // checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
 
         slackSend color: 'good', message: "Starting bootstrap process for DB in ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
         sh 'cp /var/lib/jenkins/nxl-private/bnti/reconstruct-name-strings.sh nsl-infra/playbooks/roles/bootstrap-db/files/reconstruct-name-strings.sh'
