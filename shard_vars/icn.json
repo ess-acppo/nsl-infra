@@ -23,7 +23,7 @@
   "description_html" : "<p>This section of the National ex-Australia Species List infrastructure delivers names and taxonomies for organisms named according to the {{shard_name_full}}. The data comprise names, bibliographic information, and taxonomic concepts for organisms that are neither native to nor naturalised in Australia. The {{shard_namespace_full}} ({{ shard_namespace_UPPER }}) provides names and bibliographic information. The {{tree_banner_text}} ({{ taxonomy_name }}) provides a provisional taxonomy.</p>",
   "shard_data_load_file" : "data_load.sql",
   "shard_nsl_ddl_file": "icn-ddl.sql",
-  "shard_nsl-import_file": "icn-import.sql",
+  "shard_nsl_import_file": "icn-import.sql",
   "shard_nsl_tree_import_file": "icn-tree-import.sql",
   "shard_mapper_ddl_file": "mapper-ddl.sql",
   "shard_kingdom_code": "(chrkingdomcode = 'P' OR chrkingdomcode = 'F' OR chrkingdomcode = 'L')"

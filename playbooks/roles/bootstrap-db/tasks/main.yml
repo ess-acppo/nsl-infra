@@ -8,10 +8,9 @@
     dest: "/tmp/{{item.filename}}"
   with_items:
     - { filename: "{{ shard_nsl_ddl_file }}" }
-    - { filename: mapper-ddl.sql }
-    - { filename: mapper-ddlv2.sql }
-    - { filename: icn-import.sql }
-    - { filename: icn-tree-import.sql }
+    - { filename: "{{ shard_mapper_ddl_file }}" }
+    - { filename: "{{ shard_nsl_import_file }}" }
+    - { filename: "{{ shard_nsl_tree_import_file }}" }
 
 - name: Drop the nsl database
   command: psql -c 'drop database if exists '"{{postgresql_databases[0].name}}"';'
@@ -57,7 +56,7 @@
 - name: Running import of tblbiota csv script
   become: true
   become_user: postgres
-  command: psql -f /tmp/"{{ shard_nsl-import_file }}" -d "{{postgresql_databases[0].name}}"
+  command: psql -f /tmp/"{{ shard_nsl_import_file }}" -d "{{postgresql_databases[0].name}}"
 
 # Restart tomcat
 - name: tomcat-8-restart
