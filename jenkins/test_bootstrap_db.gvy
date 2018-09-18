@@ -1,6 +1,7 @@
 node{
     stage("Prepare env-name= $ENVIRONMENT_NAME for play") {
-                sh 'rm -rf *'
+                //sh 'rm -rf *'
+                sh 'pwd && ls -alhF'
                 sh 'whoami'
                 sh 'echo "ANSIBLE VERSION :" && ansible --version'
                 sh 'echo "PYTHON VERSION :" && python --version'
