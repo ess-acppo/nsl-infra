@@ -44,7 +44,7 @@
 - name: Create nsl.mapper tables, views using mapper v1 sql script
   become: true
   become_user: postgres
-  command: psql -f /tmp/mapper-ddl.sql -d "{{postgresql_databases[0].name}}"
+  command: psql -f /tmp/"{{ shard_mapper_ddl_file }}" -d "{{postgresql_databases[0].name}}"
 # FIX: mapper.db_version table created, but empty
 - name: Create an entry in mapper.db_version table
   become: true
@@ -57,7 +57,7 @@
 - name: Running import of tblbiota csv script
   become: true
   become_user: postgres
-  command: psql -f /tmp/icn-import.sql -d "{{postgresql_databases[0].name}}"
+  command: psql -f /tmp/"{{ shard_nsl-import_file }}" -d "{{postgresql_databases[0].name}}"
 
 # Restart tomcat
 - name: tomcat-8-restart
@@ -77,7 +77,7 @@
 - name: Running Tree import sql script
   become: true
   become_user: postgres
-  command: psql -f /tmp/icn-tree-import.sql -d "{{postgresql_databases[0].name}}"
+  command: psql -f /tmp/"{{ shard_nsl_tree_import_file }}"-d "{{postgresql_databases[0].name}}"
 
 # Copy script to postgres home dir
 # - name: Copy script to postgres home dir
