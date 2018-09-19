@@ -126,6 +126,16 @@
 - name: tomcat-8-restart
   service: name=tomcat state=restarted
 
+- name: Print diagnostic information - name_group table
+  become: true
+  become_user: postgres
+  command: psql "{{postgresql_databases[0].name}}" -c 'select * from name_group;'
+
+- name: Print diagnostic information - name_type table
+  become: true
+  become_user: postgres
+  command: psql "{{postgresql_databases[0].name}}" -c 'select * from name_type;'
+  
 # # Echo variable {{tomcat_dir}}
 # - name: echo variable
 #   command: echo {{tomcat_dir}}
