@@ -5,7 +5,7 @@ node {
 
     def env_instance_name = "$ENVIRONMENT_NAME".split(",")[0]
     def env_name = env_instance_name.split("-")[0]
-    def elb_dns = "$env_name"+"-"+"$SHARD_TYPE"+".oztaxa.com"
+    def elb_dns = "$ENVIRONMENT_NAME"+".oztaxa.com"
 
     def git_tag_domain_plugin = '34e671f818c83dffba672a1938c060faa2d01db9'
     def git_tag_services = 'e251bdd5f20e73832ec81501ae530b924e1dda2f'
