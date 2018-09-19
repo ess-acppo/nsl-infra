@@ -56,7 +56,7 @@
 - name: Running import of tblbiota csv script
   become: true
   become_user: postgres
-  command: psql -f /tmp/"{{ shard_nsl_import_file }}" -d "{{postgresql_databases[0].name}}"
+  command: psql -d "{{postgresql_databases[0].name}}" -f /tmp/"{{shard_nsl_import_file}}" 
 
 # Restart tomcat
 - name: tomcat-8-restart
