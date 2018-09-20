@@ -12,8 +12,15 @@ node {
 
         checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nxl-private']], submoduleCfg: [], userRemoteConfigs: [[url: '/var/lib/jenkins/nxl-private']]])
     }
-    stage('Building war') {
 
+    stage("Copy Ad-hoc Files from Private Repository"){
+        dir('nsl-infra') {
+                sh 'cp ../nxl-private/bnti/jdk*.tar.gz playbooks/roles/tomcat8/files/'
+                sh 'cp ../nxl-private/bnti/tag_tole_database.yml aws_utils/group_vars/tag_role_database.yml'
+        }
+    }
+
+    stage('Building war') {
         dir('services') {
             // sh 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64;$WORKSPACE/services/grailsw war;$WORKSPACE/services/grailsw "set-war-path nxl"'
             sh 'cp ../nxl-private/bnti/build-nxl-services.sh .'
