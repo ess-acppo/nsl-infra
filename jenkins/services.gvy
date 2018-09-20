@@ -6,31 +6,24 @@ node {
 
         sh 'rm -rf *'
 
-        checkout([$class: 'GitSCM', branches: [[name: '*/dawr-master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'services']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/services.git']]])
+        checkout([$class: 'GitSCM', branches: [[name: '*/BNTi-customize_name_construction']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'services']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/services.git']]])
 
-        checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
+        checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
 
-
-    }
-    stage('Unit test') {
-
-        dir('services') {
-            try {
-                sh 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64;$WORKSPACE/services/grailsw clean-all;$WORKSPACE/services/grailsw "test-app unit:"'
-
-            } catch (e) {
-                currentBuild.result = 'failure'
-            }
-        }
-
+        checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nxl-private']], submoduleCfg: [], userRemoteConfigs: [[url: '/var/lib/jenkins/nxl-private']]])
     }
     stage('Building war') {
 
         dir('services') {
-            sh 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64;$WORKSPACE/services/grailsw war;$WORKSPACE/services/grailsw "set-war-path nxl"'
+            // sh 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64;$WORKSPACE/services/grailsw war;$WORKSPACE/services/grailsw "set-war-path nxl"'
+            sh 'cp ../nxl-private/bnti/build-nxl-services.sh .'
+            sh 'chmod +x ./build-nxl-services.sh'
+            sh './build-nxl-services.sh'
+            sh 'mv ./target/services##1.0205.war ./target/nxl#services##1.0205.war'
         }
-
     }
+
+
     stage("Deploy to environment level-1") {
         dir('nsl-infra') {
             def warDir = pwd() + "/../services/target/"
@@ -51,28 +44,28 @@ node {
 
         }
     }
-    stage("Integration test in environment level-1") {
-        sleep(2)
-    }
-    stage("Deploy to environment level-2") {
-        def env_name = "$ENVIRONMENT_NAME".split(",")[1]
-        sleep(2)
-        slackSend color: 'good', message: "New build  ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>) deployed to $env_name"
-
-    }
-    stage("Perform manual validations in environment level-2") {
-        input message: 'Are you satisfied with current state of application?', ok: 'Yes', submitter: 'admin,arnab', submitterParameter: 'who_approved'
-
-    }
-    stage("Deploy to environment PROD") {
-        def env_name = "$ENVIRONMENT_NAME".split(",")[2]
-        sleep(2)
-    }
-    stage("Run smoke test on PROD"){
-        sleep(2)
-        slackSend color: "good", message: "${env.JOB_NAME} deployed ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>) into PROD"
-
-    }
-
-
 }
+    // stage("Integration test in environment level-1") {
+    //     sleep(2)
+    // }
+    // stage("Deploy to environment level-2") {
+    //     def env_name = "$ENVIRONMENT_NAME".split(",")[1]
+    //     sleep(2)
+    //     slackSend color: 'good', message: "New build  ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>) deployed to $env_name"
+
+    // }
+    // stage("Perform manual validations in environment level-2") {
+    //     input message: 'Are you satisfied with current state of application?', ok: 'Yes', submitter: 'admin,arnab', submitterParameter: 'who_approved'
+
+    // }
+    // stage("Deploy to environment PROD") {
+    //     def env_name = "$ENVIRONMENT_NAME".split(",")[2]
+    //     sleep(2)
+    // }
+    // stage("Run smoke test on PROD"){
+    //     sleep(2)
+    //     slackSend color: "good", message: "${env.JOB_NAME} deployed ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>) into PROD"
+
+    // }
+
+
