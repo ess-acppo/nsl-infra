@@ -126,16 +126,41 @@
 - name: tomcat-8-restart
   service: name=tomcat state=restarted
 
+- name: Publish the draft import
+  become: true
+  become_user: postgres
+  command: psql -d "{{postgresql_databases[0].name}}" -c 'UPDATE tree_version SET published = '\''t'\'' WHERE draft_name = '\''draft import'\'';'
+
+- name: Update the tree table with published tree version id
+  become: true
+  become_user: postgres
+  command: psql -d "{{postgresql_databases[0].name}}" -c 'UPDATE tree SET default_draft_tree_version_id = NULL,current_tree_version_id = tree_version.id FROM tree_version WHERE tree_version.draft_name = '\''draft import'\'';'
+
+- name: Reset the views
+  become: true
+  become_user: postgres
+  script: refresh-views.sh
+
 - name: Print diagnostic information - name_group table
   become: true
   become_user: postgres
-  command: psql "{{postgresql_databases[0].name}}" -c 'select * from name_group;'
+  command: psql -d "{{postgresql_databases[0].name}}" -c 'select * from name_group;'
 
 - name: Print diagnostic information - name_type table
   become: true
   become_user: postgres
   command: psql "{{postgresql_databases[0].name}}" -c 'select * from name_type;'
+
+- name: Print diagnostic information - tree table
+  become: true
+  become_user: postgres
+  command: psql "{{postgresql_databases[0].name}}" -c 'select * from tree;'
   
+- name: Print diagnostic information - tree_version table
+  become: true
+  become_user: postgres
+  command: psql "{{postgresql_databases[0].name}}" -c 'select * from tree_version;'
+
 # # Echo variable {{tomcat_dir}}
 # - name: echo variable
 #   command: echo {{tomcat_dir}}
