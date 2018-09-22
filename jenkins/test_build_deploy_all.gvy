@@ -134,6 +134,10 @@ node {
         slackSend color: 'good', message: "Starting bootstrap process for DB in ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
         sh 'cp /var/lib/jenkins/nxl-private/bnti/reconstruct-name-strings.sh nsl-infra/playbooks/roles/bootstrap-db/files/reconstruct-name-strings.sh'
         sh 'chmod +x nsl-infra/playbooks/roles/bootstrap-db/files/reconstruct-name-strings.sh'
+
+        sh 'cp /var/lib/jenkins/nxl-private/bnti/refresh-views.sh nsl-infra/playbooks/roles/bootstrap-db/files/reconstruct-name-strings.sh'
+        sh 'chmod +x nsl-infra/playbooks/roles/bootstrap-db/files/refresh-views.sh'
+        
         def ds_val = "${DATA_SOURCE}"
         def date_val = "${DATE_TO_USE}"
         echo "${ds_val}"
