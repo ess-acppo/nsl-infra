@@ -1,0 +1,683 @@
+-- to import the csv into the postgresql database you need a table (if using postgresql COPY) this is the current structure
+create table if not exists tblbiota
+(
+  intbiotaid         integer,
+  intparentid        integer,
+  vchrepithet        text,
+  vchrfullname       text,
+  vchryearofpub      integer,
+  vchrauthor         text,
+  vchrnamequalifier  text,
+  chrelemtype        text,
+  vchrrank           text,
+  chrkingdomcode     text,
+  intorder           integer,
+  vchrparentage      text,
+  bitchangedcomb     boolean,
+  bitshadowed        boolean,
+  bitunplaced        boolean,
+  bitunverified      boolean,
+  bitavailablename   boolean,
+  bitliteraturename  boolean,
+  dtdatecreated      text,
+  vchrwhocreated     text,
+  dtdatelastupdated  text,
+  vchrwholastupdated text,
+  txtdistqual        text,
+  guid               text
+);
+
+COPY tblbiota from '/tmp/tblbiota.csv' WITH CSV HEADER;
+
+-- create an "Unknown" author for all name without an author.
+
+INSERT INTO public.author (abbrev, created_at, created_by, name, namespace_id, updated_at, updated_by)
+VALUES ('-', '2018-07-20 09:03:08.438000', 'pmcneil', 'dunno', (select id
+                                                                from namespace
+                                                                where name = '{{shard_namespace_UPPER}}'), '2018-07-20 09:03:59.380000',
+        'pmcneil');
+
+insert into author (abbrev, created_at, created_by, name, namespace_id, updated_at, updated_by)
+  select distinct
+    (vchrauthor),
+    now(),
+    'import',
+    vchrauthor,
+    (select id
+     from namespace
+     where name = '{{shard_namespace_UPPER}}'),
+    now(),
+    'import'
+  from tblbiota
+  where vchrauthor is not null and {{shard_kingdom_code}};
+
+-- map the ranks to NSL ranks
+update tblbiota
+set chrelemtype = 'Superordo'
+where chrelemtype = 'SPO';
+update tblbiota
+set chrelemtype = 'Subtribus'
+where chrelemtype = 'SBT';
+update tblbiota
+set chrelemtype = 'Classis'
+where chrelemtype = 'C';
+update tblbiota
+set chrelemtype = 'Subspecies'
+where chrelemtype = 'SSP';
+update tblbiota
+set chrelemtype = 'Varietas'
+where chrelemtype = 'V';
+update tblbiota
+set chrelemtype = 'Subregnum'
+where chrelemtype = 'SKING';
+update tblbiota
+set chrelemtype = 'Species'
+where chrelemtype = 'SP';
+update tblbiota
+set chrelemtype = 'Subordo'
+where chrelemtype = 'SBO';
+update tblbiota
+set chrelemtype = 'Subclassis'
+where chrelemtype = 'SBC';
+update tblbiota
+set chrelemtype = 'Subtribus'
+where chrelemtype = 'ST';
+update tblbiota
+set chrelemtype = 'Subfamilia'
+where chrelemtype = 'SF';
+update tblbiota
+set chrelemtype = 'Familia'
+where chrelemtype = 'F';
+update tblbiota
+set chrelemtype = 'Genus'
+where chrelemtype = 'G';
+update tblbiota
+set chrelemtype = 'Tribus'
+where chrelemtype = 'T';
+update tblbiota
+set chrelemtype = 'Ordo'
+where chrelemtype = 'O';
+update tblbiota
+set chrelemtype = 'Regnum'
+where chrelemtype = 'KING';
+
+-- undetermined ranks insert new ranks as required.
+
+INSERT INTO public.name_rank (id, lock_version, abbrev, deprecated, has_parent, italicize, major, name, name_group_id, parent_rank_id, sort_order, visible_in_name, description_html, rdf_id)
+VALUES (nextval('nsl_global_seq'), 0, 'phy.', false, false, false, true, 'Phylum', (select id
+                                                                                    from name_group
+                                                                                    where name = 'iczn'), null, 10,
+        false, '(description of <b>Phylum</b>)', 'phylum');
+INSERT INTO public.name_rank (id, lock_version, abbrev, deprecated, has_parent, italicize, major, name, name_group_id, parent_rank_id, sort_order, visible_in_name, description_html, rdf_id)
+VALUES (nextval('nsl_global_seq'), 0, 'subp.', false, false, false, true, 'Subphylum', (select id
+                                                                                        from name_group
+                                                                                        where name = 'iczn'), null,
+                                   10, false, '(description of <b>Subphylum</b>)', 'subphylum');
+INSERT INTO public.name_rank (id, lock_version, abbrev, deprecated, has_parent, italicize, major, name, name_group_id, parent_rank_id, sort_order, visible_in_name, description_html, rdf_id)
+VALUES (nextval('nsl_global_seq'), 0, 'Ggrp.', false, false, false, true, 'Genome group', (select id
+                                                                                           from name_group
+                                                                                           where name = 'iczn'),
+                                   null, 10, false, '(description of <b>Genome group</b>)', 'genome_group');
+INSERT INTO public.name_rank (id, lock_version, abbrev, deprecated, has_parent, italicize, major, name, name_group_id, parent_rank_id, sort_order, visible_in_name, description_html, rdf_id)
+VALUES (nextval('nsl_global_seq'), 0, 'Scls.', false, false, false, true, 'Superclassis', (select id
+                                                                                           from name_group
+                                                                                           where name = 'iczn'),
+                                   null, 10, false, '(description of <b>Superclassis</b>)', 'superclassis');
+
+
+update tblbiota
+set chrelemtype = 'Superclassis'
+where chrelemtype = 'SPC'; -- superclass
+update tblbiota
+set chrelemtype = 'Phylum'
+where chrelemtype = 'P'; -- Phylum?
+update tblbiota
+set chrelemtype = 'Subphylum'
+where chrelemtype = 'SBP'; -- Subphylum?
+update tblbiota
+set chrelemtype = '[unranked]'
+where chrelemtype = ''; -- Unranked
+update tblbiota
+set chrelemtype = 'Genome group'
+where chrelemtype = 'SGP'; -- species genome group?
+
+-- initial import of names
+
+insert into name (author_id, created_at, created_by, full_name, full_name_html, name_element, name_path, name_rank_id, name_status_id, name_type_id, namespace_id,
+                  parent_id, sanctioning_author_id, second_parent_id, simple_name, simple_name_html, sort_name, source_dup_of_id,
+                  source_id, source_id_string, source_system, status_summary, updated_at, updated_by, verbatim_rank, why_is_this_here_id)
+  select
+    coalesce(a.id, (select id
+                    from author
+                    where name = 'dunno')),
+    t.dtdatecreated :: timestamp with time zone,
+    coalesce(t.vchrwhocreated, 'import'),
+    t.vchrfullname,
+    t.vchrfullname,
+    t.vchrepithet,
+    t.vchrparentage,
+    coalesce(r.id, (select id
+                    from name_rank
+                    where name = '[unranked]')),
+    (select id
+     from name_status
+     where name = 'legitimate'),
+    (select id
+     from name_type
+     where name = 'scientific'),
+    (select id
+     from namespace
+     where name = '{{shard_namespace_UPPER}}'),
+    null,
+    null,
+    null,
+    t.vchrfullname,
+    t.vchrfullname,
+    t.vchrfullname,
+    null,
+    t.intbiotaid,
+    t.intbiotaid :: text,
+    'tblbiota',
+    null,
+    t.dtdatelastupdated :: timestamp with time zone,
+    coalesce(t.vchrwholastupdated, t.vchrwhocreated, 'import'),
+    null,
+    null
+  from tblbiota t
+    left outer join author a on a.name = t.vchrauthor
+    left outer join name_rank r on r.name = t.chrelemtype
+  where {{shard_kingdom_code}};
+
+-- now update parents
+
+update name
+set parent_id = n.id from tblbiota t
+  join name n on n.source_id = t.intparentid
+where t.intbiotaid = name.source_id;
+
+-- because "bit available name" is used to say the name is a synonym of it's parent, the parent needs to be
+-- set to the parent of the parent
+
+update name
+set parent_id = n.parent_id
+from tblbiota t
+  join name n on n.source_id = t.intparentid
+where t.intbiotaid = name.source_id
+      and t.bitavailablename;
+
+update name
+set parent_id = n.parent_id
+from tblbiota t
+  join name n on n.source_id = t.intparentid
+where t.intbiotaid = name.source_id
+      and t.bitliteraturename;
+
+-- select * from name where parent_id is null; -- check data issues.
+
+-- now set family and name path
+
+UPDATE name n
+SET name_path = '', family_id = NULL;
+
+DROP FUNCTION IF EXISTS name_name_path( BIGINT );
+CREATE FUNCTION name_name_path(target_name_id BIGINT)
+  RETURNS TABLE(name_path TEXT, family_id BIGINT)
+LANGUAGE SQL AS
+$$
+with pathElements (id, path_element, rank_name) as (
+  WITH RECURSIVE walk (id, parent_id, path_element, pos, rank_name) AS (
+    SELECT
+      n.id,
+      n.parent_id,
+      n.name_element,
+      1,
+      rank.name
+    FROM name n
+      join name_rank rank on n.name_rank_id = rank.id
+    WHERE n.id = target_name_id
+    UNION ALL
+    SELECT
+      n.id,
+      n.parent_id,
+      n.name_element,
+      walk.pos + 1,
+      rank.name
+    FROM walk, name n
+      join name_rank rank on n.name_rank_id = rank.id
+    WHERE n.id = walk.parent_id
+  )
+  SELECT
+    id,
+    path_element,
+    rank_name
+  FROM walk
+  order by walk.pos desc)
+select
+  string_agg(path_element, '/'),
+  (select id
+   from pathElements p2
+   where p2.rank_name = 'Familia'
+   limit 1)
+from pathElements;
+$$;
+
+drop table if exists tmp_path_fam;
+select
+  id,
+  blah.name_path,
+  blah.family_id
+into tmp_path_fam
+from name n, name_name_path(n.id) blah;
+
+alter table tmp_path_fam
+  add foreign key (id) references name (id);
+
+-- set all the name paths to the name parent path and the family to the family in that path
+update name
+set name_path = blah.name_path, family_id = blah.family_id
+from tmp_path_fam blah
+where blah.id = name.id;
+
+drop table tmp_path_fam;
+
+-- select * from name order by name_path;
+
+-- create a NAQS database author
+INSERT INTO public.author (abbrev, created_at, created_by, name, namespace_id, notes, updated_at, updated_by)
+VALUES ('D.Sm.', '2018-07-20 02:29:39.135000', 'pmcneil', 'NAQS', (select id
+                                                                   from namespace
+                                                                   where name = '{{shard_namespace_UPPER}}'),
+        'database author', '2018-07-20 02:29:39.135000', 'pmcneil');
+
+-- create a NAQS database reference
+INSERT INTO public.reference (author_id, citation, citation_html,
+                              created_at, created_by, display_title,
+                              language_id,
+                              namespace_id,
+                              published,
+                              ref_author_role_id,
+                              ref_type_id,
+                              title, updated_at, updated_by)
+VALUES ((select id
+         from author
+         where name = 'NAQS'),
+  'TopWatch database',
+  '<ref data-id=''10894''><ref-database><author>NAQS</author> <ref-title>TopWatch database</ref-title></ref-database></ref>',
+  '2018-07-20 02:30:23.926000', 'pmcneil', 'NAQS',
+  (select id
+   from language
+   where name = 'English'),
+  (select id
+   from namespace
+   where name = '{{shard_namespace_UPPER}}'),
+  true,
+  (select id
+   from ref_author_role
+   where name = 'Compiler'),
+  (select id
+   from ref_type
+   where name = 'Database'),
+        'TopWatch database', '2018-07-20 02:30:24.506000', 'pmcneil'
+);
+
+-- create an instance using the database reference for every name
+INSERT INTO public.instance (created_at, created_by, draft, instance_type_id, name_id, namespace_id,
+                             reference_id,
+                             updated_at, updated_by)
+  SELECT
+    now(),
+    'pmcneil',
+    false,
+    (select id
+     from instance_type
+     where name = 'secondary reference'),
+    n.id,
+    (select id
+     from namespace
+     where name = '{{shard_namespace_UPPER}}'),
+    (select id
+     from reference
+     where citation = 'TopWatch database'),
+    now(),
+    'pmcneil'
+  from name n;
+
+-- set up relationship instances....
+
+-- via Dominic:-
+-- while the software supported additional detail for synonymy/validity it wasn't used.
+-- For our purposes,
+--   if bitAvailableName is TRUE it means the name is an available, but not a valid, name (ie a synonym).
+--
+-- The documentation indicates literature name was used as a bucket for previous combinations (synonyms) misspellings,
+-- and names used in the literature but without nomenclatural standing; for all practical purposes, synonyms.
+--
+-- From what I can tell, the changed combination indicator was used to trigger parentheses around author name.
+--
+-- bitUnplaced was used to when the system auto-created an 'unplaced' grouping.
+--   This occurs when a taxon has a child added above all of its current children;
+--   BioLink will autocreate an 'unplaced' taxon at the same rank as the new one and move all the children into it.
+--   The user then has to distribute the taxa as required, and the leftovers remain in the 'unplaced' bucket.
+--
+-- bitUnVerified is unchecked by the Administrator after details have been verified - it's driven by a checkbox which
+-- can only be accessed by that role.
+--
+-- bitShadowed I have no idea but its not used.
+--
+-- bitAvailableName and bitLiteratureName are mutually exclusive.
+
+INSERT INTO public.instance_type (citing,
+                                  deprecated,
+                                  doubtful,
+                                  misapplied,
+                                  name,
+                                  nomenclatural,
+                                  primary_instance,
+                                  pro_parte,
+                                  protologue,
+                                  relationship,
+                                  secondary_instance,
+                                  sort_order,
+                                  standalone,
+                                  synonym,
+                                  taxonomic,
+                                  unsourced,
+                                  description_html,
+                                  rdf_id,
+                                  has_label,
+                                  of_label,
+                                  bidirectional)
+VALUES
+  (
+    true,
+    true,
+    false,
+    false,
+    'available synonym',
+    false,
+    false,
+    false,
+    false,
+    true,
+    false,
+    80,
+    false,
+    true,
+    false,
+    false,
+    '(description of <b>available synonym</b>)',
+    'available-synonym',
+    'available synonym',
+    'available synonym of',
+    false);
+
+INSERT INTO public.instance_type (citing,
+                                  deprecated,
+                                  doubtful,
+                                  misapplied,
+                                  name,
+                                  nomenclatural,
+                                  primary_instance,
+                                  pro_parte,
+                                  protologue,
+                                  relationship,
+                                  secondary_instance,
+                                  sort_order,
+                                  standalone,
+                                  synonym,
+                                  taxonomic,
+                                  unsourced,
+                                  description_html,
+                                  rdf_id,
+                                  has_label,
+                                  of_label,
+                                  bidirectional)
+VALUES
+  (
+    true,
+    true,
+    false,
+    false,
+    'literature synonym',
+    false,
+    false,
+    false,
+    false,
+    true,
+    false,
+    80,
+    false,
+    true,
+    false,
+    false,
+    '(description of <b>literature synonym</b>)',
+    'literature-synonym',
+    'literature synonym',
+    'literature synonym of',
+    false);
+
+-- this creates a nomenclatural synonym instance for every bitavailable name.
+
+INSERT INTO public.instance (
+  cited_by_id,
+  cites_id,
+  created_at, created_by,
+  draft,
+  instance_type_id,
+  name_id,
+  namespace_id,
+  reference_id,
+  source_id,
+  source_id_string,
+  source_system,
+  updated_at, updated_by
+)
+  (select
+     of_inst.id                                                     as cited_by_id,
+     syn_inst.id                                                    as cites_id,
+     bio.dtdatecreated :: timestamp with time zone                  as created_at,
+     coalesce(bio.vchrwhocreated, 'import')                         as created_by,
+     false,
+     (select id
+      from instance_type
+      where name = 'available synonym')                             as instance_type_id,
+     syn.id                                                         as name_id,
+     (select id
+      from namespace
+      where name = '{{shard_namespace_UPPER}}'),
+     of_inst.reference_id,
+     syn.source_id,
+     syn.source_id_string,
+     syn.source_system,
+     bio.dtdatelastupdated :: timestamp with time zone              as updated_at,
+     coalesce(bio.vchrwholastupdated, bio.vchrwhocreated, 'import') as updated_by
+   from name syn
+     join instance syn_inst on syn.id = syn_inst.name_id
+     join instance_type syn_it on syn_inst.instance_type_id = syn_it.id
+     join tblbiota bio on syn.source_id = bio.intbiotaid
+     join name of on of.source_id = bio.intparentid
+     join instance of_inst on of.id = of_inst.name_id
+     join instance_type of_it on of_inst.instance_type_id = of_it.id
+   where bio.bitavailablename
+         and syn_it.standalone
+         and of_it.standalone);
+
+INSERT INTO public.instance (
+  cited_by_id,
+  cites_id,
+  created_at, created_by,
+  draft,
+  instance_type_id,
+  name_id,
+  namespace_id,
+  reference_id,
+  source_id,
+  source_id_string,
+  source_system,
+  updated_at, updated_by
+)
+  (select
+     of_inst.id                                                     as cited_by_id,
+     syn_inst.id                                                    as cites_id,
+     bio.dtdatecreated :: timestamp with time zone                  as created_at,
+     coalesce(bio.vchrwhocreated, 'import')                         as created_by,
+     false,
+     (select id
+      from instance_type
+      where name = 'literature synonym')                            as instance_type_id,
+     syn.id                                                         as name_id,
+     (select id
+      from namespace
+      where name = '{{shard_namespace_UPPER}}'),
+     of_inst.reference_id,
+     syn.source_id,
+     syn.source_id_string,
+     syn.source_system,
+     bio.dtdatelastupdated :: timestamp with time zone              as updated_at,
+     coalesce(bio.vchrwholastupdated, bio.vchrwhocreated, 'import') as updated_by
+   from name syn
+     join instance syn_inst on syn.id = syn_inst.name_id
+     join instance_type syn_it on syn_inst.instance_type_id = syn_it.id
+     join tblbiota bio on syn.source_id = bio.intbiotaid
+     join name of on of.source_id = bio.intparentid
+     join instance of_inst on of.id = of_inst.name_id
+     join instance_type of_it on of_inst.instance_type_id = of_it.id
+   where bio.bitliteraturename
+         and syn_it.standalone
+         and of_it.standalone);
+
+-- insert identifiers for all names and instances *** this assumes an empty mapper ***
+create index if not exists identifier_type_space_idx on mapper.identifier (object_type, name_space);
+
+INSERT INTO mapper.identifier (id, id_number, version_number, name_space, object_type, deleted, reason_deleted, updated_at, updated_by, preferred_uri_id)
+SELECT nextval('mapper.mapper_sequence'), n.id, null, '{{shard_namespace}}', 'name', FALSE,
+       NULL, now(), 'pmcneil', NULL
+FROM name n;
+
+INSERT INTO mapper.identifier (id, id_number, version_number, name_space, object_type, deleted, reason_deleted, updated_at, updated_by, preferred_uri_id)
+SELECT nextval('mapper.mapper_sequence'), i.id, null, '{{shard_namespace}}', 'instance', FALSE,
+       NULL, now(), 'pmcneil', NULL
+FROM instance i;
+
+-- make a temp column on match to link back to the identifier
+alter table mapper.match add column temp bigint;
+-- make the urls
+INSERT INTO mapper.match (id, uri, deprecated, updated_at, updated_by, temp)
+SELECT nextval('mapper.mapper_sequence'), (i.object_type ||'/'|| i.name_space || '/' || id_number :: TEXT), FALSE,
+       now(), 'pmcneil', i.id
+FROM mapper.identifier i
+WHERE i.name_space = '{{shard_namespace}}';
+
+--set the preferred uris of the identifiers
+create index match_temp_idx on mapper.match (temp);
+UPDATE mapper.identifier i
+SET preferred_uri_id = m.id
+FROM mapper.match m
+WHERE i.preferred_uri_id is null
+  AND i.name_space = '{{shard_namespace}}'
+  AND m.temp = i.id;
+
+-- insert identifier_identities
+INSERT INTO
+mapper.identifier_identities (match_id, identifier_id)
+SELECT m.id, i.id
+FROM mapper.identifier i
+       JOIN mapper.match m ON i.preferred_uri_id = m.id
+WHERE i.name_space = '{{shard_namespace}}'
+  and m.temp is not null
+  AND NOT exists(SELECT 1
+                 FROM mapper.identifier_identities ii
+                 WHERE ii.identifier_id = i.id AND ii.match_id = m.id);
+
+-- and add the default hosts
+INSERT INTO mapper.match_host (match_hosts_id, host_id)
+SELECT m.id, (SELECT h.id FROM mapper.host h WHERE h.preferred)
+FROM mapper.match m
+WHERE m.temp is not null
+  and NOT exists(SELECT 1
+                 FROM mapper.match_host mh
+                 WHERE mh.match_hosts_id = m.id);
+
+drop index mapper.match_temp_idx;
+alter table mapper.match drop column temp;
+
+VACUUM ANALYSE;
+
+delete from notification;
+
+-- create an empty tree
+
+INSERT INTO tree (group_name, name, config, description_html, accepted_tree, host_name)
+VALUES ('treebuilder',
+        '{{taxonomy_name}}',
+        '{
+          "distribution_key": "{{taxonomy_name}} Dist.",
+          "comment_key": "{{taxonomy_name}} Comment"
+        }' :: JSONB,
+        '<p>The Biosecurity {{target_kingdom_ccase}} Checklist ({{taxonomy_name}}) provides a listing of stuff</p>',
+        TRUE,
+        'https://{{ elb_dns }}'
+);
+
+-- create versions
+INSERT INTO tree_version
+(draft_name,
+ log_entry,
+ previous_version_id,
+ published,
+ created_at,
+ created_by,
+ published_at,
+ published_by,
+ tree_id)
+values (
+  'initial draft',
+  'bootstrap',
+  null,
+  true,
+  now(),
+  'pmcneil',
+  now(),
+  'pmcneil',
+  (select id
+   from tree
+   where name = '{{taxonomy_name}}')
+);
+
+UPDATE tree t
+SET current_tree_version_id = (SELECT max(id)
+                               FROM tree_version v
+                               WHERE v.tree_id = t.id)
+WHERE name = '{{taxonomy_name}}';
+
+-- create a default draft version of the tree
+INSERT INTO tree_version
+(draft_name,
+ log_entry,
+ previous_version_id,
+ published,
+ created_at,
+ created_by,
+ published_at,
+ published_by,
+ tree_id)
+values (
+  'draft import',
+  'draft import',
+  null,
+  false,
+  now(),
+  'pmcneil',
+  now(),
+  'pmcneil',
+  (select id
+   from tree
+   where name = '{{taxonomy_name}}')
+);
+
+UPDATE tree t
+SET default_draft_tree_version_id = (SELECT max(id)
+                                     FROM tree_version v
+                                     WHERE v.tree_id = t.id and published = false)
+WHERE name = '{{taxonomy_name}}';
+
