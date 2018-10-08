@@ -106,22 +106,22 @@ where chrelemtype = 'KING';
 INSERT INTO public.name_rank (id, lock_version, abbrev, deprecated, has_parent, italicize, major, name, name_group_id, parent_rank_id, sort_order, visible_in_name, description_html, rdf_id)
 VALUES (nextval('nsl_global_seq'), 0, 'phy.', false, false, false, true, 'Phylum', (select id
                                                                                     from name_group
-                                                                                    where name = 'icnp'), null, 10,
+                                                                                    where name = 'prokaryota'), null, 10,
         false, '(description of <b>Phylum</b>)', 'phylum');
 INSERT INTO public.name_rank (id, lock_version, abbrev, deprecated, has_parent, italicize, major, name, name_group_id, parent_rank_id, sort_order, visible_in_name, description_html, rdf_id)
 VALUES (nextval('nsl_global_seq'), 0, 'subp.', false, false, false, true, 'Subphylum', (select id
                                                                                         from name_group
-                                                                                        where name = 'icnp'), null,
+                                                                                        where name = 'prokaryota'), null,
                                    10, false, '(description of <b>Subphylum</b>)', 'subphylum');
 INSERT INTO public.name_rank (id, lock_version, abbrev, deprecated, has_parent, italicize, major, name, name_group_id, parent_rank_id, sort_order, visible_in_name, description_html, rdf_id)
 VALUES (nextval('nsl_global_seq'), 0, 'Ggrp.', false, false, false, true, 'Genome group', (select id
                                                                                            from name_group
-                                                                                           where name = 'icnp'),
+                                                                                           where name = 'prokaryota'),
                                    null, 10, false, '(description of <b>Genome group</b>)', 'genome_group');
 INSERT INTO public.name_rank (id, lock_version, abbrev, deprecated, has_parent, italicize, major, name, name_group_id, parent_rank_id, sort_order, visible_in_name, description_html, rdf_id)
 VALUES (nextval('nsl_global_seq'), 0, 'Scls.', false, false, false, true, 'Superclassis', (select id
                                                                                            from name_group
-                                                                                           where name = 'icnp'),
+                                                                                           where name = 'prokaryota'),
                                    null, 10, false, '(description of <b>Superclassis</b>)', 'superclassis');
 
 
