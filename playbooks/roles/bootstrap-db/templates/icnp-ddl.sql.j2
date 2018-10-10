@@ -3000,6 +3000,8 @@ INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES 
 INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'classification tree key', null, '{{taxonomy_name}}');
 INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'shard group name', null, 'NXL');
 INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'shards for SPARQL', null, 'NXL,NSL');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, '{{taxonomy_name}} label', null, '{{taxonomy_name_full}}');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, '{{shard_namespace_UPPER}} label', null, '{{shard_namespace_full}}');
 
 -- populate-top-level-names.sql
 INSERT INTO public.author (id, lock_version, abbrev, created_at, created_by, date_range, duplicate_of_id, full_name, ipni_id,

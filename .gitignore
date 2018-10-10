@@ -6,6 +6,7 @@
 
 # Custom files
 install.sh
+inv.yml
 
 # Ignore bundler config.
 /.bundle
