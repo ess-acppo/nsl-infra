@@ -85,7 +85,7 @@ node {
                 sh 'chmod +x ./build-nxl-services.sh'
                 sh './build-nxl-services.sh'
                 sh 'mv ./target/services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war ./target/nxl#services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war'
-                sh 'echo "services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\')" > /tmp/services_war_filename'
+                sh 'echo "nxl#services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\')" > /tmp/services_war_filename'
             }
 
 
