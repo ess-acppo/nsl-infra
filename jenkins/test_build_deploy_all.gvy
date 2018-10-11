@@ -85,7 +85,7 @@ node {
                 sh 'chmod +x ./build-nxl-services.sh'
                 sh './build-nxl-services.sh'
                 sh 'mv ./target/services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war ./target/nxl#services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war'
-                sh 'echo "services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\')" >> /tmp/services_war_filename'
+                sh 'echo "services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war" >> /tmp/services_war_filename'
             }
 
 
@@ -103,7 +103,7 @@ node {
                 sh 'echo "whoami: `whoami`"'  
                 sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$env_instance_name/g' aws_utils/ec2.ini && ansible-playbook  -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml -e $extra_vars --extra-vars $shard_vars"
             } else if (INVENTORY_NAME) {
-                def extra_vars = /'{"nxl_env_name":"$env_name","apps":[{"app": "services"}], "war_names": [{"war_name": "services_war_filename"}   ],   "war_source_dir": "$warDir"}'/
+                def extra_vars = /'{"nxl_env_name":"$env_name","apps":[{"app": "services"}], "war_names": [{"war_name": "$services_war_filename"}   ],   "war_source_dir": "$warDir"}'/
                 sh "ansible-playbook  -i inventory/$env_name -u ubuntu playbooks/deploy.yml -e $extra_vars --extra-vars $shard_vars"
             }
         }
@@ -112,10 +112,10 @@ node {
 
         dir('nsl-infra') {
             if (ENVIRONMENT_NAME) {
-                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$ENVIRONMENT_NAME","apps":[{"app": "editor"}], "war_names": [{"war_name": "editor_war_filename"}   ],   "war_source_dir": "$projectDir"}'/
+                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$ENVIRONMENT_NAME","apps":[{"app": "editor"}], "war_names": [{"war_name": "$editor_war_filename"}   ],   "war_source_dir": "$projectDir"}'/
                 sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$ENVIRONMENT_NAME/g' aws_utils/ec2.ini && ansible-playbook  -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml -e $extra_vars -e $shard_vars"
             } else if (INVENTORY_NAME) {
-                def extra_vars = /'{"nxl_env_name":"$INVENTORY_NAME","apps":[{"app": "editor"}], "war_names": [{"war_name": "editor_war_filename"}   ],   "war_source_dir": "$projectDir"}'/
+                def extra_vars = /'{"nxl_env_name":"$INVENTORY_NAME","apps":[{"app": "editor"}], "war_names": [{"war_name": "$editor_war_filename"}   ],   "war_source_dir": "$projectDir"}'/
                 sh "ansible-playbook -vvv -i inventory/$INVENTORY_NAME -u ubuntu playbooks/deploy.yml -e $extra_vars -e $shard_vars"
             }
         }
