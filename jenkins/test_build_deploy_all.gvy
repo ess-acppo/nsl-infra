@@ -61,7 +61,7 @@ node {
                 script{
                     projectDir = pwd()
                     sh 'mv nsl-editor.war nxl#editor##$(cat config/version.properties | sed -e \'s/.*=//g\').war'
-                    sh 'echo "nxl#editor##$(cat config/version.properties | sed -e \'s/.*=//g\').war" > /tmp/editor_war_filename'
+                    sh 'echo "nxl#editor##$(cat config/version.properties | sed -e \'s/.*=//g\')" > /tmp/editor_war_filename'
                 }
             }
         }
@@ -71,7 +71,7 @@ node {
                 sh 'chmod +x ./build-nxl-mapper.sh'
                 sh './build-nxl-mapper.sh'
                 sh 'mv ./target/nsl-mapper##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war ./target/nxl#mapper##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war'
-                sh 'echo "nxl#mapper##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war" > /tmp/mapper_war_filename'
+                sh 'echo "nxl#mapper##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\')" > /tmp/mapper_war_filename'
             }
             dir('nsl-domain-plugin') {
                 sh 'cp ../nxl-private/bnti/services-BuildConfig.groovy ./grails-app/conf/BuildConfig.groovy'
@@ -85,7 +85,7 @@ node {
                 sh 'chmod +x ./build-nxl-services.sh'
                 sh './build-nxl-services.sh'
                 sh 'mv ./target/services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war ./target/nxl#services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war'
-                sh 'echo "services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war" > /tmp/services_war_filename'
+                sh 'echo "services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\')" > /tmp/services_war_filename'
             }
 
 
