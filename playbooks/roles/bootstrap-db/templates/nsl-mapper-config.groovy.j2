@@ -3,7 +3,7 @@ grails.serverURL = "https://{{ elb_dns }}/nxl/mapper"
 mapper {
     resolverURL = "https://{{ elb_dns }}/nxl/mapper"
     contextExtension = '' //extension to the context path (after nsl-mapper).
-    defaultProtocol = 'http'
+    defaultProtocol = 'https'
 
 //TODO: host seems to be missing /nxl
     defaultResolver = { ident ->
