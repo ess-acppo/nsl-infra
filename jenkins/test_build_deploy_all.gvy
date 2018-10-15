@@ -80,7 +80,6 @@ node {
                 sh './build-nsl-dm-plugin.sh'
             }
             dir('services') {
-                sh 'rm -rf ./grails-app/assets/images/CHAH-logo.*'
                 sh 'cp ../nxl-private/bnti/build-nxl-services.sh .'
                 sh 'chmod +x ./build-nxl-services.sh'
                 sh './build-nxl-services.sh'
