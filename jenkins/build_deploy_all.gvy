@@ -6,11 +6,12 @@ node {
     def env_instance_name = "$ENVIRONMENT_NAME".split(",")[0]
     def env_name = env_instance_name.split("-")[0]
     def elb_dns = "$ENVIRONMENT_NAME"+".oztaxa.com"
-
+    // Git Variables
     def git_tag_domain_plugin = '34e671f818c83dffba672a1938c060faa2d01db9'
     def git_tag_services = 'e251bdd5f20e73832ec81501ae530b924e1dda2f'
     def git_tag_mapper = '138d1ddd8e71c7a79c7405d3269fd6ceb00aa87f'
     def git_tag_editor = '9675e53469f352fcf4a439b0d8eeacbd91f12285'
+    def git_url_services = 'https://github.com/ess-acppo/services.git'
 
     stage("Prepare") { // for display purposes
         // Get some code from a GitHub repository
@@ -30,7 +31,7 @@ node {
 
             checkout([$class: 'GitSCM', branches: [[name: "${git_tag_mapper}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'mapper']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/bio-org-au/mapper.git']]])
 
-            checkout([$class: 'GitSCM',branches: [[name: "${git_tag_services}"]],doGenerateSubmoduleConfigurations: false,extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'services']],submoduleCfg: [],userRemoteConfigs: [[url: 'https://github.com/bio-org-au/services.git']]])
+            checkout([$class: 'GitSCM',branches: [[name: "${git_tag_services}"]],doGenerateSubmoduleConfigurations: false,extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'services']],submoduleCfg: [],userRemoteConfigs: [[url: "${git_url_services}"]]])
 
             checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
 
@@ -59,6 +60,7 @@ node {
                 script{
                     projectDir = pwd()
                     sh 'mv nsl-editor.war nxl#editor##$(cat config/version.properties | sed -e \'s/.*=//g\').war'
+                    sh 'echo "nxl#editor##$(cat config/version.properties | sed -e \'s/.*=//g\')" > /tmp/editor_war_filename'
                 }
             }
         }
@@ -67,7 +69,8 @@ node {
                 sh 'cp ../nxl-private/bnti/build-nxl-mapper.sh .'
                 sh 'chmod +x ./build-nxl-mapper.sh'
                 sh './build-nxl-mapper.sh'
-                sh 'mv ./target/nsl-mapper##1.0022.war ./target/nxl#mapper##1.0022.war'
+                sh 'mv ./target/nsl-mapper##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war ./target/nxl#mapper##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war'
+                sh 'echo "nxl#mapper##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\')" > /tmp/mapper_war_filename'
             }
             dir('nsl-domain-plugin') {
                 sh 'cp ../nxl-private/bnti/services-BuildConfig.groovy ./grails-app/conf/BuildConfig.groovy'
@@ -79,22 +82,26 @@ node {
                 sh 'cp ../nxl-private/bnti/build-nxl-services.sh .'
                 sh 'chmod +x ./build-nxl-services.sh'
                 sh './build-nxl-services.sh'
-                sh 'mv ./target/services##1.0205.war ./target/nxl#services##1.0205.war'
+                sh 'mv ./target/services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war ./target/nxl#services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war'
+                sh 'echo "nxl#services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\')" > /tmp/services_war_filename'
             }
 
 
         slackSend color: 'good', message: "Preparing to Deploy war files in ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
 
     }
+    def services_war_filename = readFile('/tmp/services_war_filename').trim()
+    def mapper_war_filename = readFile('/tmp/mapper_war_filename').trim()
+    def editor_war_filename = readFile('/tmp/editor_war_filename').trim()
     stage("Deploy services to $ENVIRONMENT_NAME") {
         dir('nsl-infra') {
             warDir = pwd() + "/../services/target"
             if (ENVIRONMENT_NAME) {
-                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name","apps":[{"app": "services"}], "war_names": [{"war_name": "nxl#services##1.0205"}   ],   "war_source_dir": "$warDir"}'/
+                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name","apps":[{"app": "services"}], "war_names": [{"war_name": "$services_war_filename"}   ],   "war_source_dir": "$warDir"}'/
                 sh 'echo "whoami: `whoami`"'  
                 sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$env_instance_name/g' aws_utils/ec2.ini && ansible-playbook  -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml -e $extra_vars --extra-vars $shard_vars"
             } else if (INVENTORY_NAME) {
-                def extra_vars = /'{"nxl_env_name":"$env_name","apps":[{"app": "services"}], "war_names": [{"war_name": "nxl#services##1.0205"}   ],   "war_source_dir": "$warDir"}'/
+                def extra_vars = /'{"nxl_env_name":"$env_name","apps":[{"app": "services"}], "war_names": [{"war_name": "$services_war_filename"}   ],   "war_source_dir": "$warDir"}'/
                 sh "ansible-playbook  -i inventory/$env_name -u ubuntu playbooks/deploy.yml -e $extra_vars --extra-vars $shard_vars"
             }
         }
@@ -103,10 +110,10 @@ node {
 
         dir('nsl-infra') {
             if (ENVIRONMENT_NAME) {
-                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$ENVIRONMENT_NAME","apps":[{"app": "editor"}], "war_names": [{"war_name": "nxl#editor##1.67"}   ],   "war_source_dir": "$projectDir"}'/
+                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$ENVIRONMENT_NAME","apps":[{"app": "editor"}], "war_names": [{"war_name": "$editor_war_filename"}   ],   "war_source_dir": "$projectDir"}'/
                 sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$ENVIRONMENT_NAME/g' aws_utils/ec2.ini && ansible-playbook  -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml -e $extra_vars -e $shard_vars"
             } else if (INVENTORY_NAME) {
-                def extra_vars = /'{"nxl_env_name":"$INVENTORY_NAME","apps":[{"app": "editor"}], "war_names": [{"war_name": "nxl#editor##1.67"}   ],   "war_source_dir": "$projectDir"}'/
+                def extra_vars = /'{"nxl_env_name":"$INVENTORY_NAME","apps":[{"app": "editor"}], "war_names": [{"war_name": "$editor_war_filename"}   ],   "war_source_dir": "$projectDir"}'/
                 sh "ansible-playbook -vvv -i inventory/$INVENTORY_NAME -u ubuntu playbooks/deploy.yml -e $extra_vars -e $shard_vars"
             }
         }
@@ -116,11 +123,11 @@ node {
         dir('nsl-infra') {
             warDir = pwd() + "/../mapper/target/"
             if (ENVIRONMENT_NAME) {
-                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name","apps":[{"app": "mapper"}], "war_names": [{"war_name": "nxl#mapper##1.0022"}   ],   "war_source_dir": "$warDir"}'/
+                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name","apps":[{"app": "mapper"}], "war_names": [{"war_name": "$mapper_war_filename"}   ],   "war_source_dir": "$warDir"}'/
                 sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$env_instance_name/g' aws_utils/ec2.ini && ansible-playbook  -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml -e $extra_vars --extra-vars $shard_vars"
             } else if (INVENTORY_NAME) {
 
-                def extra_vars = /'{"nxl_env_name":"$env_name","apps":[{"app": "mapper"}], "war_names": [{"war_name": "nxl#mapper##1.0022"}   ],   "war_source_dir": "$warDir"}'/
+                def extra_vars = /'{"nxl_env_name":"$env_name","apps":[{"app": "mapper"}], "war_names": [{"war_name": "$mapper_war_filename"}   ],   "war_source_dir": "$warDir"}'/
                 sh "ansible-playbook  -i inventory/$env_name -u ubuntu playbooks/deploy.yml -e $extra_vars --extra-vars $shard_vars"
             }
         }
@@ -171,11 +178,16 @@ node {
     }
     }
 
+    stage("Delete Temp Files"){
+        sleep(2)
+        slackSend color: "good", message: "Deleting Temporary files for ${env.JOB_NAME}  ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
+
+        sh 'rm -rf /tmp/services_war_filename /tmp/mapper_war_filename /tmp/editor_war_filename'
+    }
+
     stage("Run smoke test"){
         sleep(2)
         slackSend color: "good", message: "${env.JOB_NAME} completed successfully ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
 
     }
-
-
 }

@@ -179,11 +179,16 @@ node {
     }
     }
 
+    stage("Delete Temp Files"){
+        sleep(2)
+        slackSend color: "good", message: "Deleting Temporary files for ${env.JOB_NAME}  ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
+
+        sh 'rm -rf /tmp/services_war_filename /tmp/mapper_war_filename /tmp/editor_war_filename'
+    }
+
     stage("Run smoke test"){
         sleep(2)
         slackSend color: "good", message: "${env.JOB_NAME} completed successfully ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
 
     }
-
-
 }
