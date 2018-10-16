@@ -14,6 +14,7 @@
   "tree_label_text" : "{{ tree_banner_text }}",
   "banner_text" : "Aliena Animalia",
   "taxonomy_name" : "BAC",
+  "taxonomy_name_full" : "Biosecurity {{target_kingdom_ccase}} Checklist",
   "shard_images" : ["filename" : "bani-banner.png"  , "filename" : "bani-vert-200.png"],
   "menu_label" : "Biosecurity {{target_kingdom_ccase}}",
   "services_path_tree_element" : "bac",

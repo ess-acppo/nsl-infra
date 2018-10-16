@@ -14,6 +14,7 @@
   "tree_label_text" : "{{ tree_banner_text }}",
   "banner_text" : "Aliena Plantae",
   "taxonomy_name" : "BPC",
+  "taxonomy_name_full" : "Biosecurity {{target_kingdom_ccase}} Checklist",
   "shard_images" : ["filename" : "bpni-banner.png"  , "filename" : "bpni-vert-200.png"],
   "menu_label" : "Biosecurity {{target_kingdom_ccase}}",
   "services_path_tree_element" : "bpc",
