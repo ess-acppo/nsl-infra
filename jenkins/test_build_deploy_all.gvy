@@ -11,7 +11,7 @@ node {
     def git_tag_domain_plugin = '*/master'
     def git_tag_services = '*/master'
     def git_tag_mapper = '*/master'
-    def git_tag_editor = '*/release'
+    def git_tag_editor = '*/master'
     def git_url_services = 'https://github.com/moziauddin1/services.git'
 
     stage("Prepare") { // for display purposes
