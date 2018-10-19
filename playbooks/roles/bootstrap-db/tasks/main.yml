@@ -69,8 +69,8 @@
   become_user: postgres
   script: reconstruct-name-strings.sh
 
-- name: Sleep 15 sec
-  pause: seconds=15
+- name: Sleep 60 sec
+  pause: seconds=60
 
 - name: Running Tree import sql script
   become: true
