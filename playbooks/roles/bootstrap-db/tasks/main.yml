@@ -146,27 +146,27 @@
   become_user: postgres
   command: psql -d "{{postgresql_databases[0].name}}" -c 'select audit.audit_table('\''author'\'');;'
 
-- name: Create Triggers for Audit table - author
+- name: Create Triggers for Audit table - instance
   become: true
   become_user: postgres
   command: psql -d "{{postgresql_databases[0].name}}" -c 'select audit.audit_table('\''instance'\'');;'
 
-- name: Create Triggers for Audit table - author
+- name: Create Triggers for Audit table - name
   become: true
   become_user: postgres
   command: psql -d "{{postgresql_databases[0].name}}" -c 'select audit.audit_table('\''name'\'');;'
 
-- name: Create Triggers for Audit table - author
+- name: Create Triggers for Audit table - reference
   become: true
   become_user: postgres
   command: psql -d "{{postgresql_databases[0].name}}" -c 'select audit.audit_table('\''reference'\'');;'
 
-- name: Create Triggers for Audit table - author
+- name: Create Triggers for Audit table - instance_note
   become: true
   become_user: postgres
   command: psql -d "{{postgresql_databases[0].name}}" -c 'select audit.audit_table('\''instance_note'\'');;'
 
-- name: Create Triggers for Audit table - author
+- name: Create Triggers for Audit table - comment
   become: true
   become_user: postgres
   command: psql -d "{{postgresql_databases[0].name}}" -c 'select audit.audit_table('\''comment'\'');;'
