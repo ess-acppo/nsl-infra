@@ -141,6 +141,36 @@
   become_user: postgres
   script: refresh-views.sh
 
+- name: Create Triggers for Audit table - author
+  become: true
+  become_user: postgres
+  command: psql -d "{{postgresql_databases[0].name}}" -c 'select audit.audit_table('\''author'\'');;'
+
+- name: Create Triggers for Audit table - author
+  become: true
+  become_user: postgres
+  command: psql -d "{{postgresql_databases[0].name}}" -c 'select audit.audit_table('\''instance'\'');;'
+
+- name: Create Triggers for Audit table - author
+  become: true
+  become_user: postgres
+  command: psql -d "{{postgresql_databases[0].name}}" -c 'select audit.audit_table('\''name'\'');;'
+
+- name: Create Triggers for Audit table - author
+  become: true
+  become_user: postgres
+  command: psql -d "{{postgresql_databases[0].name}}" -c 'select audit.audit_table('\''reference'\'');;'
+
+- name: Create Triggers for Audit table - author
+  become: true
+  become_user: postgres
+  command: psql -d "{{postgresql_databases[0].name}}" -c 'select audit.audit_table('\''instance_note'\'');;'
+
+- name: Create Triggers for Audit table - author
+  become: true
+  become_user: postgres
+  command: psql -d "{{postgresql_databases[0].name}}" -c 'select audit.audit_table('\''comment'\'');;'
+
 - name: Print diagnostic information - name_group table
   become: true
   become_user: postgres
