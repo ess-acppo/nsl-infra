@@ -135,49 +135,49 @@ node {
     }
         
 
-    stage("Bootstrapping data into DB") {
-    node{
-        checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
+    // stage("Bootstrapping data into DB") {
+    // node{
+    //     checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
 
-        slackSend color: 'good', message: "Starting bootstrap process for DB in ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
-        sh 'cp /var/lib/jenkins/nxl-private/bnti/reconstruct-name-strings.sh nsl-infra/playbooks/roles/bootstrap-db/files/reconstruct-name-strings.sh'
-        sh 'chmod +x nsl-infra/playbooks/roles/bootstrap-db/files/reconstruct-name-strings.sh'
+    //     slackSend color: 'good', message: "Starting bootstrap process for DB in ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
+    //     sh 'cp /var/lib/jenkins/nxl-private/bnti/reconstruct-name-strings.sh nsl-infra/playbooks/roles/bootstrap-db/files/reconstruct-name-strings.sh'
+    //     sh 'chmod +x nsl-infra/playbooks/roles/bootstrap-db/files/reconstruct-name-strings.sh'
 
-        sh 'cp /var/lib/jenkins/nxl-private/bnti/refresh-views.sh nsl-infra/playbooks/roles/bootstrap-db/files/refresh-views.sh'
-        sh 'chmod +x nsl-infra/playbooks/roles/bootstrap-db/files/refresh-views.sh'
+    //     sh 'cp /var/lib/jenkins/nxl-private/bnti/refresh-views.sh nsl-infra/playbooks/roles/bootstrap-db/files/refresh-views.sh'
+    //     sh 'chmod +x nsl-infra/playbooks/roles/bootstrap-db/files/refresh-views.sh'
         
-        def ds_val = "${DATA_SOURCE}"
-        def date_val = "${DATE_TO_USE}"
-        echo "${ds_val}"
-        if (ds_val == "base") {
-            sh 'cp /var/lib/jenkins/nxl-private/bnti/tblbiota_base.csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
-        } else {
-            if (ds_val == "today") {
-                sh 'cp /home/dawr/tblBiota_$(date +%Y%m%d).csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota_pp.csv'
-                sh 'nsl-infra/playbooks/roles/bootstrap-db/templates/clean-tblbiota.sh nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota_pp.csv > nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
-            } else {
-                echo "${DATE_TO_USE}"
-                sh 'cp /home/dawr/tblBiota_"${DATE_TO_USE}".csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota_pp.csv'
-                sh 'nsl-infra/playbooks/roles/bootstrap-db/templates/clean-tblbiota.sh nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota_pp.csv > nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
-            }
-        }
+    //     def ds_val = "${DATA_SOURCE}"
+    //     def date_val = "${DATE_TO_USE}"
+    //     echo "${ds_val}"
+    //     if (ds_val == "base") {
+    //         sh 'cp /var/lib/jenkins/nxl-private/bnti/tblbiota_base.csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
+    //     } else {
+    //         if (ds_val == "today") {
+    //             sh 'cp /home/dawr/tblBiota_$(date +%Y%m%d).csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota_pp.csv'
+    //             sh 'nsl-infra/playbooks/roles/bootstrap-db/templates/clean-tblbiota.sh nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota_pp.csv > nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
+    //         } else {
+    //             echo "${DATE_TO_USE}"
+    //             sh 'cp /home/dawr/tblBiota_"${DATE_TO_USE}".csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota_pp.csv'
+    //             sh 'nsl-infra/playbooks/roles/bootstrap-db/templates/clean-tblbiota.sh nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota_pp.csv > nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
+    //         }
+    //     }
 
-        dir('nsl-infra'){
-            def verbose = ''
-            if(VERBOSE){
-                verbose = '-v'
-            }
-            if (ENVIRONMENT_NAME) {
-                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name"}'/
-                sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$env_instance_name/g' aws_utils/ec2.ini && ansible-playbook $verbose -i aws_utils/ec2.py -u ubuntu playbooks/bootstrap_db.yml --tags \"load-data\" -e $extra_vars --extra-vars $shard_vars"
-            } else if (INVENTORY_NAME) { // not fully implemented
-                env_name = "$INVENTORY_NAME".split(",")[0]
-                def extra_vars = /'{"nxl_env_name":"$env_name"}'/
-                sh "ansible-playbook  -i inventory/$env_name -u ubuntu playbooks/deploy.yml -e $extra_vars --extra-vars $shard_vars"
-            }
-        }
-    }
-    }
+    //     dir('nsl-infra'){
+    //         def verbose = ''
+    //         if(VERBOSE){
+    //             verbose = '-v'
+    //         }
+    //         if (ENVIRONMENT_NAME) {
+    //             def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name"}'/
+    //             sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$env_instance_name/g' aws_utils/ec2.ini && ansible-playbook $verbose -i aws_utils/ec2.py -u ubuntu playbooks/bootstrap_db.yml --tags \"load-data\" -e $extra_vars --extra-vars $shard_vars"
+    //         } else if (INVENTORY_NAME) { // not fully implemented
+    //             env_name = "$INVENTORY_NAME".split(",")[0]
+    //             def extra_vars = /'{"nxl_env_name":"$env_name"}'/
+    //             sh "ansible-playbook  -i inventory/$env_name -u ubuntu playbooks/deploy.yml -e $extra_vars --extra-vars $shard_vars"
+    //         }
+    //     }
+    // }
+    // }
 
     stage("Delete Temp Files"){
         sleep(2)
