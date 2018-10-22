@@ -3101,6 +3101,7 @@ INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_seq
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'card image', 'apni-vert-200.png');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'description html', '<p>This section of the National Species List infrastructure delivers names and taxonomies for flowering plants, ferns, gymnosperms, hornworts, and liverworts.The data comprise names, bibliographic information, and taxonomic concepts for plants that are either native to or naturalised in Australia.</p><p>The Australian Plant Name Index (APNI) provides names and bibliographic information.</p><p>The Australian Plant Census (APC) provides a nationally-accepted taxonomy.</p>');
 INSERT INTO public.shard_config (id, name, value) VALUES (nextval('hibernate_sequence'), 'classification tree key', 'APC');
+INSERT INTO public.shard_config (id, deprecated, name, use_notes, value) VALUES (nextval('hibernate_sequence'), false, 'disable CheckPolynomialsBelowNameParent', null, 'false');
 
 -- search-views.sql
 DROP VIEW IF EXISTS public.accepted_name_vw;
