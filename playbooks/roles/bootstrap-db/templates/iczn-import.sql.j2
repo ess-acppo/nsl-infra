@@ -39,7 +39,7 @@ VALUES ('-', '2018-07-20 09:03:08.438000', 'pmcneil', 'dunno', (select id
 
 insert into author (abbrev, created_at, created_by, name, namespace_id, updated_at, updated_by)
   select distinct
-    (vchrauthor),
+    case when vchryearofpub is null then vchrauthor else vchrauthor || ' ' || vchryearofpub end,
     now(),
     'import',
     vchrauthor,
