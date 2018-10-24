@@ -32,10 +32,10 @@ COPY tblbiota from '/tmp/tblbiota.csv' WITH CSV HEADER;
 -- create an "Unknown" author for all name without an author.
 
 INSERT INTO public.author (abbrev, created_at, created_by, name, namespace_id, updated_at, updated_by)
-VALUES ('-', '2018-07-20 09:03:08.438000', 'pmcneil', 'dunno', (select id
+VALUES ('-', now(), '{{ nsl_db_user }}', 'dunno', (select id
                                                                 from namespace
-                                                                where name = '{{shard_namespace_UPPER}}'), '2018-07-20 09:03:59.380000',
-        'pmcneil');
+                                                                where name = '{{shard_namespace_UPPER}}'), now(),
+        '{{ nsl_db_user }}');
 
 insert into author (abbrev, created_at, created_by, name, namespace_id, updated_at, updated_by)
   select distinct
@@ -284,10 +284,10 @@ drop table tmp_path_fam;
 
 -- create a NAQS database author
 INSERT INTO public.author (abbrev, created_at, created_by, name, namespace_id, notes, updated_at, updated_by)
-VALUES ('D.Sm.', '2018-07-20 02:29:39.135000', 'pmcneil', 'NAQS', (select id
+VALUES ('D.Sm.', now(), '{{ nsl_db_user }}', 'NAQS', (select id
                                                                    from namespace
                                                                    where name = '{{shard_namespace_UPPER}}'),
-        'database author', '2018-07-20 02:29:39.135000', 'pmcneil');
+        'database author', now(), '{{ nsl_db_user }}');
 
 -- create a NAQS database reference
 INSERT INTO public.reference (author_id, citation, citation_html,
@@ -303,7 +303,7 @@ VALUES ((select id
          where name = 'NAQS'),
   'TopWatch database',
   '<ref data-id=''10894''><ref-database><author>NAQS</author> <ref-title>TopWatch database</ref-title></ref-database></ref>',
-  '2018-07-20 02:30:23.926000', 'pmcneil', 'NAQS',
+  now(), '{{ nsl_db_user }}', 'NAQS',
   (select id
    from language
    where name = 'English'),
@@ -317,7 +317,7 @@ VALUES ((select id
   (select id
    from ref_type
    where name = 'Database'),
-        'TopWatch database', '2018-07-20 02:30:24.506000', 'pmcneil'
+        'TopWatch database', now(), '{{ nsl_db_user }}'
 );
 
 -- create an instance using the database reference for every name
@@ -326,7 +326,7 @@ INSERT INTO public.instance (created_at, created_by, draft, instance_type_id, na
                              updated_at, updated_by)
   SELECT
     now(),
-    'pmcneil',
+    '{{ nsl_db_user }}',
     false,
     (select id
      from instance_type
@@ -339,7 +339,7 @@ INSERT INTO public.instance (created_at, created_by, draft, instance_type_id, na
      from reference
      where citation = 'TopWatch database'),
     now(),
-    'pmcneil'
+    '{{ nsl_db_user }}'
   from name n;
 
 -- set up relationship instances....
@@ -551,12 +551,12 @@ create index if not exists identifier_type_space_idx on mapper.identifier (objec
 
 INSERT INTO mapper.identifier (id, id_number, version_number, name_space, object_type, deleted, reason_deleted, updated_at, updated_by, preferred_uri_id)
 SELECT nextval('mapper.mapper_sequence'), n.id, null, '{{shard_namespace}}', 'name', FALSE,
-       NULL, now(), 'pmcneil', NULL
+       NULL, now(), '{{ nsl_db_user }}', NULL
 FROM name n;
 
 INSERT INTO mapper.identifier (id, id_number, version_number, name_space, object_type, deleted, reason_deleted, updated_at, updated_by, preferred_uri_id)
 SELECT nextval('mapper.mapper_sequence'), i.id, null, '{{shard_namespace}}', 'instance', FALSE,
-       NULL, now(), 'pmcneil', NULL
+       NULL, now(), '{{ nsl_db_user }}', NULL
 FROM instance i;
 
 -- make a temp column on match to link back to the identifier
@@ -564,7 +564,7 @@ alter table mapper.match add column temp bigint;
 -- make the urls
 INSERT INTO mapper.match (id, uri, deprecated, updated_at, updated_by, temp)
 SELECT nextval('mapper.mapper_sequence'), (i.object_type ||'/'|| i.name_space || '/' || id_number :: TEXT), FALSE,
-       now(), 'pmcneil', i.id
+       now(), '{{ nsl_db_user }}', i.id
 FROM mapper.identifier i
 WHERE i.name_space = '{{shard_namespace}}';
 
@@ -636,9 +636,9 @@ values (
   null,
   true,
   now(),
-  'pmcneil',
+  '{{ nsl_db_user }}',
   now(),
-  'pmcneil',
+  '{{ nsl_db_user }}',
   (select id
    from tree
    where name = '{{taxonomy_name}}')
@@ -667,9 +667,9 @@ values (
   null,
   false,
   now(),
-  'pmcneil',
+  '{{ nsl_db_user }}',
   now(),
-  'pmcneil',
+  '{{ nsl_db_user }}',
   (select id
    from tree
    where name = '{{taxonomy_name}}')

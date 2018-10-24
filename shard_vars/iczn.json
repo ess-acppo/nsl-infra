@@ -27,5 +27,6 @@
   "shard_nsl_import_file": "iczn-import.sql",
   "shard_nsl_tree_import_file": "icn-tree-import.sql",
   "shard_mapper_ddl_file": "mapper-ddl.sql",
-  "shard_kingdom_code": "chrkingdomcode = 'A'"
+  "shard_kingdom_code": "chrkingdomcode = 'A'",
+  "nsl_db_user": "db-loader"
 }
