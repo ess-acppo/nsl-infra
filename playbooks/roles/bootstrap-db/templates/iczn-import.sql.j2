@@ -53,38 +53,11 @@ insert into author (abbrev, created_at, created_by, name, namespace_id, updated_
 
 -- map the ranks to NSL ranks
 update tblbiota
-set chrelemtype = 'Superordo'
-where chrelemtype = 'SPO';
-update tblbiota
-set chrelemtype = 'Subtribus'
-where chrelemtype = 'SBT';
-update tblbiota
 set chrelemtype = 'Classis'
 where chrelemtype = 'C';
 update tblbiota
-set chrelemtype = 'Subspecies'
-where chrelemtype = 'SSP';
-update tblbiota
-set chrelemtype = 'Varietas'
-where chrelemtype = 'V';
-update tblbiota
-set chrelemtype = 'Subregnum'
-where chrelemtype = 'SKING';
-update tblbiota
-set chrelemtype = 'Species'
-where chrelemtype = 'SP';
-update tblbiota
-set chrelemtype = 'Subordo'
-where chrelemtype = 'SBO';
-update tblbiota
-set chrelemtype = 'Subclassis'
-where chrelemtype = 'SBC';
-update tblbiota
-set chrelemtype = 'Subtribus'
-where chrelemtype = 'ST';
-update tblbiota
-set chrelemtype = 'Subfamilia'
-where chrelemtype = 'SF';
+set chrelemtype = 'Division'
+where chrelemtype = 'D';
 update tblbiota
 set chrelemtype = 'Familia'
 where chrelemtype = 'F';
@@ -92,16 +65,78 @@ update tblbiota
 set chrelemtype = 'Genus'
 where chrelemtype = 'G';
 update tblbiota
-set chrelemtype = 'Tribus'
-where chrelemtype = 'T';
+set chrelemtype = 'Infraorder'
+where chrelemtype = 'INO';
 update tblbiota
 set chrelemtype = 'Ordo'
 where chrelemtype = 'O';
 update tblbiota
+set chrelemtype = 'Phylum'
+where chrelemtype = 'P'; -- Phylum?
+update tblbiota
 set chrelemtype = 'Regnum'
 where chrelemtype = 'KING';
+update tblbiota
+set chrelemtype = 'Subdivision'
+where chrelemtype = 'SBD';
+update tblbiota
+set chrelemtype = 'Subgenus'
+where chrelemtype = 'SG';
+update tblbiota
+set chrelemtype = 'Species'
+where chrelemtype = 'SP';
+update tblbiota
+set chrelemtype = 'Superfamily'
+where chrelemtype = 'SPF';
+update tblbiota
+set chrelemtype = 'Subclassis'
+where chrelemtype = 'SBC';
+update tblbiota
+set chrelemtype = 'Subfamilia'
+where chrelemtype = 'SF';
+update tblbiota
+set chrelemtype = 'Subordo'
+where chrelemtype = 'SBO';
+update tblbiota
+set chrelemtype = 'Subregnum'
+where chrelemtype = 'SKING';
+update tblbiota
+set chrelemtype = 'Subspecies'
+where chrelemtype = 'SSP';
+update tblbiota
+set chrelemtype = 'Subtribus'
+where chrelemtype = 'SBT';
+update tblbiota
+set chrelemtype = 'Superclassis'
+where chrelemtype = 'SPC'; -- superclass
+update tblbiota
+set chrelemtype = 'Superordo'
+where chrelemtype = 'SPO';
+update tblbiota
+set chrelemtype = 'Tribus'
+where chrelemtype = 'T';
+update tblbiota
+set chrelemtype = '[unranked]'
+where chrelemtype = ''; -- Unranked
+update tblbiota
+set chrelemtype = 'Varietas'
+where chrelemtype = 'V';
+update tblbiota
+set chrelemtype = 'Subtribus'
+where chrelemtype = 'ST';
+update tblbiota
+set chrelemtype = 'Subphylum'
+where chrelemtype = 'SBP'; -- Subphylum?
+update tblbiota
+set chrelemtype = 'Genome group'
+where chrelemtype = 'SGP'; -- species genome group?
 
 -- undetermined ranks insert new ranks as required.
+INSERT INTO public.name_rank (id, lock_version, abbrev, deprecated, has_parent, italicize, major, name, name_group_id, parent_rank_id, sort_order, visible_in_name, description_html, rdf_id)
+VALUES (nextval('nsl_global_seq'), 0, 'Ggrp.', false, false, false, true, 'Genome group', (select id
+                                                                                           from name_group
+                                                                                           where name = 'zoological'),
+                                   null, 10, false, '(description of <b>Genome group</b>)', 'genome_group');
 
 INSERT INTO public.name_rank (id, lock_version, abbrev, deprecated, has_parent, italicize, major, name, name_group_id, parent_rank_id, sort_order, visible_in_name, description_html, rdf_id)
 VALUES (nextval('nsl_global_seq'), 0, 'phy.', false, false, false, true, 'Phylum', (select id
@@ -113,33 +148,13 @@ VALUES (nextval('nsl_global_seq'), 0, 'subp.', false, false, false, true, 'Subph
                                                                                         from name_group
                                                                                         where name = 'zoological'), null,
                                    10, false, '(description of <b>Subphylum</b>)', 'subphylum');
-INSERT INTO public.name_rank (id, lock_version, abbrev, deprecated, has_parent, italicize, major, name, name_group_id, parent_rank_id, sort_order, visible_in_name, description_html, rdf_id)
-VALUES (nextval('nsl_global_seq'), 0, 'Ggrp.', false, false, false, true, 'Genome group', (select id
-                                                                                           from name_group
-                                                                                           where name = 'zoological'),
-                                   null, 10, false, '(description of <b>Genome group</b>)', 'genome_group');
+
 INSERT INTO public.name_rank (id, lock_version, abbrev, deprecated, has_parent, italicize, major, name, name_group_id, parent_rank_id, sort_order, visible_in_name, description_html, rdf_id)
 VALUES (nextval('nsl_global_seq'), 0, 'Scls.', false, false, false, true, 'Superclassis', (select id
                                                                                            from name_group
                                                                                            where name = 'zoological'),
                                    null, 10, false, '(description of <b>Superclassis</b>)', 'superclassis');
 
-
-update tblbiota
-set chrelemtype = 'Superclassis'
-where chrelemtype = 'SPC'; -- superclass
-update tblbiota
-set chrelemtype = 'Phylum'
-where chrelemtype = 'P'; -- Phylum?
-update tblbiota
-set chrelemtype = 'Subphylum'
-where chrelemtype = 'SBP'; -- Subphylum?
-update tblbiota
-set chrelemtype = '[unranked]'
-where chrelemtype = ''; -- Unranked
-update tblbiota
-set chrelemtype = 'Genome group'
-where chrelemtype = 'SGP'; -- species genome group?
 
 -- initial import of names
 
