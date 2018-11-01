@@ -2888,19 +2888,38 @@ INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, fo
 INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, formula, hybrid, name, name_category_id, name_group_id, scientific, sort_order, description_html, rdf_id, deprecated) VALUES (nextval('nsl_global_seq'), 0, true, 'x', false, false, true, 'hybrid autonym', (select id from name_category where name = 'scientific'), (select id from name_group where name = 'virus'), true, 11, '(description of <b>hybrid autonym</b>)', 'hybrid-autonym', false);
 INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, formula, hybrid, name, name_category_id, name_group_id, scientific, sort_order, description_html, rdf_id, deprecated) VALUES (nextval('nsl_global_seq'), 0, false, '-', false, true, true, 'intergrade', (select id from name_category where name = 'scientific'), (select id from name_group where name = 'virus'), true, 12, '(description of <b>intergrade</b>)', 'intergrade', false);
 INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, formula, hybrid, name, name_category_id, name_group_id, scientific, sort_order, description_html, rdf_id, deprecated) VALUES (nextval('nsl_global_seq'), 0, true, null, false, false, false, 'autonym', (select id from name_category where name = 'scientific'), (select id from name_group where name = 'virus'), true, 13, '(description of <b>autonym</b>)', 'autonym', false);
-INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, formula, hybrid, name, name_category_id, name_group_id, scientific, sort_order, description_html, rdf_id, deprecated) VALUES (nextval('nsl_global_seq'), 0, false, null, true, false, false, 'cultivar', (select id from name_category where name = 'cultivar'), (select id from name_group where name = 'virus'), false, 17, '(description of <b>cultivar</b>)', 'cultivar', false);
-INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, formula, hybrid, name, name_category_id, name_group_id, scientific, sort_order, description_html, rdf_id, deprecated) VALUES (nextval('nsl_global_seq'), 0, false, null, true, false, true, 'cultivar hybrid', (select id from name_category where name = 'cultivar'), (select id from name_group where name = 'virus'), false, 18, '(description of <b>cultivar hybrid</b>)', 'cultivar-hybrid', false);
 INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, formula, hybrid, name, name_category_id, name_group_id, scientific, sort_order, description_html, rdf_id, deprecated) VALUES (nextval('nsl_global_seq'), 0, false, null, false, false, false, 'informal', (select id from name_category where name = 'informal'), (select id from name_group where name = 'virus'), false, 26, '(description of <b>informal</b>)', 'informal', false);
 INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, formula, hybrid, name, name_category_id, name_group_id, scientific, sort_order, description_html, rdf_id, deprecated) VALUES (nextval('nsl_global_seq'), 0, false, null, false, false, false, 'common', (select id from name_category where name = 'common'), (select id from name_group where name = 'virus'), false, 15, '(description of <b>common</b>)', 'common', false);
-INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, formula, hybrid, name, name_category_id, name_group_id, scientific, sort_order, description_html, rdf_id, deprecated) VALUES (nextval('nsl_global_seq'), 0, false, null, false, false, false, 'vernacular', (select id from name_category where name = 'common'), (select id from name_group where name = 'virus'), false, 16, '(description of <b>vernacular</b>)', 'vernacular', false);
-INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, formula, hybrid, name, name_category_id, name_group_id, scientific, sort_order, description_html, rdf_id, deprecated) VALUES (nextval('nsl_global_seq'), 0, false, '+', true, true, false, 'graft/chimera', (select id from name_category where name = 'cultivar'), (select id from name_group where name = 'virus'), false, 25, '(description of <b>graft / chimera</b>)', 'graft-chimera', false);
-INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, formula, hybrid, name, name_category_id, name_group_id, scientific, sort_order, description_html, rdf_id, deprecated) VALUES (nextval('nsl_global_seq'), 0, false, null, true, false, false, 'acra', (select id from name_category where name = 'cultivar'), (select id from name_group where name = 'virus'), false, 20, '(description of <b>acra</b>)', 'acra', true);
-INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, formula, hybrid, name, name_category_id, name_group_id, scientific, sort_order, description_html, rdf_id, deprecated) VALUES (nextval('nsl_global_seq'), 0, false, null, true, false, true, 'acra hybrid', (select id from name_category where name = 'cultivar'), (select id from name_group where name = 'virus'), false, 21, '(description of <b>acra hybrid</b>)', 'acra-hybrid', true);
-INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, formula, hybrid, name, name_category_id, name_group_id, scientific, sort_order, description_html, rdf_id, deprecated) VALUES (nextval('nsl_global_seq'), 0, false, null, true, false, false, 'pbr', (select id from name_category where name = 'cultivar'), (select id from name_group where name = 'virus'), false, 22, '(description of <b>pbr</b>)', 'pbr', true);
-INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, formula, hybrid, name, name_category_id, name_group_id, scientific, sort_order, description_html, rdf_id, deprecated) VALUES (nextval('nsl_global_seq'), 0, false, null, true, false, true, 'pbr hybrid', (select id from name_category where name = 'cultivar'), (select id from name_group where name = 'virus'), false, 23, '(description of <b>pbr hybrid</b>)', 'pbr-hybrid', true);
-INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, formula, hybrid, name, name_category_id, name_group_id, scientific, sort_order, description_html, rdf_id, deprecated) VALUES (nextval('nsl_global_seq'), 0, false, null, true, false, false, 'trade', (select id from name_category where name = 'cultivar'), (select id from name_group where name = 'virus'), false, 24, '(description of <b>trade</b>)', 'trade', true);
-INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, formula, hybrid, name, name_category_id, name_group_id, scientific, sort_order, description_html, rdf_id, deprecated) VALUES (nextval('nsl_global_seq'), 0, false, null, true, false, true, 'trade hybrid', (select id from name_category where name = 'cultivar'), (select id from name_group where name = 'virus'), false, 25, '(description of <b>trade hybrid</b>)', 'trade-hybrid', true);
-INSERT INTO public.name_type (id, lock_version, autonym, connector, cultivar, formula, hybrid, name, name_category_id, name_group_id, scientific, sort_order, description_html, rdf_id, deprecated) VALUES (nextval('nsl_global_seq'), 0, false, 'x', true, true, true, 'cultivar hybrid formula', (select id from name_category where name = 'cultivar'), (select id from name_group where name = 'virus'), false, 19, '(description of <b>cultivar hybrid formula</b>)', 'cultivar-hybrid-formula', false);
+INSERT INTO public.name_type (id,
+                              lock_version,
+                              autonym,
+                              connector,
+                              cultivar,
+                              formula,
+                              hybrid,
+                              name,
+                              name_category_id,
+                              name_group_id,
+                              scientific,
+                              sort_order,
+                              description_html,
+                              rdf_id,
+                              deprecated)
+VALUES (nextval('nsl_global_seq'),
+        0,
+        false,
+        null,
+        false,
+        false,
+        false,
+        'virusname',
+        (select id from name_category where name = 'scientific'),
+        (select id from name_group where name = 'virus'),
+        true,
+        17,
+        '(description of <b>virusname</b>)',
+        'virusname',
+        false);
 -- reference author role
 INSERT INTO public.ref_author_role (id, lock_version, name, description_html, rdf_id) VALUES (nextval('nsl_global_seq'), 0, 'Unknown', '(description of <b>Unknown</b>)', 'unknown');
 INSERT INTO public.ref_author_role (id, lock_version, name, description_html, rdf_id) VALUES (nextval('nsl_global_seq'), 0, 'Compiler', '(description of <b>Compiler</b>)', 'compiler');
