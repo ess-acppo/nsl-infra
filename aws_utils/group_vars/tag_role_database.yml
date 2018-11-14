@@ -21,9 +21,3 @@ postgresql_users:
   - name: nslrds
     password: supersecure
     role_attr_flags: SUPERUSER,LOGIN
-
-jdk_dir: /opt/jdk1.8.0_171
-tomcat_dir: /opt/tomcat
-sftp_user: dawr
-sftp_user_home: /home/dawr
-postgres_username: postgres

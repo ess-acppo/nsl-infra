@@ -1,17 +1,17 @@
 grails.serverURL = "{{services.grails.serverURL}}"
 
 shard {
-    system.message.file = "/home/pmcneil/.nsl/broadcast.txt"
+    system.message.file = "/tmp/nsl-broadcast.txt"
     product = "Don't use this"
     temp.file.directory = "/tmp"
-    colourScheme = "local"
+    colourScheme = " " // :: " " - PROD :: "test"-Purple :: "staging" - blue
     webUser = "webmoss"
 }
 
 services {
 
     mapper {
-        apikey = '558aaeb5-3e5b-4dd3-ad03-d17c2689b70d'
+        apikey = '{{services.grails.api_key}}'
     }
 
     link {
@@ -27,20 +27,20 @@ services {
         }
     }
 
-    googleAnalytics = """"""
+    scriptAddOns = ""
 
 }
 
 ldap {
     domain = 'domain'
-    server.url = 'ldap://localhost:10389'
+    server.url = 'ldap://{{ldap_host}}:{{ldap_port}}'
     search {
-        base = 'ou=people,dc=example,dc=com'
-        user = 'uid=admin,ou=system'
-        pass = 'secret'
+        base = '{{ldap_user_base}}'
+        user = '{{ldap_admin_username}}'
+        pass = '{{ldap_admin_password}}'
 
         group {
-            name = 'ou=groups,dc=example,dc=com'
+            name = '{{ldap_groups}}'
             member {
                 element = 'uniqueMember'
                 prefix = 'uid='
@@ -58,16 +58,10 @@ dataSource_nsl {
 }
 
 api.auth = [
-        'dev-apni-editor': [
+        '{{Rails.configuration.api_key}}': [
                 application: 'nsl/editor',
                 roles      : ['admin'],
-                host       : '{{ansible_host}}'
-        ],
-        'IAM-A-TEST-KEY' : [
-                application: 'tester',
-                roles      : ['admin'],
-                host       : '{{ansible_host}}'
         ]
 ]
 
-nslServices.jwt.secret = 'poobarbee'
+nslServices.jwt.secret = 'services.grails.jwtSecret'

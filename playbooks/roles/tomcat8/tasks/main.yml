@@ -78,7 +78,7 @@
   file: path=/usr/share/tomcat/conf/Catalina/localhost state=directory 
 
 - name: Configure Tomcat Manager
-  template: src=manager.xml dest=/usr/share/tomcat/conf/Catalina/localhost/manager.xml
+  template: src=manager.xml dest=/usr/share/tomcat/conf/Catalina/localhost/manager.xml.old
   notify: tomcat-8-restart
 
 - name: Configure Tomcat users

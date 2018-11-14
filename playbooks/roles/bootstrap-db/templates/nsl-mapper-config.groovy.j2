@@ -1,11 +1,10 @@
-grails.serverURL = "https://{{ elb_dns }}/nxl/mapper"
+grails.serverURL = "{{mapper.grails.serverURL}}"
 
 mapper {
-    resolverURL = "https://{{ elb_dns }}/nxl/mapper"
+    resolverURL = "{{mapper.resolverURL}}"
     contextExtension = '' //extension to the context path (after nsl-mapper).
     defaultProtocol = 'https'
 
-//TODO: host seems to be missing /nxl
     defaultResolver = { ident ->
         println "nsl-mapper-config.groovy; ident: ${ident}"
         Map serviceHosts = [

@@ -18,13 +18,11 @@ Rails.configuration.ldap_users = "{{Rails.configuration.ldap_users}}"
 Rails.configuration.ldap_groups = "{{Rails.configuration.ldap_groups}}"
 
 Rails.configuration.mapper_root_url = "{{Rails.configuration.mapper_root_url}}"
-Rails.configuration.tree_editor_url = "{{Rails.configuration.tree_editor_url}}"
+#Rails.configuration.tree_editor_url = "{{Rails.configuration.tree_editor_url}}"
 Rails.configuration.mapper_shard = "{{Rails.configuration.mapper_shard}}"
 Rails.configuration.action_mailer.delivery_method = "{{Rails.configuration.action_mailer.delivery_method}}"
 Rails.configuration.action_mailer.perform_deliveries = "{{Rails.configuration.action_mailer.perform_deliveries}}"
 Rails.configuration.action_mailer.raise_delivery_errors = "{{Rails.configuration.action_mailer.raise_delivery_errors}}"
-
-
 
 if ENV['PRECOMPILING_FOR_PRODUCTION']=='true'
   Rails.configuration.relative_url_root = "{{Rails.configuration.relative_url_root}}"
@@ -34,4 +32,5 @@ end
 
 Rails.configuration.environment = "{{Rails.configuration.environment}}"
 Rails.configuration.session_key_tag = "{{Rails.configuration.session_key_tag}}"
-
+Rails.configuration.draft_instances = "{{Rails.configuration.draft_instances}}"
+Rails.configuration.nsl_linker = "{{Rails.configuration.nsl_linker}}"

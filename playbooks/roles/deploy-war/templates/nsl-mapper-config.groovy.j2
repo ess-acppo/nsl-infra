@@ -3,44 +3,49 @@ grails.serverURL = "{{mapper.grails.serverURL}}"
 mapper {
     resolverURL = "{{mapper.resolverURL}}"
     contextExtension = '' //extension to the context path (after nsl-mapper).
-    defaultProtocol = 'http'
+    defaultProtocol = 'https'
 
-    shards = [
+    defaultResolver = { ident ->
+        println "nsl-mapper-config.groovy; ident: ${ident}"
+        Map serviceHosts = [
+                {{shard_namespace}}: 'https://{{ elb_dns }}'
+        ]
 
-            '{{ shard_namespace }}'    : [
-                    baseURL: "{{mapper.shards.baseURL}}",
-                    service: [
-                            html: { ident ->
-                                "nxl/services/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
-                            },
-                            json: { ident ->
-                                "nxl/services/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
-                            },
-                            xml : { ident ->
-                                "nxl/services/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
-                            },
-                            rdf : { ident ->
-                                String url = "DESCRIBE <http://biodiversity.org.au/boa/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}>".encodeAsURL()
-                                "sparql/?query=${url}"
-                            }
-                    ]
+        String host = serviceHosts[ident.nameSpace]
+        if (ident.objectType == 'treeElement') {
+            return "${host}/nxl/services/rest/${ident.objectType}/${ident.versionNumber}/${ident.idNumber}"
+        }
+        return "${host}/nxl/services/rest/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
+    }
+    
+    format = [
+            html: [
+                    resolver: defaultResolver
             ],
-            foa     : [
-                    baseURL: 'http://biodiversity.org.au/',
-                    service: [
-                            html: { ident ->
-                                "foa/taxa/${ident.idNumber}/summary"
-                            },
-                    ]
+            json: [
+                    resolver: defaultResolver
+            ],
+            xml : [
+                    resolver: defaultResolver
+            ],
+            rdf : [
+                    resolver: { ident ->
+                        String url = "DESCRIBE <http://biodiversity.org.au/boa/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}>".encodeAsURL()
+                        "sparql/?query=${url}"
+                    }
             ]
     ]
+
 }
 
 api.auth = [
-        '558aaeb5-3e5b-4dd3-ad03-d17c2689b70d': [
+        '{{services.grails.api_key}}': [
                 application: 'nsl/services',
                 roles      : ['admin'],
-                host       : '127.0.0.1'
+        ],
+        '{{Rails.configuration.api_key}}': [
+                application: 'nxl/editor',
+                roles      : ['admin']
         ]
 ]
 
@@ -49,14 +54,14 @@ ldap {
       authentication = false
     }
     domain = 'domain'
-    server.url = 'ldap://localhost:10389'
+    server.url = 'ldap://{{ldap_host}}:{{ldap_port}}'
     search {
-        base = 'ou=people,dc=example,dc=com'
-        user = 'uid=admin,ou=system'
-        pass = 'secret'
+        base = '{{ldap_user_base}}'
+        user = '{{ldap_admin_username}}'
+        pass = '{{ldap_admin_password}}'
 
         group {
-            name = 'ou=groups,dc=example,dc=com'
+            name = '{{ldap_groups}}'
             member {
                 element = 'uniqueMember'
                 prefix = 'uid='
