@@ -49,7 +49,7 @@ node {
     stage("Copy Ad-hoc Files from Private Repository"){
         dir('nsl-infra') {
                 sh 'cp ../nxl-private/bnti/jdk*.tar.gz playbooks/roles/tomcat8/files/'
-                sh 'cp ../nxl-private/bnti/tag_tole_database.yml aws_utils/group_vars/tag_role_database.yml'
+                sh 'cp ../nxl-private/bnti/tag_role_database.yml aws_utils/group_vars/tag_role_database.yml'
                 sh 'cp ../nxl-private/bnti/tag_tole_tomcat.yml aws_utils/group_vars/tag_role_tomcat.yml'
                 sh 'cp ../nxl-private/bnti/add_user.ldif.j2 playbooks/roles/apacheds/templates/add_user.ldif.j2'
         }
