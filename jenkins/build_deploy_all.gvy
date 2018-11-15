@@ -22,7 +22,7 @@ node {
             sh 'echo "ANSIBLE VERSION :" && ansible --version'
             sh 'echo "PYTHON VERSION :" && python --version'
             sh 'echo "JAVA VERSION :" && java -version'
-            sh 'rm -rf *'
+            sh 'rm -rf * && rm -rf /tmp//tmp/services_war_filename /tmp/services_war_filename /tmp/mapper_war_filename'
 
             // Get some code from a GitHub repository
             sh 'whoami;  touch fake.war; rm *.war || echo "no war files"'
