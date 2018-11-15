@@ -98,6 +98,7 @@ node {
     def editor_war_filename = readFile('/tmp/editor_war_filename').trim()
     stage("Deploy services to $ENVIRONMENT_NAME") {
         dir('nsl-infra') {
+            sh 'sed -ie \'s/nxl#services##1.0210/\'${services_war_filename}\'/g\' playbooks/roles/deploy-war/tasks/main.yml'
             warDir = pwd() + "/../services/target"
             if (ENVIRONMENT_NAME) {
                 def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name","apps":[{"app": "services"}], "war_names": [{"war_name": "$services_war_filename"}   ],   "war_source_dir": "$warDir"}'/
