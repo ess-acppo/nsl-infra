@@ -23,6 +23,9 @@
 - template: src=templates/create.ldif.j2 dest=/tmp/create.ldif
 - template: src=templates/add_user.ldif.j2 dest=/tmp/add_user.ldif
 
+- name: Perform daemon reload
+  command: bash -c 'systemctl daemon-reload'
+  become: true
 
 # This repeatedly errors out even though the service actually starts up. So, errors are ignored 
 - name: start apache
