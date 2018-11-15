@@ -33,14 +33,14 @@ services {
 
 ldap {
     domain = 'domain'
-    server.url = 'ldap://{{ldap_host}}:{{ldap_port}}'
+    server.url = 'ldap://{{Rails.configuration.ldap_host}}:{{Rails.configuration.ldap_port}}'
     search {
-        base = '{{ldap_user_base}}'
-        user = '{{ldap_admin_username}}'
-        pass = '{{ldap_admin_password}}'
+        base = '{{Rails.configuration.ldap_user_base}}'
+        user = '{{Rails.configuration.ldap_admin_username}}'
+        pass = '{{Rails.configuration.ldap_admin_password}}'
 
         group {
-            name = '{{ldap_groups}}'
+            name = '{{Rails.configuration.ldap_groups}}'
             member {
                 element = 'uniqueMember'
                 prefix = 'uid='
