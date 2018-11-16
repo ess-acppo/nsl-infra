@@ -25,6 +25,8 @@ node{
         echo "${ds_val}"
         if (ds_val == "base") {
             sh 'cp /var/lib/jenkins/nxl-private/bnti/tblbiota_base.csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
+        } else if (ds_val == "empty") {
+            sh 'cp /var/lib/jenkins/nxl-private/bnti/tblbiota_empty.csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
         } else {
             if (ds_val == "today") {
                 sh 'cp /home/dawr/tblBiota_$(date +%Y%m%d).csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota_pp.csv'
