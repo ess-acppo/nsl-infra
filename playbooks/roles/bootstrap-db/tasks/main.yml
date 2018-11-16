@@ -107,14 +107,14 @@
   become_user: postgres
   command: psql "{{postgresql_databases[0].name}}" -c 'UPDATE tree_element SET instance_link = regexp_replace(instance_link, '\''https://'"{{elb_dns}}"\'', '\''https://'"{{elb_dns}}"'/nxl/mapper'\''), name_link = regexp_replace(name_link, '\''https://'"{{elb_dns}}"\'', '\''https://'"{{elb_dns}}"'/nxl/mapper'\'');'
 
-- name: Copy nsl config files
-  template:
-    src: "{{item.filename}}.j2"
-    dest: "/opt/tomcat/.nsl/{{item.filename}}"
-  with_items:
-    - { filename: editor-config.rb }
-    - { filename: nsl-mapper-config.groovy }
-    - { filename: services-config.groovy }
+# - name: Copy nsl config files
+#   template:
+#     src: "{{item.filename}}.j2"
+#     dest: "/opt/tomcat/.nsl/{{item.filename}}"
+#   with_items:
+#     - { filename: editor-config.rb }
+#     - { filename: nsl-mapper-config.groovy }
+#     - { filename: services-config.groovy }
 
 # Cat the editor-config.rb file
 - name: Print the editor config file
