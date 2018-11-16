@@ -95,7 +95,7 @@ node {
     def services_war_filename = readFile('/tmp/services_war_filename').trim()
     def mapper_war_filename = readFile('/tmp/mapper_war_filename').trim()
     def editor_war_filename = readFile('/tmp/editor_war_filename').trim()
-    
+    println "S= $services_war_filename :: M=$mapper_war_filename :: E=$editor_war_filename"
     stage("Deploy services to $ENVIRONMENT_NAME") {
         dir('nsl-infra') {
             sh 'sed -ie \'s/nxl#services##1.0210/\'${services_war_filename}\'/g\' playbooks/roles/deploy-war/tasks/main.yml'
