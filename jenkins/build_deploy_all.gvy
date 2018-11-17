@@ -98,6 +98,8 @@ node {
     println "S= $services_war_filename :: M=$mapper_war_filename :: E=$editor_war_filename"
     stage("Deploy services to $ENVIRONMENT_NAME") {
         dir('nsl-infra') {
+            services_war_filename = readFile('/tmp/services_war_filename').trim()
+            println "Image Copy Dir: $services_war_filename"
             sh 'sed -ie \'s/nxl#services##1.0210/\'${services_war_filename}\'/g\' playbooks/roles/deploy-war/tasks/main.yml'
             warDir = pwd() + "/../services/target"
             if (ENVIRONMENT_NAME) {
