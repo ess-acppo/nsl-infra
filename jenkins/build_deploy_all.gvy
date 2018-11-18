@@ -100,7 +100,7 @@ node {
         dir('nsl-infra') {
             services_war_filename = readFile('/tmp/services_war_filename').trim()
             println "Image Copy Dir: $services_war_filename"
-            sh 'sed -ie \'s/nxl#services##1.0210/\'${services_war_filename}\'/g\' playbooks/roles/deploy-war/tasks/main.yml'
+            sh "sed -ie 's/nxl#services##1.0210/'${services_war_filename}'/g' playbooks/roles/deploy-war/tasks/main.yml"
             warDir = pwd() + "/../services/target"
             if (ENVIRONMENT_NAME) {
                 def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name","apps":[{"app": "services"}], "war_names": [{"war_name": "$services_war_filename"}   ],   "war_source_dir": "$warDir"}'/
