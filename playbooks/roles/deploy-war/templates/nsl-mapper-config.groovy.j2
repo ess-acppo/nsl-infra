@@ -8,7 +8,7 @@ mapper {
     defaultResolver = { ident ->
         println "nsl-mapper-config.groovy; ident: ${ident}"
         Map serviceHosts = [
-                {{shard_namespace}}: '{{defaultResolverURL}}'
+                {{shard_namespace}}: '{{mapper.defaultResolverURL}}'
         ]
 
         String host = serviceHosts[ident.nameSpace]
