@@ -110,7 +110,7 @@ INSERT INTO public.tree_version_element (
 
 INSERT INTO mapper.identifier (id, id_number, version_number, name_space, object_type, deleted, reason_deleted, updated_at, updated_by, preferred_uri_id)
       SELECT nextval('mapper.mapper_sequence'), tree_element_id, tree_version_id, '{{shard_namespace}}', 'treeElement', FALSE,
-        NULL, now(), 'pmcneil', NULL
+        NULL, now(), '{{ nsl_db_user }}', NULL
       FROM tree_version_element;
 
 
@@ -121,7 +121,7 @@ alter table mapper.match add column temp bigint;
 -- make the urls
 INSERT INTO mapper.match (id, uri, deprecated, updated_at, updated_by, temp)
     SELECT nextval('mapper.mapper_sequence'), ('tree/' || version_number || '/' || id_number :: TEXT), FALSE,
-    now(), 'pmcneil', i.id
+    now(), '{{ nsl_db_user }}', i.id
     FROM mapper.identifier i
     WHERE i.object_type = 'treeElement'
       AND i.name_space = '{{shard_namespace}}';
