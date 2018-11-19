@@ -82,6 +82,8 @@ node {
                 sh './build-nsl-dm-plugin.sh'
             }
             dir('services') {
+                sh "sed -e 's;<title>NSL Services;<title>NXL '$ENVIRONMENT_NAME';g' grails-app/views/index.gsp"
+                sh 'echo grails-app/views/index.gsp'
                 sh 'cp ../nxl-private/bnti/build-nxl-services.sh .'
                 sh 'chmod +x ./build-nxl-services.sh'
                 sh './build-nxl-services.sh'
@@ -99,7 +101,9 @@ node {
     println "S= $services_war_filename :: M=$mapper_war_filename :: E=$editor_war_filename"
     stage("Deploy services to $ENVIRONMENT_NAME") {
         dir('nsl-infra') {
-            sh 'sed -ie \'s/nxl#services##1.0210/\'${services_war_filename}\'/g\' playbooks/roles/deploy-war/tasks/main.yml'
+            services_war_filename = readFile('/tmp/services_war_filename').trim()
+            println "Image Copy Dir: $services_war_filename"
+            sh "sed -ie 's/nxl#services##1.0210/'${services_war_filename}'/g' playbooks/roles/deploy-war/tasks/main.yml"
             warDir = pwd() + "/../services/target"
             if (ENVIRONMENT_NAME) {
                 def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name","apps":[{"app": "services"}], "war_names": [{"war_name": "$services_war_filename"}   ],   "war_source_dir": "$warDir"}'/
