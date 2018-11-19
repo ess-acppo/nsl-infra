@@ -3,12 +3,12 @@ grails.serverURL = "{{mapper.grails.serverURL}}"
 mapper {
     resolverURL = "{{mapper.resolverURL}}"
     contextExtension = '' //extension to the context path (after nsl-mapper).
-    defaultProtocol = 'https'
+    defaultProtocol = '{{mapper.defaultProtocol}}'
 
     defaultResolver = { ident ->
         println "nsl-mapper-config.groovy; ident: ${ident}"
         Map serviceHosts = [
-                {{shard_namespace}}: 'https://{{ elb_dns }}'
+                {{shard_namespace}}: '{{defaultResolverURL}}'
         ]
 
         String host = serviceHosts[ident.nameSpace]
@@ -40,7 +40,7 @@ mapper {
 
 api.auth = [
         '{{services.grails.api_key}}': [
-                application: 'nsl/services',
+                application: 'nxl/services',
                 roles      : ['admin'],
         ],
         '{{Rails.configuration.api_key}}': [
