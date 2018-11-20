@@ -12,7 +12,7 @@ node {
     def git_tag_services = '*/master'
     def git_tag_mapper = '*/master'
     def git_tag_editor = '*/master'
-    def git_url_services = 'https://github.com/bio.org.au/services.git'
+    def git_url_services = 'https://github.com/bio-org-au/services.git'
 
     stage("Prepare") { // for display purposes
         // Get some code from a GitHub repository
