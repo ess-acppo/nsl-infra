@@ -82,8 +82,8 @@ node {
                 sh './build-nsl-dm-plugin.sh'
             }
             dir('services') {
-                sh "sed -e 's;<title>NSL Services;<title>NXL '$ENVIRONMENT_NAME';g' grails-app/views/index.gsp"
-                sh 'echo grails-app/views/index.gsp'
+                sh "sed -ie 's;<title>NSL Services;<title>NXL '$ENVIRONMENT_NAME';g' grails-app/views/index.gsp"
+                sh 'cat grails-app/views/index.gsp'
                 sh 'cp ../nxl-private/bnti/build-nxl-services.sh .'
                 sh 'chmod +x ./build-nxl-services.sh'
                 sh './build-nxl-services.sh'
