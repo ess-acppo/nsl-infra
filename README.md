@@ -85,7 +85,7 @@ We also have an ansible role to just load data into the NSL DB. It can be invoke
 or
 ```sed -ie 's/.*instance_filters = tag:env=.*$/instance_filters = tag:env=aristotle-ICN/g' aws_utils/ec2.ini & ansible-playbook -i aws_utils/ec2.py -u ubuntu --private-key ../KEY.pem playbooks/bootstrap_db.yml --tags "load-data" --extra-vars "@shard_vars/icn.json"```
 
-It does the following:
+It does the following: **NO LONGER NEEDED**
 ```
 * copies the tab sperate file data.tsv into the server. 
 * Then runs the postgres pl sql script data_load.sql. 
