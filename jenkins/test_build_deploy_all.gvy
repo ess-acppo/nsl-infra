@@ -64,6 +64,8 @@ node {
                     projectDir = pwd()
                     sh 'mv nsl-editor.war nxl#editor##$(cat config/version.properties | sed -e \'s/.*=//g\').war'
                     sh 'echo "nxl#editor##$(cat config/version.properties | sed -e \'s/.*=//g\')" > /tmp/editor_war_filename'
+                    def warFileName = readFile('/tmp/editor_war_filename').trim()
+                    sh "cp ${warFileName}.war ../../../builds/${warFileName}-${env.BUILD_NUMBER}.war"
                 }
             }
         }
@@ -74,6 +76,8 @@ node {
                 sh './build-nxl-mapper.sh'
                 sh 'mv ./target/nsl-mapper##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war ./target/nxl#mapper##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war'
                 sh 'echo "nxl#mapper##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\')" > /tmp/mapper_war_filename'
+                def warFileName = readFile('/tmp/mapper_war_filename').trim()
+                sh "cp ./target/${warFileName}.war ../../../builds/${warFileName}-${env.BUILD_NUMBER}.war"
             }
             dir('nsl-domain-plugin') {
                 sh 'cp ../nxl-private/bnti/services-BuildConfig.groovy ./grails-app/conf/BuildConfig.groovy'
@@ -89,6 +93,8 @@ node {
                 sh './build-nxl-services.sh'
                 sh 'mv ./target/services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war ./target/nxl#services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war'
                 sh 'echo "nxl#services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\')" > /tmp/services_war_filename'
+                def warFileName = readFile('/tmp/services_war_filename').trim()
+                sh "cp ./target/${warFileName}.war ../../../builds/${warFileName}-${env.BUILD_NUMBER}.war"
             }
 
 
