@@ -6,14 +6,12 @@ node {
     def env_instance_name = "$ENVIRONMENT_NAME".split(",")[0]
     def env_name = env_instance_name.split("-")[0]
     def elb_dns = "$ENVIRONMENT_NAME"+".oztaxa.com"
-
     // Git Variables
     def git_tag_domain_plugin = '*/master'
     def git_tag_services = '*/master'
     def git_tag_mapper = '*/master'
     def git_tag_editor = '*/master'
     def git_url_services = 'https://github.com/bio-org-au/services.git'
-
     stage("Prepare") { // for display purposes
         // Get some code from a GitHub repository
         try {
@@ -65,7 +63,7 @@ node {
                     sh 'mv nsl-editor.war nxl#editor##$(cat config/version.properties | sed -e \'s/.*=//g\').war'
                     sh 'echo "nxl#editor##$(cat config/version.properties | sed -e \'s/.*=//g\')" > /tmp/editor_war_filename'
                     def warFileName = readFile('/tmp/editor_war_filename').trim()
-                    sh "cp ${warFileName}.war ../../../builds/${warFileName}-${env.BUILD_NUMBER}.war"
+                    sh "cp ${warFileName}.war ../../../builds/${env.BUILD_NUMBER}-${warFileName}.war"
                 }
             }
         }
@@ -77,7 +75,7 @@ node {
                 sh 'mv ./target/nsl-mapper##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war ./target/nxl#mapper##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war'
                 sh 'echo "nxl#mapper##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\')" > /tmp/mapper_war_filename'
                 def warFileName = readFile('/tmp/mapper_war_filename').trim()
-                sh "cp ./target/${warFileName}.war ../../../builds/${warFileName}-${env.BUILD_NUMBER}.war"
+                sh "cp ./target/${warFileName}.war ../../../builds/${env.BUILD_NUMBER}-${warFileName}.war"
             }
             dir('nsl-domain-plugin') {
                 sh 'cp ../nxl-private/bnti/services-BuildConfig.groovy ./grails-app/conf/BuildConfig.groovy'
@@ -94,7 +92,7 @@ node {
                 sh 'mv ./target/services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war ./target/nxl#services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war'
                 sh 'echo "nxl#services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\')" > /tmp/services_war_filename'
                 def warFileName = readFile('/tmp/services_war_filename').trim()
-                sh "cp ./target/${warFileName}.war ../../../builds/${warFileName}-${env.BUILD_NUMBER}.war"
+                sh "cp ./target/${warFileName}.war ../../../builds/${env.BUILD_NUMBER}-${warFileName}.war"
             }
 
 

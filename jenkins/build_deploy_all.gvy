@@ -12,7 +12,6 @@ node {
     def git_tag_mapper = '138d1ddd8e71c7a79c7405d3269fd6ceb00aa87f'
     def git_tag_editor = '9675e53469f352fcf4a439b0d8eeacbd91f12285'
     def git_url_services = 'https://github.com/ess-acppo/services.git'
-
     stage("Prepare") { // for display purposes
         // Get some code from a GitHub repository
         try {
@@ -63,6 +62,8 @@ node {
                     projectDir = pwd()
                     sh 'mv nsl-editor.war nxl#editor##$(cat config/version.properties | sed -e \'s/.*=//g\').war'
                     sh 'echo "nxl#editor##$(cat config/version.properties | sed -e \'s/.*=//g\')" > /tmp/editor_war_filename'
+                    def warFileName = readFile('/tmp/editor_war_filename').trim()
+                    sh "cp ${warFileName}.war ../../../builds/${env.BUILD_NUMBER}-${warFileName}.war"
                 }
             }
         }
@@ -73,6 +74,8 @@ node {
                 sh './build-nxl-mapper.sh'
                 sh 'mv ./target/nsl-mapper##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war ./target/nxl#mapper##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war'
                 sh 'echo "nxl#mapper##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\')" > /tmp/mapper_war_filename'
+                def warFileName = readFile('/tmp/mapper_war_filename').trim()
+                sh "cp ./target/${warFileName}.war ../../../builds/${env.BUILD_NUMBER}-${warFileName}.war"
             }
             dir('nsl-domain-plugin') {
                 sh 'cp ../nxl-private/bnti/services-BuildConfig.groovy ./grails-app/conf/BuildConfig.groovy'
@@ -88,6 +91,8 @@ node {
                 sh './build-nxl-services.sh'
                 sh 'mv ./target/services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war ./target/nxl#services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\').war'
                 sh 'echo "nxl#services##$(cat application.properties | grep -i "app.version=" | sed -e \'s/^app.version=//g\')" > /tmp/services_war_filename'
+                def warFileName = readFile('/tmp/services_war_filename').trim()
+                sh "cp ./target/${warFileName}.war ../../../builds/${env.BUILD_NUMBER}-${warFileName}.war"
             }
 
 
