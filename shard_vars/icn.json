@@ -28,5 +28,6 @@
   "shard_nsl_tree_import_file": "icn-tree-import.sql",
   "shard_mapper_ddl_file": "mapper-ddl.sql",
   "shard_kingdom_code": "(chrkingdomcode = 'P' OR chrkingdomcode = 'F' OR chrkingdomcode = 'L')",
-  "nsl_db_user": "db-loader"
+  "nsl_db_user": "db-loader",
+  "comment_charecter": "#"
 }
