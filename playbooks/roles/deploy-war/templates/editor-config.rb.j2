@@ -34,3 +34,11 @@ Rails.configuration.environment = "{{Rails.configuration.environment}}"
 Rails.configuration.session_key_tag = "{{Rails.configuration.session_key_tag}}"
 Rails.configuration.draft_instances = "{{Rails.configuration.draft_instances}}"
 Rails.configuration.nsl_linker = "{{Rails.configuration.nsl_linker}}"
+
+# ICZN recognises changed combination names, irrelevant to ICN
+# ICZN not interested in the full author history of names
+{{comment_charecter}}Rails.configuration.allow_name_changed_combination = true
+{{comment_charecter}}Rails.configuration.allow_name_ex_base_author = false
+{{comment_charecter}}Rails.configuration.allow_name_base_author = false
+{{comment_charecter}}Rails.configuration.allow_name_ex_author = false
+{{comment_charecter}}Rails.configuration.allow_sanctioning_author = false
