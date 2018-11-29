@@ -136,7 +136,7 @@ INSERT INTO public.name_rank (id, lock_version, abbrev, deprecated, has_parent, 
 VALUES (nextval('nsl_global_seq'), 0, 'Ggrp.', false, false, false, true, 'Genome group', (select id
                                                                                            from name_group
                                                                                            where name = 'zoological'),
-                                                                                           null, 205, false, '(description of <b>Genome group</b>)', 'genome_group');
+                                                                                           null, 220, false, '(description of <b>Genome group</b>)', 'genome_group');
 
 INSERT INTO public.name_rank (id, lock_version, abbrev, deprecated, has_parent, italicize, major, name, name_group_id, parent_rank_id, sort_order, visible_in_name, description_html, rdf_id)
 VALUES (nextval('nsl_global_seq'), 0, 'phy.', false, false, false, true, 'Phylum', (select id
@@ -147,13 +147,13 @@ INSERT INTO public.name_rank (id, lock_version, abbrev, deprecated, has_parent, 
 VALUES (nextval('nsl_global_seq'), 0, 'subp.', false, false, false, false, 'Subphylum', (select id
                                                                                         from name_group
                                                                                         where name = 'zoological'),
-                                                                                        null, 25, false, '(description of <b>Subphylum</b>)', 'subphylum');
+                                                                                        null, 30, false, '(description of <b>Subphylum</b>)', 'subphylum');
 
 INSERT INTO public.name_rank (id, lock_version, abbrev, deprecated, has_parent, italicize, major, name, name_group_id, parent_rank_id, sort_order, visible_in_name, description_html, rdf_id)
 VALUES (nextval('nsl_global_seq'), 0, 'Scls.', false, false, false, false, 'Superclassis', (select id
                                                                                            from name_group
                                                                                            where name = 'zoological'),
-                                                                                           null, 30, false, '(description of <b>Superclassis</b>)', 'superclassis');
+                                                                                           null, 40, false, '(description of <b>Superclassis</b>)', 'superclassis');
 
 
 -- initial import of names
