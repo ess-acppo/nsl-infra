@@ -30,5 +30,5 @@
   "shard_kingdom_code": "(chrkingdomcode = 'P' OR chrkingdomcode = 'F' OR chrkingdomcode = 'L')",
   "nsl_db_user": "db-loader",
   "comment_charecter": "#",
-  "rank_display_name_file": "rank-display-name.sql.j2"
+  "rank_display_name_file": "rank-display-name.sql"
 }
