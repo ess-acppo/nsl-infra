@@ -29,5 +29,6 @@
   "shard_mapper_ddl_file": "mapper-ddl.sql",
   "shard_kingdom_code": "(chrkingdomcode = 'P' OR chrkingdomcode = 'F' OR chrkingdomcode = 'L')",
   "nsl_db_user": "db-loader",
-  "comment_charecter": "#"
+  "comment_charecter": "#",
+  "rank_display_name_file": "rank-display-name.sql.j2"
 }

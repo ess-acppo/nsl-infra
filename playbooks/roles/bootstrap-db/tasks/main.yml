@@ -11,6 +11,7 @@
     - { filename: "{{ shard_mapper_ddl_file }}" }
     - { filename: "{{ shard_nsl_import_file }}" }
     - { filename: "{{ shard_nsl_tree_import_file }}" }
+    - { filename: "{{ rank_display_name_file }}" }
 
 - name: Drop the nsl database
   command: psql -c 'drop database if exists '"{{postgresql_databases[0].name}}"';'
@@ -190,6 +191,11 @@
   become: true
   become_user: postgres
   command: psql "{{postgresql_databases[0].name}}" -c 'select * from tree_version;'
+
+- name: Convert ranks display names to english
+  become: true
+  become_user: postgres
+  command: psql -d "{{postgresql_databases[0].name}}" -f /tmp/"{{ shard_nsl_tree_import_file }}" 
 
 # # Echo variable {{tomcat_dir}}
 # - name: echo variable
