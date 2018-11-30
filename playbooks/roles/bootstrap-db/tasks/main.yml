@@ -195,7 +195,7 @@
 - name: Convert ranks display names to english
   become: true
   become_user: postgres
-  command: psql -d "{{postgresql_databases[0].name}}" -f /tmp/"{{ shard_nsl_tree_import_file }}" 
+  command: psql -d "{{postgresql_databases[0].name}}" -f /tmp/"{{ rank_display_name_file }}" 
 
 # # Echo variable {{tomcat_dir}}
 # - name: echo variable
