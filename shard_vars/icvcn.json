@@ -29,6 +29,11 @@
   "shard_mapper_ddl_file": "mapper-ddl.sql",
   "shard_kingdom_code": "chrkingdomcode = 'V'",
   "nsl_db_user": "db-loader",
-  "comment_charecter": "#",
-  "rank_display_name_file": "rank-display-name.sql"
+  "rank_display_name_file": "rank-display-name.sql",
+  "allow_name_changed_combination": "false",
+  "allow_name_ex_base_author": "false",
+  "allow_name_base_author": "false",
+  "allow_name_ex_author": "false",
+  "allow_name_sanctioning_author": "false",
+  "allow_name_published_year": "false"
 }
