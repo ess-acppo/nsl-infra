@@ -9,7 +9,7 @@ node {
     // Git Variables
     def git_tag_domain_plugin = '*/master' // Building master as build fails sometime with release
     def git_tag_services = 'f05a49b2cd75b72da0b054ca2a88503dcc471e92' // Changes Post ICZN Merge
-    def git_tag_mapper = '*/release' // Release on mapper, not much activity on mapper
+    def git_tag_mapper = '*/master' // Master on mapper, not much activity on mapper; No release branch
     def git_tag_editor = '1492e2982e874ff78b66949ce573291e3408f74b' // Changes post Published Year addition to Name Form
     def git_url_services = 'https://github.com/bio-org-au/services.git' // ANBG Repo
     stage("Prepare") { // for display purposes
