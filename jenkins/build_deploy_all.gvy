@@ -7,11 +7,11 @@ node {
     def env_name = env_instance_name.split("-")[0]
     def elb_dns = "$ENVIRONMENT_NAME"+".oztaxa.com"
     // Git Variables
-    def git_tag_domain_plugin = '34e671f818c83dffba672a1938c060faa2d01db9'
-    def git_tag_services = 'e251bdd5f20e73832ec81501ae530b924e1dda2f'
-    def git_tag_mapper = '138d1ddd8e71c7a79c7405d3269fd6ceb00aa87f'
-    def git_tag_editor = '9675e53469f352fcf4a439b0d8eeacbd91f12285'
-    def git_url_services = 'https://github.com/ess-acppo/services.git'
+    def git_tag_domain_plugin = '*/master' // Building master as build fails sometime with release
+    def git_tag_services = 'f05a49b2cd75b72da0b054ca2a88503dcc471e92' // Changes Post ICZN Merge
+    def git_tag_mapper = '*/release' // Release on mapper, not much activity on mapper
+    def git_tag_editor = '1492e2982e874ff78b66949ce573291e3408f74b' // Changes post Published Year addition to Name Form
+    def git_url_services = 'https://github.com/bio-org-au/services.git' // ANBG Repo
     stage("Prepare") { // for display purposes
         // Get some code from a GitHub repository
         try {
