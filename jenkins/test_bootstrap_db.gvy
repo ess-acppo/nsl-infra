@@ -25,9 +25,6 @@ node{
         sh 'cp /var/lib/jenkins/nxl-private/bnti/refresh-views.sh nsl-infra/playbooks/roles/bootstrap-db/files/refresh-views.sh'
         sh 'chmod +x nsl-infra/playbooks/roles/bootstrap-db/files/refresh-views.sh'
 
-        def ds_val = "${DATA_SOURCE}"
-        def date_val = "${DATE_TO_USE}"
-        echo "${ds_val}"
         if (ds_val == "base") {
             sh 'cp /var/lib/jenkins/nxl-private/bnti/tblbiota_base.csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
         } else if (ds_val == "empty") {
