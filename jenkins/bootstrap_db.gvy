@@ -1,13 +1,12 @@
 node{
     stage("Prepare env-name= $ENVIRONMENT_NAME for play") {
                 sh 'rm -rf *'
+                sh 'pwd && ls -alhF'
                 sh 'whoami'
                 sh 'echo "ANSIBLE VERSION :" && ansible --version'
                 sh 'echo "PYTHON VERSION :" && python --version'
                 sh 'echo "JAVA VERSION :" && java -version'
                 checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
-                //sh 'mkdir playbooks/roles/bootstrap-db/files/'
-                //sh 'cp /home/dawr/tblBiota_$(date +%Y%m%d).csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
                 sh 'cp /var/lib/jenkins/nxl-private/bnti/tblbiota_base.csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
     }
     stage("Running Bootstrap data Operation env-name= $ENVIRONMENT_NAME") {
@@ -26,6 +25,9 @@ node{
         sh 'cp /var/lib/jenkins/nxl-private/bnti/refresh-views.sh nsl-infra/playbooks/roles/bootstrap-db/files/refresh-views.sh'
         sh 'chmod +x nsl-infra/playbooks/roles/bootstrap-db/files/refresh-views.sh'
 
+        def ds_val = "${DATA_SOURCE}"
+        def date_val = "${DATE_TO_USE}"
+        echo "${ds_val}"
         if (ds_val == "base") {
             sh 'cp /var/lib/jenkins/nxl-private/bnti/tblbiota_base.csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
         } else if (ds_val == "empty") {
@@ -64,5 +66,17 @@ node{
 
             slackSend color: 'good', message: "Successfully finished: ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
         }
+    }
+
+    stage("Delete Temp Files"){
+        sleep(2)
+        slackSend color: "good", message: "Deleting Temporary files for ${env.JOB_NAME}  ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
+
+        sh 'rm -rf /tmp/services_war_filename /tmp/mapper_war_filename /tmp/editor_war_filename'
+    }
+
+    stage("Run smoke test"){
+        sleep(2)
+        slackSend color: "good", message: "${env.JOB_NAME} completed successfully ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
     }
 }

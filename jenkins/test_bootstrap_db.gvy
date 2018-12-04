@@ -7,13 +7,18 @@ node{
                 sh 'echo "PYTHON VERSION :" && python --version'
                 sh 'echo "JAVA VERSION :" && java -version'
                 checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
-                //sh 'mkdir playbooks/roles/bootstrap-db/files/'
-                //sh 'cp /home/dawr/tblBiota_$(date +%Y%m%d).csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
                 sh 'cp /var/lib/jenkins/nxl-private/bnti/tblbiota_base.csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
     }
     stage("Running Bootstrap data Operation env-name= $ENVIRONMENT_NAME") {
                 
         slackSend color: 'good', message: "Processing csv files ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
+                
+        def ds_val = "${DATA_SOURCE}"
+        def date_val = "${DATE_TO_USE}"
+        echo "${ds_val}"
+        
+        slackSend color: 'good', message: "Processing csv files ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
+
         sh 'cp /var/lib/jenkins/nxl-private/bnti/reconstruct-name-strings.sh nsl-infra/playbooks/roles/bootstrap-db/files/reconstruct-name-strings.sh'
         sh 'chmod +x nsl-infra/playbooks/roles/bootstrap-db/files/reconstruct-name-strings.sh'
 
