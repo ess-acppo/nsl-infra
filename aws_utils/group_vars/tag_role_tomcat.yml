@@ -1,9 +1,11 @@
+---
 sshuser: ubuntu
-version: 7
+version: 8
 private_ip: "{{inventory_hostname}}"
-
+jdk_dir: /opt/jdk1.8.0_171
+jdk_tar: jdk-8u171-linux-x64.tar.gz
 # Here are variables related to the Tomcat installation
-
+tomcat_dir: /opt/tomcat
 http_port: 8080
 https_port: 8443
 
@@ -11,13 +13,14 @@ https_port: 8443
 
 admin_username: admin
 admin_password: adminsecret
+jdk_filename: jdk-8u171-linux-x64.tar.gz
 
 war_bucket: nslrepo
 war_names:
     - { war_name: 'nxl#editor##1.44' }
     - { war_name: 'nxl#mapper##1.0017' }
     - { war_name: 'nxl#services##1.0122' }
-war_deploy_path: /opt/apache-tomcat-7.0.61/webapps
+war_deploy_path: /opt/apache-tomcat-8.5.13/webapps
 
 Rails:
     configuration:

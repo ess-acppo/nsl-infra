@@ -144,6 +144,9 @@
       <Host name="localhost"  appBase="webapps"
             unpackWARs="true" autoDeploy="true">
 
+        <!-- NOTE: DAWR BNTi workaround to map /nsl -> /nxl -->
+        <Valve className="org.apache.catalina.valves.rewrite.RewriteValve" />
+
         <!-- SingleSignOn valve, share authentication between web applications
              Documentation at: /docs/config/valve.html -->
         <!--

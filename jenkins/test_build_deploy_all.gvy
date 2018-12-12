@@ -7,11 +7,11 @@ node {
     def env_name = env_instance_name.split("-")[0]
     def elb_dns = "$ENVIRONMENT_NAME"+".oztaxa.com"
     // Git Variables
-    def git_tag_domain_plugin = '*/master' // Building master as build fails sometime with release
-    def git_tag_services = '39223650629dfaa2e4f18d636dbde783789c681e' // Changes Post ICZN Merge
-    def git_tag_mapper = '*/master' // Master on mapper, not much activity on mapper; No release branch
-    def git_tag_editor = '1492e2982e874ff78b66949ce573291e3408f74b' // Changes post Published Year addition to Name Form
-    def git_url_services = 'https://github.com/bio-org-au/services.git' // ANBG Repo
+    def git_tag_domain_plugin = '*/master'
+    def git_tag_services = '*/master'
+    def git_tag_mapper = '*/master'
+    def git_tag_editor = '*/master'
+    def git_url_services = 'https://github.com/bio-org-au/services.git'
     stage("Prepare") { // for display purposes
         // Get some code from a GitHub repository
         try {
@@ -177,12 +177,12 @@ node {
         }
 
         slackSend color: 'good', message: "Finished Processing csv ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
-        
+
         dir('nsl-infra'){
             def verbose = '-v'
 
             slackSend color: 'good', message: "Starting bootstrap process ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
-
+            
             if (ENVIRONMENT_NAME) {
                 def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name"}'/
                 sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$env_instance_name/g' aws_utils/ec2.ini && ansible-playbook $verbose -i aws_utils/ec2.py -u ubuntu playbooks/bootstrap_db.yml --tags \"load-data\" -e $extra_vars --extra-vars $shard_vars"

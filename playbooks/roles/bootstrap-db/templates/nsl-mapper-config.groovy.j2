@@ -3,21 +3,23 @@ grails.serverURL = "{{mapper.grails.serverURL}}"
 mapper {
     resolverURL = "{{mapper.resolverURL}}"
     contextExtension = '' //extension to the context path (after nsl-mapper).
-    defaultProtocol = '{{mapper.defaultProtocol}}'
+    defaultProtocol = 'https'
 
     defaultResolver = { ident ->
         println "nsl-mapper-config.groovy; ident: ${ident}"
         Map serviceHosts = [
-                {{shard_namespace}}: '{{mapper.defaultResolverURL}}'
+                {{shard_namespace}}: 'https://{{ elb_dns }}'
         ]
-
+//TODO: add proper debug/diagnostic logging/info
         String host = serviceHosts[ident.nameSpace]
+        println "nsl-mapper-config.groovy; host: ${host}"
+
         if (ident.objectType == 'treeElement') {
             return "${host}/nxl/services/rest/${ident.objectType}/${ident.versionNumber}/${ident.idNumber}"
         }
         return "${host}/nxl/services/rest/${ident.objectType}/${ident.nameSpace}/${ident.idNumber}"
     }
-    
+
     format = [
             html: [
                     resolver: defaultResolver
@@ -34,16 +36,17 @@ mapper {
                         "sparql/?query=${url}"
                     }
             ]
+
     ]
 
 }
 
 api.auth = [
-        '{{services.grails.api_key}}': [
+        '558aaeb5-3e5b-4dd3-ad03-d17c2689b70d': [
                 application: 'nxl/services',
-                roles      : ['admin'],
+                roles      : ['admin']
         ],
-        '{{Rails.configuration.api_key}}': [
+        'd0d1e81d-test-apni-editor': [
                 application: 'nxl/editor',
                 roles      : ['admin']
         ]
@@ -54,14 +57,14 @@ ldap {
       authentication = false
     }
     domain = 'domain'
-    server.url = 'ldap://{{Rails.configuration.ldap_host}}:{{Rails.configuration.ldap_port}}'
+    server.url = 'ldap://localhost:10389'
     search {
-        base = '{{Rails.configuration.ldap_user_base}}'
-        user = '{{Rails.configuration.ldap_admin_username}}'
-        pass = '{{Rails.configuration.ldap_admin_password}}'
+        base = 'ou=people,dc=example,dc=com'
+        user = 'uid=admin,ou=system'
+        pass = 'secret'
 
         group {
-            name = '{{Rails.configuration.ldap_groups}}'
+            name = 'ou=groups,dc=example,dc=com'
             member {
                 element = 'uniqueMember'
                 prefix = 'uid='

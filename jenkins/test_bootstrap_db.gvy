@@ -10,8 +10,8 @@ node{
                 sh 'cp /var/lib/jenkins/nxl-private/bnti/tblbiota_base.csv nsl-infra/playbooks/roles/bootstrap-db/files/tblbiota.csv'
     }
     stage("Running Bootstrap data Operation env-name= $ENVIRONMENT_NAME") {
-
-        slackSend color: 'good', message: "Started Job ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
+                
+        slackSend color: 'good', message: "Processing csv files ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details...>)"
                 
         def ds_val = "${DATA_SOURCE}"
         def date_val = "${DATE_TO_USE}"

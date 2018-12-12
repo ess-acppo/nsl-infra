@@ -6,31 +6,31 @@ node {
 
         sh 'rm -rf *'
 
-        checkout([$class: 'GitSCM', branches: [[name: '*/dawr-master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'services']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/services.git']]])
+        checkout([$class: 'GitSCM', branches: [[name: '*/BNTi-customize_name_construction']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'services']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/services.git']]])
 
-        checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
+        checkout([$class: 'GitSCM', branches: [[name: '*/flex-deploy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-infra']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/ess-acppo/nsl-infra.git']]])
 
-
+        checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nxl-private']], submoduleCfg: [], userRemoteConfigs: [[url: '/var/lib/jenkins/nxl-private']]])
     }
-    stage('Unit test') {
 
-        dir('services') {
-            try {
-                sh 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64;$WORKSPACE/services/grailsw clean-all;$WORKSPACE/services/grailsw "test-app unit:"'
-
-            } catch (e) {
-                currentBuild.result = 'failure'
-            }
+    stage("Copy Ad-hoc Files from Private Repository"){
+        dir('nsl-infra') {
+                sh 'cp ../nxl-private/bnti/jdk*.tar.gz playbooks/roles/tomcat8/files/'
+                sh 'cp ../nxl-private/bnti/tag_tole_database.yml aws_utils/group_vars/tag_role_database.yml'
         }
-
     }
+
     stage('Building war') {
-
         dir('services') {
-            sh 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64;$WORKSPACE/services/grailsw war;$WORKSPACE/services/grailsw "set-war-path nxl"'
+            // sh 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64;$WORKSPACE/services/grailsw war;$WORKSPACE/services/grailsw "set-war-path nxl"'
+            sh 'cp ../nxl-private/bnti/build-nxl-services.sh .'
+            sh 'chmod +x ./build-nxl-services.sh'
+            sh './build-nxl-services.sh'
+            sh 'mv ./target/services##1.0205.war ./target/nxl#services##1.0205.war'
         }
-
     }
+
+
     stage("Deploy to environment level-1") {
         dir('nsl-infra') {
             def warDir = pwd() + "/../services/target/"
@@ -39,40 +39,40 @@ node {
             if (ENVIRONMENT_NAME) {
                 def env_instance_name = "$ENVIRONMENT_NAME".split(",")[0]
                 def env_name = env_instance_name.split("-")[0]
-                def elb_dns = "$SHARD_TYPE"+"."+"$env_name"+".oztaxa.com"
-                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name","apps":[{"app": "services"}], "war_names": [{"war_name": "nxl#services##1.0123"}   ],   "war_source_dir": "$warDir"}'/
+                def elb_dns = "$ENVIRONMENT_NAME"+".oztaxa.com"
+                def extra_vars = /'{"elb_dns": "$elb_dns","nxl_env_name":"$env_instance_name","apps":[{"app": "services"}], "war_names": [{"war_name": "nxl#services##1.0205"}   ],   "war_source_dir": "$warDir"}'/
                 sh "sed -ie 's/.*instance_filters = tag:env=.*\$/instance_filters = tag:env=$env_instance_name/g' aws_utils/ec2.ini && ansible-playbook  -i aws_utils/ec2.py -u ubuntu playbooks/deploy.yml -e $extra_vars --extra-vars $shard_vars"
             } else if (INVENTORY_NAME) {
                 def env_name = "$INVENTORY_NAME".split(",")[0]
-                def extra_vars = /'{"nxl_env_name":"$env_name","apps":[{"app": "services"}], "war_names": [{"war_name": "nxl#services##1.0123"}   ],   "war_source_dir": "$warDir"}'/
+                def extra_vars = /'{"nxl_env_name":"$env_name","apps":[{"app": "services"}], "war_names": [{"war_name": "nxl#services##1.0205"}   ],   "war_source_dir": "$warDir"}'/
                 sh "ansible-playbook  -i inventory/$env_name -u ubuntu playbooks/deploy.yml -e $extra_vars --extra-vars $shard_vars"
             }
 
 
         }
     }
-    stage("Integration test in environment level-1") {
-        sleep(2)
-    }
-    stage("Deploy to environment level-2") {
-        def env_name = "$ENVIRONMENT_NAME".split(",")[1]
-        sleep(2)
-        slackSend color: 'good', message: "New build  ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>) deployed to $env_name"
-
-    }
-    stage("Perform manual validations in environment level-2") {
-        input message: 'Are you satisfied with current state of application?', ok: 'Yes', submitter: 'admin,arnab', submitterParameter: 'who_approved'
-
-    }
-    stage("Deploy to environment PROD") {
-        def env_name = "$ENVIRONMENT_NAME".split(",")[2]
-        sleep(2)
-    }
-    stage("Run smoke test on PROD"){
-        sleep(2)
-        slackSend color: "good", message: "${env.JOB_NAME} deployed ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>) into PROD"
-
-    }
-
-
 }
+    // stage("Integration test in environment level-1") {
+    //     sleep(2)
+    // }
+    // stage("Deploy to environment level-2") {
+    //     def env_name = "$ENVIRONMENT_NAME".split(",")[1]
+    //     sleep(2)
+    //     slackSend color: 'good', message: "New build  ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>) deployed to $env_name"
+
+    // }
+    // stage("Perform manual validations in environment level-2") {
+    //     input message: 'Are you satisfied with current state of application?', ok: 'Yes', submitter: 'admin,arnab', submitterParameter: 'who_approved'
+
+    // }
+    // stage("Deploy to environment PROD") {
+    //     def env_name = "$ENVIRONMENT_NAME".split(",")[2]
+    //     sleep(2)
+    // }
+    // stage("Run smoke test on PROD"){
+    //     sleep(2)
+    //     slackSend color: "good", message: "${env.JOB_NAME} deployed ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>) into PROD"
+
+    // }
+
+

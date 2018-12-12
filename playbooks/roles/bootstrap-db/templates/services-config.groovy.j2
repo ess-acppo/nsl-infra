@@ -1,10 +1,10 @@
-grails.serverURL = "{{services.grails.serverURL}}"
+grails.serverURL = "https://{{ elb_dns }}/nxl/services"
 
 shard {
-    system.message.file = "/home/pmcneil/.nsl/broadcast.txt"
+    system.message.file = "/home/tomcat/.nsl/broadcast.txt"
     product = "Don't use this"
     temp.file.directory = "/tmp"
-    colourScheme = "local"
+    colourScheme = " " // :: " " - PROD :: "test"-Purple :: "staging" - blue
     webUser = "webmoss"
 }
 
@@ -15,9 +15,9 @@ services {
     }
 
     link {
-        mapperURL = "{{services.link.mapperURL}}"
-        internalMapperURL = "{{services.link.internalMapperURL}}"
-        editor = "{{services.link.editor}}"
+        mapperURL = "https://{{ elb_dns }}/nxl/mapper"
+        internalMapperURL = "http://localhost:8080/nxl/mapper"
+        editor = "https://{{ elb_dns }}/nxl/editor"
     }
 
     photoService {
@@ -27,7 +27,7 @@ services {
         }
     }
 
-    googleAnalytics = """"""
+    scriptAddOns = ""
 
 }
 
@@ -51,22 +51,17 @@ ldap {
 }
 
 dataSource_nsl {
-//    jndiName = "java:comp/env/jdbc/apni"
-		username = "{{postgresql_users[7].name}}"
-		password = "{{postgresql_users[7].password}}"
-		url = "jdbc:postgresql://devicv-vpc-b068bad7.ctp5yr3kk5uq.ap-southeast-2.rds.amazonaws.com:5432/{{postgresql_databases[0].name}}"
+
+                username = "nsldev"
+                password = "nsldev"
+                url = "jdbc:postgresql://localhost:5432/nsl"
 }
 
 api.auth = [
-        'dev-apni-editor': [
+        'd0d1e81d-test-apni-editor': [
                 application: 'nsl/editor',
-                roles      : ['admin'],
-                host       : '{{ansible_host}}'
-        ],
-        'IAM-A-TEST-KEY' : [
-                application: 'tester',
-                roles      : ['admin'],
-                host       : '{{ansible_host}}'
+                roles      : ['admin', 'treebuilder']
+                //TODO: check internal aws ip addr use
         ]
 ]
 

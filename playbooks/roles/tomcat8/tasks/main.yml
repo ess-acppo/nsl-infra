@@ -1,6 +1,51 @@
 ---
-- name: Install Java 1.8
-  apt: name=openjdk-8-jdk
+# - name: Install Java 1.8
+#   apt: name=openjdk-8-jdk
+- name: copy Oracle java tag.gz file
+  copy: src={{ jdk_filename }} dest=/opt mode=0755
+
+- name: Untar a file
+  unarchive:
+    src: "/opt/{{ jdk_tar }}"
+    dest: /opt
+    mode: 0755
+    owner: root
+    remote_src: yes
+
+- name: Add line in root bashrc for java home
+  lineinfile:
+    dest: /root/.bashrc
+    line: 'export JAVA_HOME={{ jdk_dir }}'
+    insertafter: 'EOF'
+    regexp: 'export JAVA_HOME={{ jdk_dir }}'
+    state: present
+
+- name: Add line in root bashrc for new PATH
+  lineinfile:
+    dest: /root/.bashrc
+    line: 'PATH=$JAVA_HOME/bin:$PATH'
+    insertafter: 'EOF'
+    regexp: 'PATH=\$JAVA_HOME/bin:\$PATH'
+    state: present
+
+- name: Add line in vagrant/ubuntu bashrc for java home
+  lineinfile:
+    dest: /home/{{ sshuser }}/.bashrc
+    line: 'export JAVA_HOME={{ jdk_dir }}'
+    insertafter: 'EOF'
+    regexp: 'export JAVA_HOME={{ jdk_dir }}'
+    state: present
+
+- name: Add line in vagrant/ubuntu bashrc for new PATH
+  lineinfile:
+    dest: /home/{{ sshuser }}/.bashrc
+    line: 'PATH=$JAVA_HOME/bin:$PATH'
+    insertafter: 'EOF'
+    regexp: 'PATH=\$JAVA_HOME/bin:\$PATH'
+    state: present
+
+- name: Symlink install directory to opt-jdk
+  file: src={{ jdk_dir }} path=/opt/jdk state=link
 
 - name: add group "tomcat"
   group: name=tomcat
@@ -11,33 +56,62 @@
   become_method: sudo
 
 - name: Download Tomcat
-  get_url: url=http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.8/bin/apache-tomcat-8.5.8.tar.gz dest=/opt/apache-tomcat-8.5.8.tar.gz
+  get_url: url=http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.13/bin/apache-tomcat-8.5.13.tar.gz dest=/opt/apache-tomcat-8.5.13.tar.gz
 
 - name: Extract archive
-  command: chdir=/usr/share /bin/tar xvf /opt/apache-tomcat-8.5.8.tar.gz -C /opt/ creates=/opt/apache-tomcat-8.5.8
+  command: chdir=/usr/share /bin/tar xvf /opt/apache-tomcat-8.5.13.tar.gz -C /opt/ creates=/opt/apache-tomcat-8.5.13
 
-- name: Symlink install directory
-  file: src=/opt/apache-tomcat-8.5.8 path=/usr/share/tomcat state=link
+- name: Symlink install directory to usr-share-tomcat
+  file: src=/opt/apache-tomcat-8.5.13 path=/usr/share/tomcat state=link
+
+- name: Symlink install directory to opt-tomcat
+  file: src=/opt/apache-tomcat-8.5.13 path=/opt/tomcat state=link
 
 - name: Change ownership of Tomcat installation
   file: path=/usr/share/tomcat/ owner=tomcat group=tomcat state=directory recurse=yes
 
 - name: Configure Tomcat server
   template: src=server.xml dest=/usr/share/tomcat/conf/
-  notify: restart tomcat
+  notify: tomcat-8-restart
+
+- name: Creates directory Catalina/localhost
+  file: path=/usr/share/tomcat/conf/Catalina/localhost state=directory 
+
+- name: Configure Tomcat Manager
+  template: src=manager.xml dest=/usr/share/tomcat/conf/Catalina/localhost/manager.xml.old
+  notify: tomcat-8-restart
 
 - name: Configure Tomcat users
   template: src=tomcat-users.xml dest=/usr/share/tomcat/conf/
-  notify: restart tomcat
+  notify: tomcat-8-restart
 
 - name: Install Tomcat init script
   copy: src=tomcat-initscript.sh dest=/etc/init.d/tomcat mode=0755
 
+- name: Start Start tomcat in all runlevels
+  command: bash -c 'update-rc.d tomcat defaults'
+  become: True
+  become_method: sudo
+
+- name: Create /conf/Catalina/localhost/rewrite.comfig file
+  command: bash -c "echo 'RewriteRule /nsl/editor/(.*) /nxl/editor/$1 [R,NE]' > {{ tomcat_dir }}/conf/Catalina/localhost/rewrite.config"
+
 - name: systemd daemon-reload
   shell: systemctl daemon-reload
 
-- name: tomcat-8-start
-  service: name=tomcat state=started enabled=yes
+- name: Copy setenv file
+  template:
+    src: "{{item.filename}}.j2"
+    dest: "/usr/share/tomcat/bin/{{item.filename}}"
+    mode: 0775
+  with_items:
+  - { filename: setenv.sh } 
+  - { filename: startup.sh } 
+
+- name: Start Tomcat First Time
+  command: bash -c 'systemctl start "tomcat"'
+  become: True
+  become_method: sudo
 
 - name: wait for tomcat to start
-  wait_for: port={{http_port}}
+  wait_for: port={{ http_port }}

@@ -32,10 +32,33 @@
       elb_dns: "{{ hostvars.localhost.elb_facts.load_balancers[0].dns_name }}"
     when: hostvars.localhost.elb_facts.load_balancers.0 is defined
 
+# Install Tomcat Server Role
+- hosts: tag_role_tomcat
+  remote_user: "{{sshuser}}"
+  become: yes
+  become_method: sudo
 
+  pre_tasks:
+    - debug: var=version
+ # choice the tomcat version
+  roles:  
+    # - { role: tomcat7, when: version == 7 }
+    - role: tomcat8 #, when: version == 8 }
 
+# Install postgres server role
+- hosts: tag_role_database
+  become: yes
+  roles:
+  - role: geerlingguy.postgresql
+    become: yes
 
-# This playbook deploys a war file onto a  standalone Tomcat 7 server.
+# Install ApacheDS for ldap
+- hosts: tag_role_ldap
+  become: yes
+  roles:
+    - apacheds
+
+# Deploy a war file onto a  standalone Tomcat 7 server.
 
 - hosts: tag_role_tomcat
   remote_user: "{{sshuser}}"
@@ -43,6 +66,12 @@
   become_method: sudo
   roles:
     - { role: deploy-war}
+
+# # Bootstrap the database
+# - hosts: tag_role_database
+#   become: yes
+#   roles:
+#     - bootstrap-db 
 
 
   

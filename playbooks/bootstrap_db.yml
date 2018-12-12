@@ -19,8 +19,8 @@
   become: yes
   become_method: sudo
   roles:
-    - { role: bootstrap-db}
-    - {role: 'load-data', tags: 'load-data'}
+    - { role: 'bootstrap-db', tags: 'load-data' }
+    # - { role: 'load-data', tags: 'load-data' }
 
 
   

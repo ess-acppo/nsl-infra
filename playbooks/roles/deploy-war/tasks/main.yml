@@ -6,14 +6,11 @@
   register: existing_wars
   with_items: "{{ apps }}"
 
-
-
 - name: Clean exisitng war dir
   file:
     state: absent
     path: "{{ item.path }}"
   with_items: "{{ existing_wars.results[0].files }}"
-
 
 - name: Clean artifact path
   file:
@@ -55,8 +52,6 @@
   tags:
     - configuration
 
-
-
 - name: Copy setenv file
   template:
       src: "{{item.filename}}.j2"
@@ -76,7 +71,7 @@
 - name: Copy image files
   copy:
     src: "{{item.filename}}"
-    dest: "{{ war_deploy_path }}/nxl#services##1.0123/assets"
+    dest: "{{ war_deploy_path }}/nxl#services##1.0210/assets"
   with_items: "{{ shard_images }}"
 #    - { filename: bpni-banner.png }
 #    - { filename: bpni-vert-200.png }
