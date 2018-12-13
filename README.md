@@ -2,9 +2,22 @@ This repository contains code code to assist installing the application stack as
 
 Technologies used are:
 
-* [Ansible](https://www.ansible.com/)
-* [Packer](https://www.packer.io/)
-* [Vagrant](https://www.vagrantup.com/)
+1. [AWS](https://aws.amazon.com/)
+1. [Ansible](https://www.ansible.com/)
+1. [Packer](https://www.packer.io/)
+1. [Vagrant](https://www.vagrantup.com/)
+1. [IntelliJ](https://www.jetbrains.com/idea/)
+1. [OpenJDK 1.7.55](https://openjdk.java.net/)
+1. [Postgres 9.6](https://www.postgresql.org/)
+1. [Apache Lucene Solr](http://lucene.apache.org/solr/)
+1. [Apacheds 2.0-M17](https://directory.apache.org/apacheds/)
+1. [nsl-services](https://github.com/bio-org-au/services)
+1. [nsl-mapper](https://github.com/bio-org-au/mapper)
+1. [nsl-editor](https://github.com/bio-org-au/nsl-editor)
+1. [SDKMAN](https://sdkman.io/)
+1. [Grails 2.4.3](https://grails.org/)
+1. [Git](https://git-scm.com/)
+1. [Github](https://github.com/)
 
 
 ### Steps to stand up a new environment: 
@@ -27,6 +40,8 @@ Technologies used are:
 # Automated provisioning in AWS
 1. The following ansible command stands up a set of AWS resources ```ansible-playbook -vvv playbooks/infra.yml -e "nxl_env_name=$ENVIRONMENT_NAME"```. The anisble provisioners are not run. We use a pre-existing AMI which contains all previously provisioned software components. The full list of such components can be found in ansible ( site.yml , Step 4 under [manual deployment](#manual-steps-in-any-cloud-or-datacenter)])
 1. The following ansible command will deploy a default set of war files and corresponding configuration into tomcat ```sed -ie \'s/.*instance_filters = tag:env=.*$/instance_filters = tag:env=$ENVIRONMENT_NAME/g\' aws_utils/ec2.ini && ansible-playbook -i aws_utils/ec2.py -u ubuntu  playbooks/deploy.yml -e '{"nxl_env_name":"$ENVIRONMENT_NAME","apps":[{"app": "services"},{"app": "editor"},{"app": "mapper"}], "war_names": [{"war_name": "nsl#services##1.0123"},{"war_name": "nsl#editor##1.44"},{"war_name": "nsl#mapper##1.0017"}   ],   "war_source_dir": "~/agri/nsl-infra"}'```
+
+> The above command is sample only. Please contact us using github to auto-deploy
 
 The above ansible commands has also been configured to run via Jenkins using the jenkins/aws_infra.gvy and jenkins/services.gvy ( for services)
 
