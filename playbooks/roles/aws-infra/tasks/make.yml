@@ -170,7 +170,7 @@
    key_name: DAWRAWSSYD
    group_id: "{{ nxl_app_sg.group_id }}"
    instance_type: t2.large
-   image: "{{ nxl_ami | default('ami-6c24d20e') }}"
+   image: "{{ nxl_ami | default('ami-0179ca18beef4e4b8') }}"
    wait: yes
    wait_timeout: 500
    count: 1
