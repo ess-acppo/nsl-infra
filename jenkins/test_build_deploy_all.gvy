@@ -57,7 +57,7 @@ node {
     stage('Building wars for editor,mapper and services') {
         withEnv(['PATH+=/opt/jruby-9.1.13.0/bin']){
             dir('nsl-editor'){
-                sh "echo $PATH; which jruby; JAVA_OPTS='-server -d64'; jruby -S bundle install --without development test;bundle exec rake assets:clobber;bundle exec rake assets:precompile  RAILS_ENV=production RAILS_GROUPS=assets;bundle exec warble"
+                sh "echo $PATH; which jruby; ./build-war.sh setup"
                 script{
                     projectDir = pwd()
                     sh 'mv nsl-editor.war nxl#editor##$(cat config/version.properties | sed -e \'s/.*=//g\').war'
