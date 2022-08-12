@@ -26,7 +26,7 @@ node {
             // Get some code from a GitHub repository
             sh 'whoami;  touch fake.war; rm *.war || echo "no war files"'
 
-            checkout([$class: 'GitSCM', branches: [[name: "${git_tag_editor}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-editor']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/bio-org-au/editor-r6.git']]])
+            checkout([$class: 'GitSCM', branches: [[name: "${git_tag_editor}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-editor']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/bio-org-au/editor-rails-6.git']]])
 
             checkout([$class: 'GitSCM', branches: [[name: "${git_tag_mapper}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'mapper']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/bio-org-au/mapper-mn.git']]])
 
