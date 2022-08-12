@@ -8,9 +8,9 @@ node {
     def elb_dns = "$ENVIRONMENT_NAME"+".oztaxa.com"
     // Git Variables
     def git_tag_domain_plugin = '*/master'
-    def git_tag_services = '*/master'
-    def git_tag_mapper = '*/master'
-    def git_tag_editor = '*/master'
+    def git_tag_services = '*/release'
+    def git_tag_mapper = '*/release'
+    def git_tag_editor = '*/release'
     def git_url_services = 'https://github.com/bio-org-au/services-g3.git'
     stage("Prepare") { // for display purposes
         // Get some code from a GitHub repository
