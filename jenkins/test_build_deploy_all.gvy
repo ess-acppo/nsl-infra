@@ -11,7 +11,7 @@ node {
     def git_tag_services = '*/master'
     def git_tag_mapper = '*/master'
     def git_tag_editor = '*/master'
-    def git_url_services = 'https://github.com/bio-org-au/services.git'
+    def git_url_services = 'https://github.com/bio-org-au/services-g3.git'
     stage("Prepare") { // for display purposes
         // Get some code from a GitHub repository
         try {
@@ -26,9 +26,9 @@ node {
             // Get some code from a GitHub repository
             sh 'whoami;  touch fake.war; rm *.war || echo "no war files"'
 
-            checkout([$class: 'GitSCM', branches: [[name: "${git_tag_editor}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-editor']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/bio-org-au/nsl-editor.git']]])
+            checkout([$class: 'GitSCM', branches: [[name: "${git_tag_editor}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-editor']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/bio-org-au/editor-r6.git']]])
 
-            checkout([$class: 'GitSCM', branches: [[name: "${git_tag_mapper}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'mapper']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/bio-org-au/mapper.git']]])
+            checkout([$class: 'GitSCM', branches: [[name: "${git_tag_mapper}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'mapper']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/bio-org-au/mapper-mn.git']]])
 
             checkout([$class: 'GitSCM',branches: [[name: "${git_tag_services}"]],doGenerateSubmoduleConfigurations: false,extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'services']],submoduleCfg: [],userRemoteConfigs: [[url: "${git_url_services}"]]])
 
@@ -36,7 +36,7 @@ node {
 
             checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nxl-private']], submoduleCfg: [], userRemoteConfigs: [[url: '/var/lib/jenkins/nxl-private']]])
     
-            checkout([$class: 'GitSCM', branches: [[name: "${git_tag_domain_plugin}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-domain-plugin']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/bio-org-au/nsl-domain-plugin.git']]])
+            checkout([$class: 'GitSCM', branches: [[name: "${git_tag_domain_plugin}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'nsl-domain-plugin']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/bio-org-au/nsl-domain-plugin-g3.git']]])
 
         } catch (e) {
                slackSend color: 'bad', message: "failed ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Details: ${e.message} >)"
